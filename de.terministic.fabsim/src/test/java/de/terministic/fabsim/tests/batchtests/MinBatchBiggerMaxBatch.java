@@ -1,6 +1,7 @@
 package de.terministic.fabsim.tests.batchtests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
@@ -13,11 +14,12 @@ public class MinBatchBiggerMaxBatch {
 
 	ToolGroup toolGroup;
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void MinBatchBiggerMaxBatch() {
-		final BatchDetails details = new BatchDetails("typ1", 10, 5);// (Name,
-																		// minBatch,
-																		// maxBatch)
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			final BatchDetails details = new BatchDetails("Typ1", 10, 5);// (Name, minBatch, maxBatch)
+		});
 	}
 
 }

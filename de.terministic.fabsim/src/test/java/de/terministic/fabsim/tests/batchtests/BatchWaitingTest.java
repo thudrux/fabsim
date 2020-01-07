@@ -1,16 +1,14 @@
 package de.terministic.fabsim.tests.batchtests;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.LotSource;
+import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
-import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.EventListManager;
@@ -32,7 +30,7 @@ public class BatchWaitingTest {
 	ToolGroup toolGroup;
 	Sink sink;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		this.model = new FabModel();
 		this.sink = (Sink) this.model.getSimComponentFactory().createSink();
@@ -42,9 +40,11 @@ public class BatchWaitingTest {
 				this.toolGroup);
 
 		final Recipe recipe = this.model.getSimComponentFactory().createRecipe("Recipe1");
-		this.model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", this.toolGroup, 5L, typ1,ProcessType.BATCH, recipe);
-		this.model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", this.sink, 0L,ProcessType.BATCH, recipe);
-		Product product=model.getSimComponentFactory().createProduct("Product", recipe);
+		this.model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", this.toolGroup, 5L, typ1,
+				ProcessType.BATCH, recipe);
+		this.model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", this.sink, 0L, ProcessType.BATCH,
+				recipe);
+		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 
 		this.source = (LotSource) this.model.getSimComponentFactory().createSource("Source1", product, 10L);
 		this.source.setLotSize(1);
@@ -60,7 +60,7 @@ public class BatchWaitingTest {
 		this.engine.init(this.model);
 		this.sink.addListener(counter);
 		this.engine.runSimulation(46L);
-		assertEquals(0, counter.getItemCount());
+		Assertions.assertEquals(0, counter.getItemCount());
 	}
 
 }
