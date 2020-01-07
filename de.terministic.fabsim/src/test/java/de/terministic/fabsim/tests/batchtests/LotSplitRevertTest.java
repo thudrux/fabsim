@@ -1,10 +1,8 @@
 package de.terministic.fabsim.tests.batchtests;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.Lot;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.core.FabModel;
@@ -27,8 +25,8 @@ public class LotSplitRevertTest {
 		this.lot1.mergeWithLot(this.lot2);
 		final long c = this.lot1.getId();
 		final int d = this.lot1.getSize();
-		assertEquals(a, c);
-		assertEquals(b, d);
+		Assertions.assertEquals(a, c);
+		Assertions.assertEquals(b, d);
 	}
 
 }
