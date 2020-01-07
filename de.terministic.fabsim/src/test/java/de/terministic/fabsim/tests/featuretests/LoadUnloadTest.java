@@ -1,10 +1,9 @@
 package de.terministic.fabsim.tests.featuretests;
 
-import static org.junit.Assert.*;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.LotSource;
@@ -30,41 +29,42 @@ public class LoadUnloadTest {
 	LotSource source;
 	AbstractToolGroup toolGroup;
 	ProcessStep tgStep;
-	
-	@Before
+
+	@BeforeEach
 	public void setUp() throws Exception {
 		model = new FabModel();
-		Sink sink = (Sink)model.getSimComponentFactory().createSink();
-		toolGroup=model.getSimComponentFactory().createToolGroup("Toolgroup");
+		Sink sink = (Sink) model.getSimComponentFactory().createSink();
+		toolGroup = model.getSimComponentFactory().createToolGroup("Toolgroup");
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");
-		tgStep = model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup,null, 3L,5L, 7L,null, null, ProcessType.LOT, recipe);
-		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT,recipe);
-		Product product=model.getSimComponentFactory().createProduct("Product", recipe);
+		tgStep = model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, null, 3L, 5L, 7L,
+				null, null, ProcessType.LOT, recipe);
+		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
+		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 
-		source = (LotSource)model.getSimComponentFactory().createSource("Source1", product, 200L);
+		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product, 200L);
 		source.setCreateFirstAtTimeZero(true);
 
-		EventListManager eventList= new EventListManager();
+		EventListManager eventList = new EventListManager();
 		engine = new SimulationEngine(eventList);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		model = null;
-		engine= null;
-		toolGroup=null;
-		tgStep=null;
-		source=null;
+		engine = null;
+		toolGroup = null;
+		tgStep = null;
+		source = null;
 	}
 
 	@Test
 	public void cycleTimeWithLoadAndUnloadTime() {
 		FirstCycleTimeTracker tracker = new FirstCycleTimeTracker();
-		long duration =3L+5L+7L;
+		long duration = 3L + 5L + 7L;
 		engine.init(model);
 		engine.addListener(tracker);
 		engine.runSimulation(50L);
-		assertEquals(duration, tracker.getCycleTime());
+		Assertions.assertEquals(duration, tracker.getCycleTime());
 	}
 
 }
