@@ -1,18 +1,17 @@
 package de.terministic.fabsim.tests.setuptests;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.LotSource;
+import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
-import de.terministic.fabsim.components.ProcessStep.ProcessType;
+import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
@@ -35,45 +34,48 @@ public class CountedSetupFunctionTest {
 	ToolGroup toolGroup;
 	Sink sink;
 
-	@Before
-	public void setUp() throws Exception{
-		model = new FabModel();	
-		sink = (Sink)model.getSimComponentFactory().createSink();
-		toolGroup=(ToolGroup) model.getSimComponentFactory().createToolGroup("ToolGroup", 1, ProcessingType.LOT);
+	@BeforeEach
+	public void setUp() throws Exception {
+		model = new FabModel();
+		sink = (Sink) model.getSimComponentFactory().createSink();
+		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("ToolGroup", 1, ProcessingType.LOT);
 		SetupState s1 = model.getSimComponentFactory().createSetupStateAndAddToToolGroup("s1", toolGroup);
 		SetupState s2 = model.getSimComponentFactory().createSetupStateAndAddToToolGroup("s2", toolGroup);
-		AbstractSetupStrategy strategy = model.getSimComponentFactory().createBasicConditionBasedSetupStrategyAndAddToToolGroup(toolGroup);
-		model.getSimComponentFactory().createMinProducedItemsSinceChangeSetupChangeConditionAndAddToSetupStrategy(s1, 5, strategy);
+		AbstractSetupStrategy strategy = model.getSimComponentFactory()
+				.createBasicConditionBasedSetupStrategyAndAddToToolGroup(toolGroup);
+		model.getSimComponentFactory().createMinProducedItemsSinceChangeSetupChangeConditionAndAddToSetupStrategy(s1, 5,
+				strategy);
 		model.getSimComponentFactory().createSetupChangeAndAddToToolGroup(s1, s2, 5L, toolGroup);
 		toolGroup.setInitialSetup(s1);
-		
+
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");
-		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 5L, s1, ProcessType.LOT, recipe);
+		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 5L, s1, ProcessType.LOT,
+				recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
-		
+
 		Recipe recipe2 = model.getSimComponentFactory().createRecipe("Recipe2");
-		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 3L, s2, ProcessType.LOT, recipe2);
+		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 3L, s2, ProcessType.LOT,
+				recipe2);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe2);
-		Product product1=model.getSimComponentFactory().createProduct("Product1", recipe);
-		source = (LotSource)model.getSimComponentFactory().createSource("Source1", product1, 1L);
+		Product product1 = model.getSimComponentFactory().createProduct("Product1", recipe);
+		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product1, 1L);
 		source.setLotSize(1);
 		source.setAllowSplit(false);
-		Product product2=model.getSimComponentFactory().createProduct("Product2", recipe2);
-		source2 = (LotSource)model.getSimComponentFactory().createSource("Source2", product2, 2L);
+		Product product2 = model.getSimComponentFactory().createProduct("Product2", recipe2);
+		source2 = (LotSource) model.getSimComponentFactory().createSource("Source2", product2, 2L);
 		source.setLotSize(1);
 		source.setAllowSplit(false);
-		
-		EventListManager eventList= new EventListManager();
+
+		EventListManager eventList = new EventListManager();
 		engine = new SimulationEngine(eventList);
 	}
-	
 
 	@Test
 	public void CountedFunctionTest() {
-		FinishedFlowItemCounter counter = new FinishedFlowItemCounter(); 
+		FinishedFlowItemCounter counter = new FinishedFlowItemCounter();
 		engine.init(model);
 		sink.addListener(counter);
 		engine.runSimulation(31L);
-		assertEquals(5, counter.getItemCount());
+		Assertions.assertEquals(5, counter.getItemCount());
 	}
 }
