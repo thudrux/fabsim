@@ -1,6 +1,8 @@
 package de.terministic.fabsim.dispatchRules;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import de.terministic.fabsim.core.AbstractFlowItem;
 
@@ -21,24 +23,15 @@ public class FIFO extends AbstractDispatchRule {
 
 	@Override
 	public ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items) {
-		// final ArrayList<AbstractFlowItem> newList = new ArrayList<>();
-		// final ArrayList<AbstractFlowItem> oldList = new ArrayList<>(items);
-		// while (oldList.size() > 0) {
-		// int index = 0;
-		// long lastTime =
-		// oldList.get(0).getTimeStamps(oldList.get(0).getCurrentStepNumber()).getArrivalTime();
-		// for (int i = 0; i < oldList.size(); i++) {
-		// if (lastTime >
-		// oldList.get(i).getTimeStamps(oldList.get(i).getCurrentStepNumber()).getArrivalTime())
-		// {
-		// index = i;
-		// lastTime =
-		// oldList.get(i).getTimeStamps(oldList.get(i).getCurrentStepNumber()).getArrivalTime();
-		// }
-		// }
-		// newList.add(oldList.get(index));
-		// oldList.remove(index);
-		// }
+		Collections.sort(items, new Comparator<AbstractFlowItem>() {
+			@Override
+			public int compare(final AbstractFlowItem o1, final AbstractFlowItem o2) {
+				final Long time1 = new Long(o1.getTimeStamps(o1.getCurrentStepNumber()).getArrivalTime());
+				final long time2 = (o2.getTimeStamps(o2.getCurrentStepNumber()).getArrivalTime());
+				return time1.compareTo(time2);
+			}
+		});
+
 		return items;
 	}
 
