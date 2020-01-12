@@ -154,8 +154,19 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		this.logger.trace("Current State: {}", currentState);
 		final AbstractToolState newState = currentState.onBreakdownFinished(tool, event.getBreakdown());
+		if (newState == currentState) {
+			BreakdownToolState udState = (BreakdownToolState) newState;
 
-		updateStateAndResumeNewStateWithEvent(tool, event, newState);
+			this.logger.trace("[{}] next breakdown is handled {}", tool.getTime(), newState);
+			tool.setCurrentToolState(newState.getSemiE10State(tool));
+			this.currentStateMap.put(tool, newState);
+
+			udState.enterState(tool, udState.getNextBreakdownInStack(tool));
+		}
+
+		else {
+			updateStateAndResumeNewStateWithEvent(tool, event, newState);
+		}
 	}
 
 	/*

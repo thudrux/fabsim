@@ -202,7 +202,7 @@ public class BreakdownStateChangeTest {
 			System.out.println(entry);
 		}
 
-		Assertions.assertEquals(7, toolLogList.size());
+		Assertions.assertEquals(6, toolLogList.size());
 
 		Assertions.assertEquals(50L, toolLogList.get(1).getTime());
 		Assertions.assertEquals(SemiE10EquipmentState.PR, toolLogList.get(1).getNewState());
@@ -211,16 +211,13 @@ public class BreakdownStateChangeTest {
 		Assertions.assertEquals(SemiE10EquipmentState.UD, toolLogList.get(2).getNewState());
 
 		Assertions.assertEquals(56L, toolLogList.get(3).getTime());
-		Assertions.assertEquals(SemiE10EquipmentState.PR, toolLogList.get(3).getNewState());
+		Assertions.assertEquals(SemiE10EquipmentState.UD, toolLogList.get(3).getNewState());
 
-		Assertions.assertEquals(56L, toolLogList.get(4).getTime());
-		Assertions.assertEquals(SemiE10EquipmentState.UD, toolLogList.get(4).getNewState());
+		Assertions.assertEquals(61L, toolLogList.get(4).getTime());
+		Assertions.assertEquals(SemiE10EquipmentState.PR, toolLogList.get(4).getNewState());
 
-		Assertions.assertEquals(61L, toolLogList.get(5).getTime());
-		Assertions.assertEquals(SemiE10EquipmentState.PR, toolLogList.get(5).getNewState());
-
-		Assertions.assertEquals(65L, toolLogList.get(6).getTime());
-		Assertions.assertEquals(SemiE10EquipmentState.SB_NO_MATERIAL, toolLogList.get(6).getNewState());
+		Assertions.assertEquals(65L, toolLogList.get(5).getTime());
+		Assertions.assertEquals(SemiE10EquipmentState.SB_NO_MATERIAL, toolLogList.get(5).getNewState());
 
 	}
 
