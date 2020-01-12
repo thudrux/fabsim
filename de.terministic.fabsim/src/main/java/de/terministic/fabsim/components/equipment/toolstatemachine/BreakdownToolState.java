@@ -26,8 +26,13 @@ public class BreakdownToolState extends AbstractToolState {
 	// this
 	// maps
 
+	public IBreakdown getNextBreakdownInStack(AbstractTool tool) {
+		return breakdownStack.get(tool).remove(0);
+	}
+
 	public BreakdownToolState(final FabModel model) {
 		super(model);
+
 		// TODO Auto-generated constructor stub
 	}
 
@@ -64,18 +69,25 @@ public class BreakdownToolState extends AbstractToolState {
 
 	@Override
 	public boolean needsEventForLater(final ISimEvent event) {
-		return (event instanceof MaintenanceTriggeredEvent) || (event instanceof BreakdownTriggeredEvent);
+		return (event instanceof MaintenanceTriggeredEvent);
 	}
 
 	@Override
 	public AbstractToolState onBreakdownFinished(final AbstractTool tool, final IBreakdown breakdown) {
 		this.logger.trace("onBreakdownFinished was called");
 		breakdown.breakdownFinished(tool);
-		return this.previousStateMap.remove(tool);
+		if (breakdownStack.containsKey(tool) && breakdownStack.get(tool).size() > 0) {
+			return this;
+		} else
+			return this.previousStateMap.remove(tool);
 	}
 
 	@Override
 	public AbstractToolState onBreakdownTriggered(final AbstractTool tool, final IBreakdown down) {
+		if (this.breakdownStack.get(tool) == null) {
+			this.breakdownStack.put(tool, new ArrayList<IBreakdown>());
+		}
+		this.breakdownStack.get(tool).add(down);
 		return null;
 	}
 
