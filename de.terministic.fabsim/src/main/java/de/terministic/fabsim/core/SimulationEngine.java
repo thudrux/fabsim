@@ -11,14 +11,14 @@ import de.terministic.fabsim.statistics.FlowItemCounter;
 public class SimulationEngine {
 
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
-	private final EventListManager eventList;
+	private final IEventListManager eventList;
 	// private final IEventListManager eventList;
 	private long currentSimTime = 0L;
 	private FabModel model;
 	private final ArrayList<SimEventListener> listenerList = new ArrayList<>();
 	private SimEventFactory eventFactory;
 
-	public SimulationEngine(final EventListManager eventList) {
+	public SimulationEngine(final IEventListManager eventList) {
 		this.eventList = eventList;
 		this.eventFactory = new SimEventFactory();
 		this.eventFactory.setSimulationEngine(this);
@@ -43,7 +43,7 @@ public class SimulationEngine {
 		return this.eventFactory;
 	}
 
-	public EventListManager getEventList() {
+	public IEventListManager getEventList() {
 		return this.eventList;
 	}
 

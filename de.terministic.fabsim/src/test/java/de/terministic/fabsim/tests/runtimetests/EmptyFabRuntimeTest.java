@@ -7,8 +7,9 @@ import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.core.GenericEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 
 public class EmptyFabRuntimeTest {
@@ -28,11 +29,10 @@ public class EmptyFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-			EventListManager eventList = new EventListManager();
+			// EventListManager eventList = new EventListManager();
 
-			// GenericEventListManager<AbstractSimEvent> eventList = new
-			// GenericEventListManagery<AbstractSimEvent>(
-			// AbstractSimEvent.class);
+			GenericEventListManager<AbstractSimEvent> eventList = new GenericEventListManager<AbstractSimEvent>(
+					AbstractSimEvent.class);
 
 			SimulationEngine engine = new SimulationEngine(eventList);
 
@@ -41,7 +41,7 @@ public class EmptyFabRuntimeTest {
 		}
 		long duration = System.currentTimeMillis() - startTime;
 
-		Assertions.assertTrue(duration < 3000);
+		Assertions.assertTrue(duration < 4000);
 	}
 
 }
