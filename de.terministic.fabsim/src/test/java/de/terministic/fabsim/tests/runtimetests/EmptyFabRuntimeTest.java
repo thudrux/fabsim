@@ -29,6 +29,11 @@ public class EmptyFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			EventListManager eventList = new EventListManager();
+
+			// GenericEventListManager<AbstractSimEvent> eventList = new
+			// GenericEventListManagery<AbstractSimEvent>(
+			// AbstractSimEvent.class);
+
 			SimulationEngine engine = new SimulationEngine(eventList);
 
 			engine.init(model);
