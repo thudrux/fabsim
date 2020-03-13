@@ -1,27 +1,33 @@
 package de.terministic.fabsim.core;
 
-import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.Collections;
 
-public class EventsTypeList<T extends Comparable<T>> extends PriorityQueue<AbstractSimEvent>
-		implements Comparable<EventsTypeList<T>> {
+public class EventsTypeList extends ArrayList<AbstractSimEvent> implements Comparable<EventsTypeList> {
 
 	private static final long serialVersionUID = -3684156624934255743L;
 
-	private final T type;
-
-	public EventsTypeList(T type) {
-		this.type = type;
-	}
-
-	public T getType() {
-		return type;
+	public EventsTypeList() {
 	}
 
 	@Override
-	public int compareTo(EventsTypeList<T> that) {
-		int result = Long.compare(this.peek().getEventTime(), that.peek().getEventTime());
-		if (result == 0)
-			result = this.getType().compareTo(that.getType());
-		return result;
+	public int compareTo(EventsTypeList that) {
+		return this.get(0).compareTo(that.get(0));
+	}
+
+	@Override
+	public boolean add(AbstractSimEvent event) {
+		if (super.add(event)) {
+			Collections.sort(this);
+			return true;
+		}
+		return false;
+	}
+
+	public AbstractSimEvent pop() {
+		if (this.size() > 0) {
+			return this.remove(0);
+		}
+		return null;
 	}
 }

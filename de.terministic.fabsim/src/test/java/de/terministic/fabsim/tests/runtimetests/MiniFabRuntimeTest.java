@@ -9,7 +9,8 @@ import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.ComponentComparator;
+import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 
@@ -32,7 +33,11 @@ public class MiniFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-			EventListManager eventList = new EventListManager();
+
+			// EventListManager eventList = new EventListManager();
+
+			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
+
 			SimulationEngine engine = new SimulationEngine(eventList);
 
 			engine.init(model);
