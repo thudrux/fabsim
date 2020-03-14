@@ -29,9 +29,6 @@ public class EventListManager implements IEventListManager {
 	}
 
 	public void scheduleEvent(final AbstractSimEvent event) {
-		if ((event.getComponent() != null) && (event.getComponent().getName().equals("ToolGroup_2"))) {
-			logger.trace("Event scheduled: {}", event);
-		}
 		if (event.getEventTime() <= simulationEndTime) {
 			EventsInMomentList moments = this.events.get(event.getEventTime());
 			if (moments == null) {
