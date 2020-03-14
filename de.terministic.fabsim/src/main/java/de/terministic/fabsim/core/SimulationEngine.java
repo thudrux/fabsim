@@ -80,8 +80,13 @@ public class SimulationEngine {
 		long eventCounter = 0L;
 		eventList.scheduleEvent(new DummyEvent(model, Long.MAX_VALUE, null, null));
 		eventList.setSimulationEndTime(endTime);
+		boolean logStart = false;
 		while (this.eventList.size() > 0 && this.currentSimTime <= endTime) {
 			final ISimEvent event = this.eventList.getNextEvent();
+			if (((AbstractSimEvent) event).getId() == 82) {
+				this.logger.info("[{}] Resolving event: {}", getTime(), event);
+			}
+
 			if (event.getEventTime() < this.currentSimTime)
 				throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
 						+ event.getEventTime() + ") current simulation time(" + getTime() + ")");
@@ -89,11 +94,11 @@ public class SimulationEngine {
 			if (this.currentSimTime > endTime) {
 				break;
 			} else {
-				if ((event.getComponent() != null)) {// &&
-														// (event.getComponent().getName().equals("ToolGroup_0")))
-														// {
-					this.logger.trace("[{}] Resolving event: {}", getTime(), event);
-				}
+//				if ((event.getComponent() != null)) {// &&
+//														// (event.getComponent().getName().equals("ToolGroup_0")))
+//														// {
+//					this.logger.info("[{}] Resolving event: {}", getTime(), event);
+//				}
 				event.resolveEvent();
 				eventCounter++;
 				notifyListener(event);

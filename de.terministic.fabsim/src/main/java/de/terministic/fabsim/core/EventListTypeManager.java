@@ -31,6 +31,9 @@ public class EventListTypeManager implements IEventListManager {
 	}
 
 	public void scheduleEvent(final AbstractSimEvent event) {
+		if (((AbstractSimEvent) event).getId() == 82) {
+			this.logger.info("Scheduling event: {}", event);
+		}
 		for (EventsTypeList eventTypeList : events) {
 			if (comparator.compare(eventTypeList.get(0), event)) {
 				eventTypeList.add(event);
