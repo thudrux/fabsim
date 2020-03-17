@@ -30,10 +30,7 @@ public class EmptyFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-
 			EventListManager eventList = new EventListManager();
-//			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(10000000L);
@@ -48,10 +45,7 @@ public class EmptyFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-
-			// EventListManager eventList = new EventListManager();
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(10000000L);

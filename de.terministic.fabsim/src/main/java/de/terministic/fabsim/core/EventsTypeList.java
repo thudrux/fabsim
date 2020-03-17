@@ -24,7 +24,7 @@ public class EventsTypeList extends ArrayList<AbstractSimEvent> implements Compa
 		return false;
 	}
 
-	public AbstractSimEvent pop() {
+	public AbstractSimEvent poll() {
 		if (this.size() > 0) {
 			return this.remove(0);
 		}

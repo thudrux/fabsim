@@ -69,16 +69,12 @@ public class LargeToolGroupFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-
 			EventListManager eventList = new EventListManager();
-//			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
 		long duration = System.currentTimeMillis() - startTime;
-
 		Assertions.assertTrue(duration < 24000);
 	}
 
@@ -87,16 +83,12 @@ public class LargeToolGroupFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-
-			// EventListManager eventList = new EventListManager();
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
 		long duration = System.currentTimeMillis() - startTime;
-
 		Assertions.assertTrue(duration < 24000);
 	}
 

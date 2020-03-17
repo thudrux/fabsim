@@ -38,9 +38,6 @@ public class MiniFabRuntimeTest {
 
 			IEventListManager eventList = new EventListManager();
 
-			// EventListTypeManager eventList = new EventListTypeManager(new
-			// ComponentComparator());
-
 			SimulationEngine engine = new SimulationEngine(eventList);
 
 			engine.init(model);
@@ -56,8 +53,6 @@ public class MiniFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-
-//			IEventListManager eventList = new EventListManager();
 
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
 

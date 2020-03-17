@@ -18,6 +18,11 @@ import de.terministic.fabsim.core.FabModel;
 
 public class EventListTypeManagerTest {
 
+	public void printEvent(AbstractSimEvent event) {
+		System.out.println(event.getClass().getCanonicalName() + ", Time:" + Long.toString(event.getEventTime())
+				+ ", Priority: " + Integer.toString(event.getPriority()) + ", ID:" + Long.toString(event.getId()));
+	}
+
 	@Test
 	public void scheduleTest() {
 
@@ -35,22 +40,27 @@ public class EventListTypeManagerTest {
 		AbstractSource source = model.getSimComponentFactory().createSource("Source1", product, 10L);
 
 		try {
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 13L, toolGroup, null, null));
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 12L, toolGroup, null, null));
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 14L, toolGroup, null, null));
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 11L, toolGroup, null, null));
-			manager.scheduleEvent(new OperatorFinishedEvent(model, 11L, source, null, null));
-			manager.scheduleEvent(new OperatorFinishedEvent(model, 12L, source, null, null));
-			manager.scheduleEvent(new OperatorFinishedEvent(model, 10L, source, null, null));
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 10L, toolGroup, null, null));
-			manager.scheduleEvent(new ProcessFinishedEvent(model, 13L, toolGroup, null, null));
+			AbstractSimEvent event1 = new ProcessFinishedEvent(model, 13L, toolGroup, null, null);
+			AbstractSimEvent event2 = new ProcessFinishedEvent(model, 12L, toolGroup, null, null);
+			AbstractSimEvent event3 = new ProcessFinishedEvent(model, 15L, toolGroup, null, null);
+			AbstractSimEvent event4 = new OperatorFinishedEvent(model, 15L, source, null, null);
+			AbstractSimEvent event5 = new OperatorFinishedEvent(model, 14L, source, null, null);
+			AbstractSimEvent event6 = new OperatorFinishedEvent(model, 11L, source, null, null);
+
+			manager.scheduleEvent(event1);
+			manager.scheduleEvent(event2);
+			manager.scheduleEvent(event3);
+			manager.scheduleEvent(event4);
+			manager.scheduleEvent(event5);
+			manager.scheduleEvent(event6);
+
+			// manager.unscheduleEvent(event6);
 
 			AbstractSimEvent nextEvent = manager.getNextEvent();
-			System.out.println(Long.toString(nextEvent.getEventTime()));
+			printEvent(nextEvent);
 			while (nextEvent != null) {
 				nextEvent = manager.getNextEvent();
-				System.out.println(nextEvent.getClass().toString() + " " + Long.toString(nextEvent.getEventTime()) + " "
-						+ Integer.toString(nextEvent.getPriority()) + " " + Long.toString(nextEvent.getId()));
+				printEvent(nextEvent);
 			}
 
 		} catch (Exception e) {
