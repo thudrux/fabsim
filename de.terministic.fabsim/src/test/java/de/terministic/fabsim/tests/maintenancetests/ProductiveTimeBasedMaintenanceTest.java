@@ -54,9 +54,9 @@ public class ProductiveTimeBasedMaintenanceTest {
 		tool.addListener(log);
 		engine.runSimulation(60L);
 		List<ToolStateLogEntry> toolLog = log.getLog().get(tool);
-		for (ToolStateLogEntry entry : toolLog) {
-			System.out.println(entry);
-		}
+//		for (ToolStateLogEntry entry : toolLog) {
+//			System.out.println(entry);
+//		}
 		Assertions.assertEquals(12, toolLog.size());
 		Assertions.assertEquals(0L, toolLog.get(0).getTime());
 		Assertions.assertEquals(0L, toolLog.get(1).getTime());

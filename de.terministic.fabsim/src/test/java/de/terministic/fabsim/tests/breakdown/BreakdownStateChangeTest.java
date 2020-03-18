@@ -198,9 +198,9 @@ public class BreakdownStateChangeTest {
 
 		engine.runSimulation(80L);
 		List<ToolStateLogEntry> toolLogList = log.getLog().get(toolGroup.getToolByIndex(0));
-		for (ToolStateLogEntry entry : toolLogList) {
-			System.out.println(entry);
-		}
+//		for (ToolStateLogEntry entry : toolLogList) {
+//			System.out.println(entry);
+//		}
 
 		Assertions.assertEquals(6, toolLogList.size());
 
