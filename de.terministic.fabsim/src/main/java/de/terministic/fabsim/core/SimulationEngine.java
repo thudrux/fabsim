@@ -83,9 +83,9 @@ public class SimulationEngine {
 		boolean logStart = false;
 		while (this.eventList.size() > 0 && this.currentSimTime <= endTime) {
 			final ISimEvent event = this.eventList.getNextEvent();
-			if (((AbstractSimEvent) event).getId() == 82) {
-				this.logger.info("[{}] Resolving event: {}", getTime(), event);
-			}
+//			if (((AbstractSimEvent) event).getId() == 82) {
+//				this.logger.info("[{}] Resolving event: {}", getTime(), event);
+//			}
 
 			if (event.getEventTime() < this.currentSimTime)
 				throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
