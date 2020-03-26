@@ -71,7 +71,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine();
+			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
@@ -85,7 +85,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-			SimulationEngine engine = new SimulationEngine();
+			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
@@ -99,7 +99,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine();
+			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
