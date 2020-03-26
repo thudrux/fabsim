@@ -5,12 +5,12 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventListManager implements IEventListManager {
+public class TimeGroupedEventListManager implements IEventListManager {
 	private final TreeMap<Long, EventsInMomentList> events = new TreeMap<>();
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
 	private long spentTime = 0L;
 
-	public EventListManager() {
+	public TimeGroupedEventListManager() {
 
 	}
 

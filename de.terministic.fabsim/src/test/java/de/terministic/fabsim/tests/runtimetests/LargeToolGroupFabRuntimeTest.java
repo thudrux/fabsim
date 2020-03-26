@@ -15,10 +15,11 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.ComponentComparator;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.ComponentGroupedEventListManager;
 import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
 
 public class LargeToolGroupFabRuntimeTest {
@@ -69,7 +70,21 @@ public class LargeToolGroupFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-			EventListManager eventList = new EventListManager();
+			TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
+			SimulationEngine engine = new SimulationEngine(eventList);
+			engine.init(model);
+			engine.runSimulation(YEAR);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+		Assertions.assertTrue(duration < 24000);
+	}
+
+	@Test
+	public void runTimeForMiniModelWithTypeGroupedEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
@@ -83,7 +98,7 @@ public class LargeToolGroupFabRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
-			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
+			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
