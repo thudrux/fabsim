@@ -15,7 +15,6 @@ import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.ProcessTimeBasedMaintenance;
 import de.terministic.fabsim.core.AbstractSink;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
@@ -37,8 +36,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 		ProcessTimeBasedMaintenance maint = model.getSimComponentFactory()
 				.createProcessTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3, obj7, toolGroup);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 7L, ProcessType.LOT, recipe);
@@ -90,8 +88,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 		SimTimeBasedBreakdown breakdown = model.getSimComponentFactory()
 				.createSimulationTimeBasedBreakdownAndAddToToolGroup("Breakdown", obj4, obj8, toolGroup);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 10L, ProcessType.LOT,
@@ -139,8 +136,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 		SimTimeBasedBreakdown breakdown = model.getSimComponentFactory()
 				.createSimulationTimeBasedBreakdownAndAddToToolGroup("Breakdown", obj4, obj8, toolGroup);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 10L, ProcessType.LOT,
@@ -189,8 +185,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				.createSimulationTimeBasedBreakdownAndAddToToolGroup("Breakdown", obj4, obj8, toolGroup);
 		breakdown.setFirstDefaultOccurance(13L);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 10L, ProcessType.LOT,
@@ -239,8 +234,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				.createSimulationTimeBasedBreakdownAndAddToToolGroup("Breakdown", obj4, obj8, toolGroup);
 		breakdown.setFirstDefaultOccurance(5L);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 10L, ProcessType.LOT,

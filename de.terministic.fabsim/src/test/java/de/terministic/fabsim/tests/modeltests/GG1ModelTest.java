@@ -12,7 +12,6 @@ import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.Source;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
@@ -39,8 +38,7 @@ public class GG1ModelTest {
 
 		source = (Source) model.getSimComponentFactory().createSource("Source1", product, 10L);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

@@ -12,7 +12,6 @@ import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
@@ -55,8 +54,7 @@ public class BatchSplitTest {
 		this.source.setAllowSplit(false);
 		this.source.setCreateFirstAtTimeZero(true);
 
-		final TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		this.engine = new SimulationEngine(eventList);
+		this.engine = new SimulationEngine();
 	}
 
 }

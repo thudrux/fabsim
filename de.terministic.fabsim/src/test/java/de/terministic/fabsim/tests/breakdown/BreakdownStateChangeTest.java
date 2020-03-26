@@ -17,7 +17,6 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
@@ -49,8 +48,7 @@ public class BreakdownStateChangeTest {
 
 		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product, 50L);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

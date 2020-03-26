@@ -32,7 +32,7 @@ public class EmptyFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 			engine.init(model);
 			engine.runSimulation(10000000L);
 		}
@@ -47,7 +47,7 @@ public class EmptyFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 			engine.init(model);
 			engine.runSimulation(10000000L);
 		}
@@ -62,7 +62,7 @@ public class EmptyFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 			engine.init(model);
 			engine.runSimulation(10000000L);
 		}

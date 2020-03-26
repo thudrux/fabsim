@@ -39,7 +39,7 @@ public class MiniFabRuntimeTest {
 
 			IEventListManager eventList = new TimeGroupedEventListManager();
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 
 			engine.init(model);
 			engine.runSimulation(10000000L);
@@ -57,7 +57,7 @@ public class MiniFabRuntimeTest {
 
 			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 
 			engine.init(model);
 			engine.runSimulation(10000000L);
@@ -75,7 +75,7 @@ public class MiniFabRuntimeTest {
 
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new SimulationEngine();
 
 			engine.init(model);
 			engine.runSimulation(10000000L);

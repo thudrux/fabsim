@@ -18,7 +18,14 @@ public class SimulationEngine {
 	private final ArrayList<SimEventListener> listenerList = new ArrayList<>();
 	private SimEventFactory eventFactory;
 
-	public SimulationEngine(final IEventListManager eventList) {
+	public SimulationEngine() {
+		this.eventList = new TimeGroupedEventListManager();
+		this.eventFactory = new SimEventFactory();
+		this.eventFactory.setSimulationEngine(this);
+
+	}
+
+	public SimulationEngine(IEventListManager eventList) {
 		this.eventList = eventList;
 		this.eventFactory = new SimEventFactory();
 		this.eventFactory.setSimulationEngine(this);

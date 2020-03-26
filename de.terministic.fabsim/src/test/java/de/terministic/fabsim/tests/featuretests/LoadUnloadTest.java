@@ -1,23 +1,17 @@
 package de.terministic.fabsim.tests.featuretests;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.LotSource;
 import de.terministic.fabsim.components.ProcessStep;
+import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
-import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
-import de.terministic.fabsim.components.equipment.BatchDetails;
-import de.terministic.fabsim.components.equipment.SetupState;
-import de.terministic.fabsim.core.AbstractComponent;
-import de.terministic.fabsim.core.AbstractOperatorGroup;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
@@ -44,8 +38,7 @@ public class LoadUnloadTest {
 		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product, 200L);
 		source.setCreateFirstAtTimeZero(true);
 
-		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

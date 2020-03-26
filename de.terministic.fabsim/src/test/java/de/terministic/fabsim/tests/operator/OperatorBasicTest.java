@@ -23,7 +23,6 @@ import de.terministic.fabsim.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.core.AbstractOperatorGroup;
 import de.terministic.fabsim.core.AbstractSink;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
@@ -43,8 +42,7 @@ public class OperatorBasicTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		this.model = new FabModel();
-		final TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-		this.engine = new SimulationEngine(eventList);
+		this.engine = new SimulationEngine();
 
 	}
 
