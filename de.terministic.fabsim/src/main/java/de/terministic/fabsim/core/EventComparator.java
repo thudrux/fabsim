@@ -10,6 +10,9 @@ public class EventComparator implements Comparator<ISimEvent> {
 		if (result == 0) {
 			result = Integer.compare(e1.getPriority(), e2.getPriority());
 		}
+		if (result == 0) {
+			result = Long.compare(e1.getId(), e2.getId());
+		}
 		return result;
 	}
 
