@@ -35,7 +35,8 @@ public class ComponentGroupedEventListManager implements IEventListManager {
 		if (event.getEventTime() <= simulationEndTime) {
 			if (componentMap.containsKey(event.getComponent())) {
 				ComponentEventList compEvents = componentMap.get(event.getComponent());
-				if (compEvents.peek().compareTo(event) >= 0) {
+				// if (compEvents.peek().compareTo(event) >= 0) {
+				if (event.compareTo(compEvents.peek()) >= 0) {
 					compEvents.add(event);
 				} else {
 					events.remove(compEvents);
@@ -50,6 +51,7 @@ public class ComponentGroupedEventListManager implements IEventListManager {
 			}
 
 		}
+
 	}
 
 	public void setSpentTime(final long spentTime) {
