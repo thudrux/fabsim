@@ -12,7 +12,7 @@ import de.terministic.fabsim.components.ReworkGate;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.AbstractSink;
 import de.terministic.fabsim.core.AbstractSource;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FabKPIOverview;
@@ -43,7 +43,7 @@ public class ReworkGateTest {
 
 		AbstractSource source = model.getSimComponentFactory().createSource("Source", product, 4L);
 
-		SimulationEngine engine = new SimulationEngine(new EventListManager());
+		SimulationEngine engine = new SimulationEngine(new TimeGroupedEventListManager());
 		engine.init(model);
 		SimulationResultAggregator sra = new SimulationResultAggregator();
 		engine.addListeners(sra.neededListeners());
@@ -77,7 +77,7 @@ public class ReworkGateTest {
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source", product, 35L);
 		source.setCreateFirstAtTimeZero(true);
 
-		SimulationEngine engine = new SimulationEngine(new EventListManager());
+		SimulationEngine engine = new SimulationEngine(new TimeGroupedEventListManager());
 		engine.init(model);
 		SimulationResultAggregator sra = new SimulationResultAggregator();
 		engine.addListeners(sra.neededListeners());

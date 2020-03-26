@@ -13,7 +13,7 @@ import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.Source;
 import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
@@ -46,7 +46,7 @@ public class DelayTest {
 
 		source = (Source) model.getSimComponentFactory().createSource("Source1", product, 1L);
 
-		EventListManager eventList = new EventListManager();
+		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		engine = new SimulationEngine(eventList);
 	}
 

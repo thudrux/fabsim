@@ -17,7 +17,7 @@ import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.core.AbstractComponent;
 import de.terministic.fabsim.core.AbstractOperatorGroup;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
@@ -44,7 +44,7 @@ public class LoadUnloadTest {
 		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product, 200L);
 		source.setCreateFirstAtTimeZero(true);
 
-		EventListManager eventList = new EventListManager();
+		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		engine = new SimulationEngine(eventList);
 	}
 

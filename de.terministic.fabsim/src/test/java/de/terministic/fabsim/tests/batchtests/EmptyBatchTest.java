@@ -11,7 +11,7 @@ import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.ProcessStartEventCounter;
@@ -57,7 +57,7 @@ public class EmptyBatchTest {
 		this.source.setLotSize(1);
 		this.source.setAllowSplit(false);
 
-		final EventListManager eventList = new EventListManager();
+		final TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		this.engine = new SimulationEngine(eventList);
 	}
 
