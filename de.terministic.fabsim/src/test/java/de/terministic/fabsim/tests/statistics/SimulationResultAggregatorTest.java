@@ -9,7 +9,7 @@ import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.Source;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FabKPIOverview;
@@ -20,7 +20,7 @@ public class SimulationResultAggregatorTest {
 	@Test
 	public void emptyRecipeSimResultAggregatorTest() {
 		FabModel model = new FabModel();
-		final EventListManager eventList = new EventListManager();
+		final TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		SimulationEngine engine = new SimulationEngine(eventList);
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();
@@ -49,7 +49,7 @@ public class SimulationResultAggregatorTest {
 	public void simpleRecipeSimResultAggregatorTest() {
 
 		FabModel model = new FabModel();
-		final EventListManager eventList = new EventListManager();
+		final TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		SimulationEngine engine = new SimulationEngine(eventList);
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();

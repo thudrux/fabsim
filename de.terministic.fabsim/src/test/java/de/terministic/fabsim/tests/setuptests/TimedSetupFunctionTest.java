@@ -13,7 +13,7 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
@@ -72,7 +72,7 @@ public class TimedSetupFunctionTest {
 		source2.setLotSize(1);
 		source2.setAllowSplit(false);
 
-		EventListManager eventList = new EventListManager();
+		TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
 		engine = new SimulationEngine(eventList);
 	}
 

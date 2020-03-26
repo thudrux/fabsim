@@ -81,7 +81,7 @@ public class MachinePercentSetupFunctionTest {
 		 * (LotSource)model.getSimComponentFactory().createSource("Source3", recipe3,
 		 * 2L); source3.setLotSize(1); source3.setAllowSplit(false);
 		 * 
-		 * EventListManager eventList= new EventListManager(); engine = new
+		 * TimeGroupedEventListManager eventList= new TimeGroupedEventListManager(); engine = new
 		 * SimulationEngine(eventList);
 		 */ }
 
