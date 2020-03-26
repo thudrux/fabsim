@@ -18,6 +18,7 @@ import de.terministic.fabsim.core.ComponentComparator;
 import de.terministic.fabsim.core.ComponentGroupedEventListManager;
 import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
@@ -107,4 +108,17 @@ public class LargeToolGroupFabRuntimeTest {
 		Assertions.assertTrue(duration < 24000);
 	}
 
+	@Test
+	public void runTimeForMiniModelWithPriorityQueueEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
+			SimulationEngine engine = new SimulationEngine(eventList);
+			engine.init(model);
+			engine.runSimulation(YEAR);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+		Assertions.assertTrue(duration < 24000);
+	}
 }

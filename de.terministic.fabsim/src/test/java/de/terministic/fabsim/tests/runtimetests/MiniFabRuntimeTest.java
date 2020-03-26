@@ -14,6 +14,7 @@ import de.terministic.fabsim.core.ComponentGroupedEventListManager;
 import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.IEventListManager;
+import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TimeGroupedEventListManager;
 
@@ -74,6 +75,24 @@ public class MiniFabRuntimeTest {
 			FabModel model = buildModel();
 
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
+
+			SimulationEngine engine = new SimulationEngine(eventList);
+
+			engine.init(model);
+			engine.runSimulation(10000000L);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+
+		Assertions.assertTrue(duration < 11000);
+	}
+
+	@Test
+	public void runTimeForMiniModelWithPriorityQueueEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+
+			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
 
 			SimulationEngine engine = new SimulationEngine(eventList);
 
