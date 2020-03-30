@@ -18,6 +18,7 @@ public class Batch extends AbstractFlowItem {
 
 	public void addItem(final AbstractFlowItem item) {
 		this.items.add(item);
+		size += item.getSize();
 	}
 
 	public boolean contains(final AbstractFlowItem item) {
@@ -28,13 +29,11 @@ public class Batch extends AbstractFlowItem {
 		return this.items;
 	}
 
+	private int size = 0;
+
 	@Override
 	public int getSize() {
-		int result = 0;
-		for (final AbstractFlowItem item : this.items) {
-			result += item.getSize();
-		}
-		return result;
+		return size;
 	}
 
 	@Override
@@ -47,6 +46,10 @@ public class Batch extends AbstractFlowItem {
 
 	public void setItems(final ArrayList<AbstractFlowItem> items) {
 		this.items = items;
+		size = 0;
+		for (AbstractFlowItem item : items) {
+			size += item.getSize();
+		}
 	}
 
 	@Override
