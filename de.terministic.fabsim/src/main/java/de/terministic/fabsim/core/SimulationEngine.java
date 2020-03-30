@@ -19,7 +19,7 @@ public class SimulationEngine {
 	private SimEventFactory eventFactory;
 
 	public SimulationEngine() {
-		this.eventList = new TimeGroupedEventListManager();
+		this.eventList = new PriorityQueueEventListManager();
 		this.eventFactory = new SimEventFactory();
 		this.eventFactory.setSimulationEngine(this);
 
