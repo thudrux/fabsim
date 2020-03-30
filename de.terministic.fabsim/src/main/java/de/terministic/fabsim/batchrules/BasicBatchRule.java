@@ -29,7 +29,7 @@ public class BasicBatchRule extends AbstractBatchRule {
 	}
 
 	private Batch createNewBatch(final AbstractFlowItem item) {
-		final Recipe r = new Recipe("BasicBatchRecipe:" + item.getCurrentStep().getBatchDetails().getBatchId());
+		final Recipe r = new Recipe(item.getCurrentStep().getBatchDetails().getBatchId());
 		r.add(item.getCurrentStep());
 		final Batch b = new Batch(item.getModel(), r);
 		b.setupForSimulation(getSimulationEngine());
