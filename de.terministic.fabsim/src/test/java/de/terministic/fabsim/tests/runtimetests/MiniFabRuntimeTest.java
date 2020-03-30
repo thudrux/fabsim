@@ -17,6 +17,7 @@ import de.terministic.fabsim.core.IEventListManager;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TimeGroupedEventListManager;
+import de.terministic.fabsim.core.TreeSetEventListManager;
 
 public class MiniFabRuntimeTest {
 
@@ -104,4 +105,21 @@ public class MiniFabRuntimeTest {
 		Assertions.assertTrue(duration < 11000);
 	}
 
+	@Test
+	public void runTimeForMiniModelWithTreeSetEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+
+			TreeSetEventListManager eventList = new TreeSetEventListManager();
+
+			SimulationEngine engine = new SimulationEngine(eventList);
+
+			engine.init(model);
+			engine.runSimulation(10000000L);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+
+		Assertions.assertTrue(duration < 11000);
+	}
 }

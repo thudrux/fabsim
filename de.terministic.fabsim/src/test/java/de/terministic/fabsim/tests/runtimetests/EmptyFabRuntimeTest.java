@@ -14,6 +14,7 @@ import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TimeGroupedEventListManager;
+import de.terministic.fabsim.core.TreeSetEventListManager;
 
 public class EmptyFabRuntimeTest {
 
@@ -78,6 +79,21 @@ public class EmptyFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
+			SimulationEngine engine = new SimulationEngine(eventList);
+			engine.init(model);
+			engine.runSimulation(10000000L);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+
+		Assertions.assertTrue(duration < 5000);
+	}
+
+	@Test
+	public void runTimeForEmptyModelWithTreeSetEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+			TreeSetEventListManager eventList = new TreeSetEventListManager();
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(10000000L);

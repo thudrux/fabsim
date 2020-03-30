@@ -21,6 +21,7 @@ import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TimeGroupedEventListManager;
+import de.terministic.fabsim.core.TreeSetEventListManager;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
 
 public class LargeToolGroupFabRuntimeTest {
@@ -30,6 +31,13 @@ public class LargeToolGroupFabRuntimeTest {
 	private final long HOUR = 60 * MINUTE;
 	private final long DAY = 24 * HOUR;
 	private final long YEAR = 365 * DAY;
+
+	Random rand;
+
+	@BeforeEach
+	public void setUp() {
+		rand = new Random(9472934792347249L);
+	}
 
 	private FabModel buildModel() {
 		FabModel model = new FabModel();
@@ -57,13 +65,6 @@ public class LargeToolGroupFabRuntimeTest {
 		model.getSimComponentFactory().createSource("Source1", product, interarrival);
 
 		return model;
-	}
-
-	Random rand;
-
-	@BeforeEach
-	public void setUp() {
-		rand = new Random(9472934792347249L);
 	}
 
 	@Test
@@ -114,6 +115,20 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
+			SimulationEngine engine = new SimulationEngine(eventList);
+			engine.init(model);
+			engine.runSimulation(YEAR);
+		}
+		long duration = System.currentTimeMillis() - startTime;
+		Assertions.assertTrue(duration < 24000);
+	}
+
+	@Test
+	public void runTimeForMiniModelWithTreeSetEventListManagerTest() {
+		long startTime = System.currentTimeMillis();
+		for (int i = 0; i < 10; i++) {
+			FabModel model = buildModel();
+			TreeSetEventListManager eventList = new TreeSetEventListManager();
 			SimulationEngine engine = new SimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
