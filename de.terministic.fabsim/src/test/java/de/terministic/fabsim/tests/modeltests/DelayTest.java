@@ -1,22 +1,19 @@
 package de.terministic.fabsim.tests.modeltests;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.ProcessStep;
+import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.Source;
-import de.terministic.fabsim.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.ConstantDurationObject;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
 import de.terministic.fabsim.statistics.FlowItemCounter;
 
@@ -46,8 +43,7 @@ public class DelayTest {
 
 		source = (Source) model.getSimComponentFactory().createSource("Source1", product, 1L);
 
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

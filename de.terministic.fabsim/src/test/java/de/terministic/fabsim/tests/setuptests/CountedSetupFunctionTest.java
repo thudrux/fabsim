@@ -13,7 +13,6 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
@@ -66,8 +65,7 @@ public class CountedSetupFunctionTest {
 		source.setLotSize(1);
 		source.setAllowSplit(false);
 
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@Test

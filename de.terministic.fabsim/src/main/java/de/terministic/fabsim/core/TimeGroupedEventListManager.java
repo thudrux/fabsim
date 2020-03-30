@@ -5,12 +5,12 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventListManager {
+public class TimeGroupedEventListManager implements IEventListManager {
 	private final TreeMap<Long, EventsInMomentList> events = new TreeMap<>();
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
 	private long spentTime = 0L;
 
-	public EventListManager() {
+	public TimeGroupedEventListManager() {
 
 	}
 
@@ -29,9 +29,6 @@ public class EventListManager {
 	}
 
 	public void scheduleEvent(final AbstractSimEvent event) {
-		if ((event.getComponent() != null) && (event.getComponent().getName().equals("ToolGroup_2"))) {
-			logger.trace("Event scheduled: {}", event);
-		}
 		if (event.getEventTime() <= simulationEndTime) {
 			EventsInMomentList moments = this.events.get(event.getEventTime());
 			if (moments == null) {
@@ -54,7 +51,7 @@ public class EventListManager {
 		return count;
 	}
 
-	public void unscheduleEvent(final ISimEvent event) {
+	public void unscheduleEvent(final AbstractSimEvent event) {
 		if ((event.getComponent().getName().equals("ToolGroup_2"))) {
 			logger.trace("trying to unschedule event: {}", event);
 		}

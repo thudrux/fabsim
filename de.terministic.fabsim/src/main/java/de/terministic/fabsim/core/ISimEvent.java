@@ -12,4 +12,6 @@ public interface ISimEvent {
 	public void resolveEvent();
 
 	public void setTime(long l);
+
+	public long getId();
 }

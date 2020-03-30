@@ -12,7 +12,6 @@ import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
@@ -60,8 +59,7 @@ public class fullBatchStartTest {
 		this.source.setLotSize(1);
 		this.source.setAllowSplit(false);
 
-		final EventListManager eventList = new EventListManager();
-		this.engine = new SimulationEngine(eventList);
+		this.engine = new SimulationEngine();
 	}
 
 }

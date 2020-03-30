@@ -15,7 +15,6 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.ToolStateChangeLog;
@@ -77,8 +76,7 @@ public class SetupWhileWorkingTest {
 		source2.setLotSize(1);
 		source2.setAllowSplit(false);
 
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@Test

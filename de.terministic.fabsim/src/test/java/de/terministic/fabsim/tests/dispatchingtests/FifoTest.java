@@ -11,7 +11,6 @@ import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.dispatchRules.FIFO;
@@ -64,8 +63,7 @@ public class FifoTest {
 		source2.setLotSize(1);
 		source2.setAllowSplit(false);
 
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@Test

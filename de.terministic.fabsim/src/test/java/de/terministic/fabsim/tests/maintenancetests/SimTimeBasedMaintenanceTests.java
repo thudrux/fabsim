@@ -14,7 +14,6 @@ import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.maintenance.SimTimeBasedMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AllAllowedSetupStrategy;
 import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
@@ -62,8 +61,7 @@ public class SimTimeBasedMaintenanceTests {
 		SimTimeBasedMaintenance maint = model.getSimComponentFactory()
 				.createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3, obj7, toolGroup);
 		maint.setFirstOccuranceForTool(tool, 5L);
-		EventListManager eventList = new EventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		ToolStateChangeLog log = new ToolStateChangeLog();
 		engine.init(model);

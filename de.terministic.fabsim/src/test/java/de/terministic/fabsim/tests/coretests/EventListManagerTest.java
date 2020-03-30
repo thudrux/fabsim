@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.equipment.OperatorFinishedEvent;
 import de.terministic.fabsim.components.equipment.ProcessFinishedEvent;
-import de.terministic.fabsim.core.EventListManager;
+import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
 
@@ -14,7 +14,7 @@ public class EventListManagerTest {
 	@Test
 	public void timeTest() {
 		FabModel model = new FabModel();
-		EventListManager manager = new EventListManager();
+		TimeGroupedEventListManager manager = new TimeGroupedEventListManager();
 		OperatorFinishedEvent opEvent1 = new OperatorFinishedEvent(model, 13L, null, null, null);
 		manager.scheduleEvent(opEvent1);
 		OperatorFinishedEvent opEvent2 = new OperatorFinishedEvent(model, 12L, null, null, null);
@@ -26,7 +26,7 @@ public class EventListManagerTest {
 	@Test
 	public void prioTest() {
 		FabModel model = new FabModel();
-		EventListManager manager = new EventListManager();
+		TimeGroupedEventListManager manager = new TimeGroupedEventListManager();
 		manager.scheduleEvent(new ProcessFinishedEvent(model, 12L, null, null, null));
 		OperatorFinishedEvent opEvent = new OperatorFinishedEvent(model, 12L, null, null, null);
 		manager.scheduleEvent(opEvent);

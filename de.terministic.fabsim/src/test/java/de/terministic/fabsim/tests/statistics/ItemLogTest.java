@@ -8,7 +8,6 @@ import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.Source;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.ItemLog;
@@ -19,8 +18,7 @@ public class ItemLogTest {
 	public void itemLogBasicTest() {
 
 		FabModel model = new FabModel();
-		final EventListManager eventList = new EventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new SimulationEngine();
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");

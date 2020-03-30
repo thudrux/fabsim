@@ -17,7 +17,6 @@ import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolS
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.OperatorDemand;
 
 public abstract class AbstractTool extends AbstractResource {
@@ -234,7 +233,7 @@ public abstract class AbstractTool extends AbstractResource {
 
 	}
 
-	public void unscheduleEvent(final ISimEvent event) {
+	public void unscheduleEvent(final AbstractSimEvent event) {
 		getSimulationEngine().getEventList().unscheduleEvent(event);
 	}
 

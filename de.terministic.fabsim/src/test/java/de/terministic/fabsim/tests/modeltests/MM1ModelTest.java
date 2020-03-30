@@ -12,7 +12,6 @@ import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
@@ -38,8 +37,7 @@ public class MM1ModelTest {
 
 		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product, 10L);
 
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

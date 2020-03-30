@@ -11,7 +11,7 @@ public class FirstCycleTimeTracker extends SimEventListener {
 	long destruction = -10L;
 
 	public long getCycleTime() {
-		this.logger.debug("First Item times are Arrival: {} and Destruction: {}", this.arrival, this.destruction);
+//		this.logger.debug("First Item times are Arrival: {} and Destruction: {}", this.arrival, this.destruction);
 		return this.destruction - this.arrival;
 	}
 

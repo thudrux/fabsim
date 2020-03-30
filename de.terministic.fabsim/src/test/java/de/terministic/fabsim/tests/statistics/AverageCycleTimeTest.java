@@ -12,7 +12,6 @@ import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.Sink;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
-import de.terministic.fabsim.core.EventListManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.statistics.CycleTimeTracker;
@@ -39,8 +38,7 @@ public class AverageCycleTimeTest {
 		source = (LotSource) model.getSimComponentFactory().createSource("Source1", product1, 10L);
 		Product product2 = model.getSimComponentFactory().createProduct("Product2", recipe);
 		source2 = (LotSource) model.getSimComponentFactory().createSource("Source2", product2, 30L);
-		EventListManager eventList = new EventListManager();
-		engine = new SimulationEngine(eventList);
+		engine = new SimulationEngine();
 	}
 
 	@AfterEach

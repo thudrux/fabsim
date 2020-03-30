@@ -11,13 +11,21 @@ import de.terministic.fabsim.statistics.FlowItemCounter;
 public class SimulationEngine {
 
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
-	private final EventListManager eventList;
+	private final IEventListManager eventList;
+	// private final IEventListManager eventList;
 	private long currentSimTime = 0L;
 	private FabModel model;
 	private final ArrayList<SimEventListener> listenerList = new ArrayList<>();
 	private SimEventFactory eventFactory;
 
-	public SimulationEngine(final EventListManager eventList) {
+	public SimulationEngine() {
+		this.eventList = new PriorityQueueEventListManager();
+		this.eventFactory = new SimEventFactory();
+		this.eventFactory.setSimulationEngine(this);
+
+	}
+
+	public SimulationEngine(IEventListManager eventList) {
 		this.eventList = eventList;
 		this.eventFactory = new SimEventFactory();
 		this.eventFactory.setSimulationEngine(this);
@@ -42,7 +50,7 @@ public class SimulationEngine {
 		return this.eventFactory;
 	}
 
-	public EventListManager getEventList() {
+	public IEventListManager getEventList() {
 		return this.eventList;
 	}
 
@@ -79,8 +87,13 @@ public class SimulationEngine {
 		long eventCounter = 0L;
 		eventList.scheduleEvent(new DummyEvent(model, Long.MAX_VALUE, null, null));
 		eventList.setSimulationEndTime(endTime);
+		boolean logStart = false;
 		while (this.eventList.size() > 0 && this.currentSimTime <= endTime) {
 			final ISimEvent event = this.eventList.getNextEvent();
+//			if (((AbstractSimEvent) event).getId() == 82) {
+//				this.logger.info("[{}] Resolving event: {}", getTime(), event);
+//			}
+
 			if (event.getEventTime() < this.currentSimTime)
 				throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
 						+ event.getEventTime() + ") current simulation time(" + getTime() + ")");
@@ -88,11 +101,11 @@ public class SimulationEngine {
 			if (this.currentSimTime > endTime) {
 				break;
 			} else {
-				if ((event.getComponent() != null)) {// &&
-														// (event.getComponent().getName().equals("ToolGroup_0")))
-														// {
-					this.logger.trace("[{}] Resolving event: {}", getTime(), event);
-				}
+//				if ((event.getComponent() != null)) {// &&
+//														// (event.getComponent().getName().equals("ToolGroup_0")))
+//														// {
+//					this.logger.info("[{}] Resolving event: {}", getTime(), event);
+//				}
 				event.resolveEvent();
 				eventCounter++;
 				notifyListener(event);
