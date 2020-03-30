@@ -84,7 +84,7 @@ public class LargeToolGroupInLongSequenceFabRuntimeTest {
 			engine.runSimulation(YEAR);
 		}
 		long duration = System.currentTimeMillis() - startTime;
-		Assertions.assertTrue(duration < 400000);
+		Assertions.assertTrue(duration < 24000);
 	}
 
 	@Test
