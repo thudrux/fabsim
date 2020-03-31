@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.batchrules.BasicBatchRule;
 import de.terministic.fabsim.components.Controller;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.Tool;
 import de.terministic.fabsim.components.equipment.ToolGroup;
+import de.terministic.fabsim.components.equipment.ToolGroupController;
 import de.terministic.fabsim.components.equipment.maintenance.SimTimeBasedMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AllAllowedSetupStrategy;
 import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;

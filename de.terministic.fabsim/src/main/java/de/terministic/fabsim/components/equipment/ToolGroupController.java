@@ -1,4 +1,4 @@
-package de.terministic.fabsim.components;
+package de.terministic.fabsim.components.equipment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import de.terministic.fabsim.batchrules.AbstractBatchRule;
 import de.terministic.fabsim.batchrules.QueueChangeAndBatches;
-import de.terministic.fabsim.components.equipment.AbstractTool;
-import de.terministic.fabsim.components.equipment.BreakdownFinishedEvent;
-import de.terministic.fabsim.components.equipment.ToolGroup;
+import de.terministic.fabsim.components.Batch;
+import de.terministic.fabsim.components.Controller;
+import de.terministic.fabsim.components.ToolAndItem;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractModelElement;

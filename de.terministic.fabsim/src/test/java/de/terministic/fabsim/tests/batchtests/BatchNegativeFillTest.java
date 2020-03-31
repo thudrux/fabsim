@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.Controller;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
+import de.terministic.fabsim.components.equipment.ToolGroupController;
 import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;
 import de.terministic.fabsim.core.FabModel;
 

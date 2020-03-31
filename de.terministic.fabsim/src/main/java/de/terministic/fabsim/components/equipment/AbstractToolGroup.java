@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.dispatchRules.AbstractDispatchRule;

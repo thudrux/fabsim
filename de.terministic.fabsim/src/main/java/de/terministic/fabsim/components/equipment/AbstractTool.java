@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.terministic.fabsim.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.dedication.Dedication;
 import de.terministic.fabsim.components.equipment.dedication.DedicationDetails;
 import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolStateMachine;

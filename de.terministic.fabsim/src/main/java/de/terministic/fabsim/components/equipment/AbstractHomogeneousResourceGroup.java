@@ -9,7 +9,6 @@ import java.util.Set;
 
 import de.terministic.fabsim.batchrules.AbstractBatchRule;
 import de.terministic.fabsim.components.InvalidDataException;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;

@@ -14,7 +14,6 @@ import java.util.Set;
 import de.terministic.fabsim.components.FlowItemArrivalEvent;
 import de.terministic.fabsim.components.Lot;
 import de.terministic.fabsim.components.ToolAndItem;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolStateMachine;
