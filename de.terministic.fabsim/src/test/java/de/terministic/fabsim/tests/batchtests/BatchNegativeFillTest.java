@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.Controller;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
+import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.ToolGroupController;
@@ -20,7 +21,7 @@ class BatchNegativeFillTest {
 	void NegativeFillTest() {
 		final FabModel model = new FabModel();
 		final Controller controller = new Controller(model, null, null);
-		final ToolGroupController tgController = new ToolGroupController(model, controller);
+		final AbstractToolGroupController tgController = new ToolGroupController(model, controller);
 
 		this.toolGroup = new ToolGroup(model, "Batch1", ProcessingType.BATCH, 1, new BasicToolStateMachine(model),
 				tgController, null);

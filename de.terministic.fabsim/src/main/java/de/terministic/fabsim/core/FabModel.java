@@ -20,6 +20,7 @@ import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
 import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
+import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.components.equipment.ToolGroupController;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
@@ -61,7 +62,7 @@ public class FabModel {
 
 	private final AbstractRouting routing;
 	protected Controller dispatchController;
-	protected ToolGroupController tgController;
+	protected AbstractToolGroupController tgController;
 
 	protected AbstractDispatchRule globalDispatchRule;
 
@@ -237,7 +238,7 @@ public class FabModel {
 		return this.sources;
 	}
 
-	public ToolGroupController getToolGroupController() {
+	public AbstractToolGroupController getToolGroupController() {
 		return this.tgController;
 	}
 

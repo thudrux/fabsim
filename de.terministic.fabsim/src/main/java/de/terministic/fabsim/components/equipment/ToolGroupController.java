@@ -11,27 +11,23 @@ import de.terministic.fabsim.components.Controller;
 import de.terministic.fabsim.components.ToolAndItem;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.core.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractModelElement;
-import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.AbstractFlowItem.FlowItemType;
+import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.dispatchRules.MaxWaitingTimeInQueueEvent;
 
-public class ToolGroupController extends AbstractModelElement {
-
-	private final String NO_BATCH_BATCH_ID = "noBatch";
+public class ToolGroupController extends AbstractToolGroupController {
 
 	private final LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> itemMap;
-	private final Controller controller;
 
 	public ToolGroupController(final FabModel model, final Controller controller) {
-		super(model);
-		this.controller = controller;
+		super(model, controller);
 		this.itemMap = new LinkedHashMap<>();
 
 	}
 
 	// add items to the hashMap, key is the batchID
+	@Override
 	public void addNewItem(final AbstractFlowItem flowItem, final ToolGroup tg) {
 		String id;
 		id = checkIfItemHasBatchDetailsAndReturnThem(flowItem, tg);
@@ -47,12 +43,14 @@ public class ToolGroupController extends AbstractModelElement {
 		controller.getDispatchRule(tg).addItemToList(flowItem, this.itemMap.get(tg).get(id));
 	}
 
+	@Override
 	public void addNewToolGroup(final ToolGroup toolGroup) {
 		if (!this.itemMap.containsKey(toolGroup)) {
 			this.itemMap.put(toolGroup, new LinkedHashMap<String, ArrayList<AbstractFlowItem>>());
 		}
 	}
 
+	@Override
 	public List<AbstractFlowItem> canUnbatch(final AbstractFlowItem flowItem) {
 		List<AbstractFlowItem> ret = new ArrayList<>();
 		if (flowItem instanceof Batch) {
@@ -94,6 +92,7 @@ public class ToolGroupController extends AbstractModelElement {
 			return this.NO_BATCH_BATCH_ID;
 	}
 
+	@Override
 	public LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> getItemMap() {
 		return this.itemMap;
 	}
@@ -145,6 +144,7 @@ public class ToolGroupController extends AbstractModelElement {
 		logger.trace("removeItemFromItemMap: After removing map looks like: {}", itemMap);
 	}
 
+	@Override
 	public ToolAndItem selectToolAndItem(final ToolGroup tg, final AbstractFlowItem item) {
 		ToolAndItem result = null;
 		for (final AbstractTool t : tg.getStandbyTools()) {
@@ -162,6 +162,7 @@ public class ToolGroupController extends AbstractModelElement {
 		return result;
 	}
 
+	@Override
 	public ToolAndItem selectToolAndItem(final ToolGroup tg, final AbstractTool tool) {
 		this.logger.trace("Starting to select item for tool in ToolGroup");
 		final AbstractDispatchRule drule = this.getController().getDispatchRule(tg);
@@ -181,13 +182,10 @@ public class ToolGroupController extends AbstractModelElement {
 		return result;
 	}
 
+	@Override
 	public void onBreakdownFinished(BreakdownFinishedEvent event) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public Controller getController() {
-		return controller;
 	}
 
 }

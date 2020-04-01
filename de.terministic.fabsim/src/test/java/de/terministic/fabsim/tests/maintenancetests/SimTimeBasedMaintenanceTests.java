@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import de.terministic.fabsim.batchrules.BasicBatchRule;
 import de.terministic.fabsim.components.Controller;
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
+import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.components.equipment.Tool;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.components.equipment.ToolGroupController;
@@ -38,7 +39,7 @@ public class SimTimeBasedMaintenanceTests {
 	public void testNextOccuranceOnTool() {
 		FabModel fabModel = new FabModel();
 		Controller cr = new Controller(fabModel, new FIFO(), new BasicBatchRule(fabModel));
-		ToolGroupController tgController = new ToolGroupController(fabModel, cr);
+		AbstractToolGroupController tgController = new ToolGroupController(fabModel, cr);
 		ConstantDurationObject obj3 = new ConstantDurationObject(3L);
 		ConstantDurationObject obj5 = new ConstantDurationObject(5L);
 		SimTimeBasedMaintenanceTestUmbrella maint = new SimTimeBasedMaintenanceTestUmbrella(fabModel, "maint", obj3,
