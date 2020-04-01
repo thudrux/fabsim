@@ -63,7 +63,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 
 	private boolean considersDedication = false;
 
-	public AbstractHomogeneousResourceGroup(FabModel model, final String name, final ToolGroupController tgController) {
+	public AbstractHomogeneousResourceGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
 		super(model, name, tgController);
 	}
 

@@ -1,6 +1,5 @@
 package de.terministic.fabsim.components;
 
-import de.terministic.fabsim.components.equipment.AbstractResourceContoller;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSink;
@@ -22,12 +21,6 @@ public class Sink extends AbstractSink {
 	@Override
 	public boolean canProcessItem(final AbstractFlowItem item) {
 		return true;
-	}
-
-	@Override
-	public AbstractResourceContoller getResourceController() {
-		return null;
-
 	}
 
 	@Override

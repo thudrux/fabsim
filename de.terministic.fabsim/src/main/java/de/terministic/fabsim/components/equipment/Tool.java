@@ -30,12 +30,6 @@ public class Tool extends AbstractTool {
 	}
 
 	@Override
-	public AbstractResourceContoller getResourceController() {
-		throw new NotYetImplementedException();
-		// TODO implement method
-	}
-
-	@Override
 	public void initialize() {
 		// do nothing
 	}

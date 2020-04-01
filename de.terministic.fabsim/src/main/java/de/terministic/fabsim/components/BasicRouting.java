@@ -5,7 +5,6 @@
 package de.terministic.fabsim.components;
 
 import de.terministic.fabsim.components.equipment.AbstractResource;
-import de.terministic.fabsim.components.equipment.AbstractResourceContoller;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractRouting;
@@ -63,12 +62,6 @@ public class BasicRouting extends AbstractRouting {
 	@Override
 	public boolean canProcessItem(AbstractFlowItem item) {
 		return true;
-	}
-
-	@Override
-	public AbstractResourceContoller getResourceController() {
-		// TODO Auto-generated method stub
-		throw new NotYetImplementedException();
 	}
 
 }

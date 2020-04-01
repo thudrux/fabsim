@@ -32,7 +32,7 @@ public abstract class AbstractTool extends AbstractResource {
 		this.dedications = dedications;
 	}
 
-	private ToolGroupController tgController;
+	private AbstractToolGroupController tgController;
 
 	protected AbstractFlowItem item;
 	protected AbstractToolStateMachine toolStateMachine;
@@ -106,7 +106,7 @@ public abstract class AbstractTool extends AbstractResource {
 		return this.setupTransitions;
 	}
 
-	public ToolGroupController getTGController() {
+	public AbstractToolGroupController getTGController() {
 		return this.tgController;
 	}
 
@@ -221,7 +221,7 @@ public abstract class AbstractTool extends AbstractResource {
 		this.setupTransitions = setupTransitions;
 	}
 
-	public void setTGController(final ToolGroupController tgController) {
+	public void setTGController(final AbstractToolGroupController tgController) {
 		this.tgController = tgController;
 	}
 
