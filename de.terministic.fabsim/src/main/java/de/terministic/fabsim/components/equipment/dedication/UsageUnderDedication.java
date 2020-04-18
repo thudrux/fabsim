@@ -1,10 +1,10 @@
 package de.terministic.fabsim.components.equipment.dedication;
 
-import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.components.equipment.AbstractTool;
 
 public class UsageUnderDedication {
 	private AbstractTool tool;
+
 	public AbstractTool getTool() {
 		return tool;
 	}
@@ -21,12 +21,10 @@ public class UsageUnderDedication {
 		this.usage = usage;
 	}
 
-	private double usage=0.0;
-	
-	public UsageUnderDedication(AbstractTool tool){
-		this.tool=tool;
+	private double usage = 0.0;
+
+	public UsageUnderDedication(AbstractTool tool) {
+		this.tool = tool;
 	}
-	
-	
 
 }
