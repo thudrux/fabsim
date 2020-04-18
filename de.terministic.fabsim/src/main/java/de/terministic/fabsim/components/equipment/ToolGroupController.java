@@ -185,10 +185,10 @@ public class ToolGroupController extends AbstractToolGroupController {
 		ToolAndItem result = null;
 		ArrayList<AbstractFlowItem> possibleItems = getPossibleItemsForTheTool(tg, tool);
 		if (tg.isConsidersDedication()) {
-			possibleItems = tool.dedicationFilter(possibleItems);
+			possibleItems = (ArrayList<AbstractFlowItem>) tool.dedicationFilter(possibleItems);
 		}
 		this.logger.trace("possible items :{} ", possibleItems);
-		possibleItems = tg.getSetupStrategy().filterValidItems(tool, possibleItems);
+		possibleItems = (ArrayList<AbstractFlowItem>) tg.getSetupStrategy().filterValidItems(tool, possibleItems);
 		this.logger.trace("items with fitting setup : {}", possibleItems);
 		if (possibleItems.size() > 0) {
 			final AbstractFlowItem item = drule.getBestItem(possibleItems);

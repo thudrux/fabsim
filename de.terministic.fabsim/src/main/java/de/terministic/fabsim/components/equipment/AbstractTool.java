@@ -4,7 +4,7 @@
  */
 package de.terministic.fabsim.components.equipment;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -232,15 +232,10 @@ public abstract class AbstractTool extends AbstractResource {
 		getSimulationEngine().getEventList().unscheduleEvent(event);
 	}
 
-	public ArrayList<AbstractFlowItem> dedicationFilter(ArrayList<AbstractFlowItem> possibleItems) {
-		ArrayList<AbstractFlowItem> result = new ArrayList<>();
-		for (AbstractFlowItem item : possibleItems) {
-			DedicationDetails details = ((DedicationDetails) item.getCurrentStep().getDetails());
-			if (this.dedications.contains(details.getNecessaryQualification())) {
-				result.add(item);
-			}
-		}
-		return result;
+	public Collection<AbstractFlowItem> dedicationFilter(Collection<AbstractFlowItem> possibleItems) {
+		possibleItems.removeIf(item -> !this.dedications
+				.contains(((DedicationDetails) item.getCurrentStep().getDetails()).getNecessaryQualification()));
+		return possibleItems;
 	}
 
 }
