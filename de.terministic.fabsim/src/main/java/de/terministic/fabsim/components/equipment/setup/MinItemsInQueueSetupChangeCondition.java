@@ -1,6 +1,6 @@
 package de.terministic.fabsim.components.equipment.setup;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,8 +32,8 @@ public class MinItemsInQueueSetupChangeCondition implements ISetupChangeConditio
 		}
 		final ToolGroup toolGroup = (ToolGroup) tool.getParent();
 		int setupCount = 0;
-		for (final String key : toolGroup.getTGController().getItemMap().get(toolGroup).keySet()) {
-			final ArrayList<AbstractFlowItem> list = toolGroup.getTGController().getItemMap().get(toolGroup).get(key);
+		for (final String key : toolGroup.getTGController().getBatchIdsForToolGroup(toolGroup)) {
+			final Collection<AbstractFlowItem> list = toolGroup.getTGController().getQueueForBatchId(toolGroup, key);
 			this.logger.trace("ItemMapKey: {} has {} items {}", key, list.size(), list);
 			for (final AbstractFlowItem queuedItem : list) {
 				this.logger.trace("checking {}", queuedItem);

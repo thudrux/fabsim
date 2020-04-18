@@ -1,6 +1,7 @@
 package de.terministic.fabsim.components.equipment;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -93,9 +94,24 @@ public class ToolGroupController extends AbstractToolGroupController {
 	}
 
 	@Override
-	public LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> getItemMap() {
-		return this.itemMap;
+	public Collection<ToolGroup> getToolGroups() {
+		return itemMap.keySet();
 	}
+
+	@Override
+	public Collection<String> getBatchIdsForToolGroup(ToolGroup toolGroup) {
+		return itemMap.get(toolGroup).keySet();
+	}
+
+	@Override
+	public Collection<AbstractFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId) {
+		return itemMap.get(toolGroup).get(batchId);
+	}
+
+//	@Override
+//	public LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> getItemMap() {
+//		return this.itemMap;
+//	}
 
 	protected ArrayList<AbstractFlowItem> getPossibleItemsForTheTool(final ToolGroup tg, final AbstractTool tool) {
 		logger.trace("getPossibleItemsForTheTool Start: {}", tg);

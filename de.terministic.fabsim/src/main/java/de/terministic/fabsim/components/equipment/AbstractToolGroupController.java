@@ -1,7 +1,6 @@
 package de.terministic.fabsim.components.equipment;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
 
 import de.terministic.fabsim.components.Controller;
@@ -20,7 +19,14 @@ public abstract class AbstractToolGroupController extends AbstractModelElement {
 
 	public abstract ToolAndItem selectToolAndItem(final ToolGroup tg, final AbstractFlowItem item);
 
-	public abstract LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> getItemMap();
+	// public abstract LinkedHashMap<ToolGroup, LinkedHashMap<String,
+	// ArrayList<AbstractFlowItem>>> getItemMap();
+
+	public abstract Collection<ToolGroup> getToolGroups();
+
+	public abstract Collection<String> getBatchIdsForToolGroup(ToolGroup toolGroup);
+
+	public abstract Collection<AbstractFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId);
 
 	public abstract List<AbstractFlowItem> canUnbatch(final AbstractFlowItem flowItem);
 
