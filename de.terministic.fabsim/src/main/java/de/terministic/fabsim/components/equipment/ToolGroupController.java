@@ -183,7 +183,8 @@ public class ToolGroupController extends AbstractToolGroupController {
 		this.logger.trace("Starting to select item for tool in ToolGroup");
 		final AbstractDispatchRule drule = this.getController().getDispatchRule(tg);
 		ToolAndItem result = null;
-		ArrayList<AbstractFlowItem> possibleItems = getPossibleItemsForTheTool(tg, tool);
+		ArrayList<AbstractFlowItem> possibleItems = new ArrayList<AbstractFlowItem>(
+				getPossibleItemsForTheTool(tg, tool));
 		if (tg.isConsidersDedication()) {
 			possibleItems = (ArrayList<AbstractFlowItem>) tool.dedicationFilter(possibleItems);
 		}
