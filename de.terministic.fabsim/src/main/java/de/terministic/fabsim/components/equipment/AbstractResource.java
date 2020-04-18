@@ -33,7 +33,7 @@ public abstract class AbstractResource extends AbstractComponent {
 	 */
 	public abstract void addBreakdown(final IBreakdown breakdown);
 
-	public abstract boolean canProcessItem(AbstractFlowItem item);
+	public abstract boolean canProcessItem();
 
 	public AbstractResourceGroup getParent() {
 		return this.parent;

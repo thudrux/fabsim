@@ -120,7 +120,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 		final AbstractDispatchRule drule = this.getController().getDispatchRule(tg);
 		for (final String batchId : this.itemMap.get(tg).keySet()) {
 			if (this.itemMap.get(tg).get(batchId).size() > 0) {
-				if (tool.canProcessItem(this.itemMap.get(tg).get(batchId).get(0))) {
+				if (tool.canProcessItem()) {
 					if (tg.getProcessingType().equals(ProcessingType.BATCH)) {
 						logger.trace("getPossibleItemsForTheTool:  beforeBatchRule getpossible: {}", itemMap);
 						// QueueChangeAndBatches selectionResult = brule
@@ -164,7 +164,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 	public ToolAndItem selectToolAndItem(final ToolGroup tg, final AbstractFlowItem item) {
 		ToolAndItem result = null;
 		for (final AbstractTool t : tg.getStandbyTools()) {
-			if (!t.canProcessItem(item)) {
+			if (!t.canProcessItem()) {
 				break;
 			}
 			if (!tg.getSetupStrategy().filterForValidItem(t, item)) {

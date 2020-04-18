@@ -38,7 +38,7 @@ public class Tool extends AbstractTool {
 	public void onFlowItemArrival(FlowItemArrivalEvent event) {
 		super.onFlowItemArrival(event);
 
-		if (this.toolStateMachine.readyToProcess(this, event.getFlowItem())) {
+		if (this.toolStateMachine.readyToProcess(this)) {
 			this.toolStateMachine.handleFlowItemArrival(this, event.getFlowItem());
 			event.getSender().onAcceptedFlowItemTransfer(event);
 		} else {

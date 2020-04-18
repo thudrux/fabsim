@@ -19,7 +19,7 @@ public class Sink extends AbstractSink {
 	}
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		return true;
 	}
 

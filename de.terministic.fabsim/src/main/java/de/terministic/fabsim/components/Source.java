@@ -34,7 +34,7 @@ public class Source extends AbstractSource {
 	}
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		throw new NotYetImplementedException();
 	}
 

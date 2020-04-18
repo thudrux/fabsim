@@ -50,7 +50,7 @@ public class CoolDownBuffer extends AbstractResource {
 	}
 
 	@Override
-	public boolean canProcessItem(AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		return true;
 	}
 

@@ -59,12 +59,8 @@ public abstract class AbstractTool extends AbstractResource {
 	public abstract void becomesUnavailable();
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
-		this.logger.trace("[{}]canProcess: {} on {}({})", getTime(), item, this,
-				this.toolStateMachine.getCurrentSemiE10StateOfTool(this));
-		boolean result = this.toolStateMachine.readyToProcess(this, item);
-		this.logger.trace("result is {}", result);
-		return result;
+	public boolean canProcessItem() {
+		return this.toolStateMachine.readyToProcess(this);
 	}
 
 	public void finishProcessingOfFlowItem(final AbstractFlowItem flowItem) {

@@ -97,7 +97,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	}
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 	}

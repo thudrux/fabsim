@@ -60,7 +60,7 @@ public class BasicRouting extends AbstractRouting {
 	}
 
 	@Override
-	public boolean canProcessItem(AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		return true;
 	}
 
