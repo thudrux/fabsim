@@ -29,7 +29,7 @@ public class StandbyToolState extends AbstractToolState {
 	}
 
 	@Override
-	public boolean canProcess(final AbstractFlowItem item) {
+	public boolean canProcess() {
 		return true;
 	}
 

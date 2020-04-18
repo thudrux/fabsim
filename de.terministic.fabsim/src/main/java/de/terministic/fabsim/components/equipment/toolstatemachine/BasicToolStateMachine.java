@@ -358,7 +358,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public boolean readyToProcess(final AbstractTool tool, final AbstractFlowItem item) {
-		return this.currentStateMap.get(tool).canProcess(item);
+		return this.currentStateMap.get(tool).canProcess();
 	}
 
 	/*
