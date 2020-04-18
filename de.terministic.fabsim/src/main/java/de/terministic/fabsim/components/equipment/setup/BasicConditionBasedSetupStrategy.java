@@ -59,17 +59,18 @@ public class BasicConditionBasedSetupStrategy extends AbstractSetupStrategy {
 	public Collection<AbstractFlowItem> filterValidItems(final AbstractTool tool,
 			final Collection<AbstractFlowItem> possibleItems) {
 		final Map<SetupState, Boolean> postStateValidity = new LinkedHashMap<>();
-		final ArrayList<AbstractFlowItem> resultList = new ArrayList<>();
+		final ArrayList<AbstractFlowItem> removeList = new ArrayList<>();
 		for (final AbstractFlowItem item : possibleItems) {
 			final SetupState postState = item.getCurrentStep().getSetupDetails();
 			if (!postStateValidity.containsKey(postState)) {
 				postStateValidity.put(postState, filterForValidItem(tool, item));
 			}
-			if (postStateValidity.get(postState)) {
-				resultList.add(item);
+			if (!postStateValidity.get(postState)) {
+				removeList.add(item);
 			}
 		}
-		return resultList;
+		possibleItems.removeAll(removeList);
+		return possibleItems;
 	}
 
 }
