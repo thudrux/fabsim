@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import de.terministic.fabsim.components.equipment.BatchDetails;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.FifoFlowItemQueue;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.core.AbstractFlowItem;
+import de.terministic.fabsim.core.NotYetImplementedException;
 
 public class FIFO extends AbstractDispatchRule {
 
@@ -39,6 +43,18 @@ public class FIFO extends AbstractDispatchRule {
 	public ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items) {
 		items.add(item);
 		return items;
+	}
+
+	@Override
+	public IFlowItemQueue createBatchQueue(BatchDetails details) {
+		// TODO Auto-generated method stub
+		throw new NotYetImplementedException("Batch Queue not yet implemented");
+//		return null;
+	}
+
+	@Override
+	public IFlowItemQueue createQueue() {
+		return new FifoFlowItemQueue();
 	}
 
 }

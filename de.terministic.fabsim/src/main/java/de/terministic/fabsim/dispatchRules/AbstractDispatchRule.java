@@ -2,6 +2,8 @@ package de.terministic.fabsim.dispatchRules;
 
 import java.util.ArrayList;
 
+import de.terministic.fabsim.components.equipment.BatchDetails;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.core.AbstractFlowItem;
 
 public abstract class AbstractDispatchRule {
@@ -25,5 +27,9 @@ public abstract class AbstractDispatchRule {
 	public abstract ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items);
 
 	public abstract ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items);
+
+	public abstract IFlowItemQueue createBatchQueue(BatchDetails details);
+
+	public abstract IFlowItemQueue createQueue();
 
 }
