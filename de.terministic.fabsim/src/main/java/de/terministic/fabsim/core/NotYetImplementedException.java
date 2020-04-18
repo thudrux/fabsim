@@ -2,6 +2,14 @@ package de.terministic.fabsim.core;
 
 public class NotYetImplementedException extends RuntimeException {
 
+	public NotYetImplementedException() {
+		super();
+	}
+
+	public NotYetImplementedException(String string) {
+		super(string);
+	}
+
 	/**
 	 *
 	 */
