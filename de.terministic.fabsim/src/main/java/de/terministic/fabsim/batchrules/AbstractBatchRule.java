@@ -23,11 +23,6 @@ public abstract class AbstractBatchRule extends AbstractModelElement {
 		return this.name;
 	}
 
-	public abstract QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> batch);
-
-	public abstract QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> possibleItems,
-			AbstractDispatchRule drule);
-
 	public void setName(final String name) {
 		this.name = name;
 	}
