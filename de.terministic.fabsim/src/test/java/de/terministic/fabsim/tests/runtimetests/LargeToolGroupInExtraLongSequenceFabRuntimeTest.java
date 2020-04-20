@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.ProcessStep.ProcessType;
@@ -14,13 +15,10 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.ComponentComparator;
 import de.terministic.fabsim.core.ComponentGroupedEventListManager;
-import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.TreeSetEventListManager;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
 
@@ -74,34 +72,7 @@ public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 	}
 
 	@Test
-	public void runTimeForMiniModelWithTimeGroupedEventListManagerTest() {
-		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 1; i++) {
-			FabModel model = buildModel();
-			TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
-			engine.init(model);
-			engine.runSimulation(YEAR);
-		}
-		long duration = System.currentTimeMillis() - startTime;
-		Assertions.assertTrue(duration < 400000);
-	}
-
-	@Test
-	public void runTimeForMiniModelWithTypeGroupedEventListManagerTest() {
-		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 1; i++) {
-			FabModel model = buildModel();
-			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-			SimulationEngine engine = new SimulationEngine(eventList);
-			engine.init(model);
-			engine.runSimulation(YEAR);
-		}
-		long duration = System.currentTimeMillis() - startTime;
-		Assertions.assertTrue(duration < 24000);
-	}
-
-	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithComponentGroupedEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
@@ -116,6 +87,7 @@ public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithPriorityQueueEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
@@ -130,6 +102,7 @@ public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithTreeSetEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
