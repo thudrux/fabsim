@@ -4,6 +4,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.PriorityQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.terministic.fabsim.core.AbstractFlowItem;
 
 public class FifoFlowItemQueue extends PriorityQueue<AbstractFlowItem> implements IFlowItemQueue {
@@ -11,6 +14,7 @@ public class FifoFlowItemQueue extends PriorityQueue<AbstractFlowItem> implement
 	/**
 	 * 
 	 */
+	protected Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
 	private static final long serialVersionUID = 2004682036381685856L;
 
 	private int waferCount = 0;
@@ -50,6 +54,7 @@ public class FifoFlowItemQueue extends PriorityQueue<AbstractFlowItem> implement
 
 	@Override
 	public boolean addFlowItem(AbstractFlowItem item) {
+//		logger.info("[{}] START addFlowItem for {} with queue looking like {}", item.getTime(), item, this);
 		waferCount += item.getSize();
 		return this.add(item);
 	}

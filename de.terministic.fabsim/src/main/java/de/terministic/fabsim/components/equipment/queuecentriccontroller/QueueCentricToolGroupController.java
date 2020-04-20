@@ -65,7 +65,7 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 			}
 			this.itemMap.get(tg).put(id, queue);
 		}
-		queue.add(flowItem);
+		queue.addFlowItem(flowItem);
 	}
 
 	@Override
@@ -138,7 +138,10 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 			}
 		} else {
 			for (IFlowItemQueue q : itemMap.get(tg).values()) {
-				queue.addFlowItemCandidate(q.lookAtHighestPriorityFlowItem(), q);
+				AbstractFlowItem candidate = q.lookAtHighestPriorityFlowItem();
+				if (candidate != null) {
+					queue.addFlowItemCandidate(candidate, q);
+				}
 			}
 		}
 		return queue;
