@@ -65,16 +65,29 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<AbstractFlowItem> impl
 	}
 
 	private AbstractFlowItem createCandidate() {
+//		logger.info("START createCandidate with queue looking like {}", this);
 		AbstractFlowItem result;
 		if (this.isEmpty()) {
-			return null;
+			result = null;
+		} else {
+			AbstractFlowItem firstInQueue = peek();
+			long currentTime = firstInQueue.getTime();
+			long arrival = firstInQueue.getTimeStamps(firstInQueue.getCurrentStepNumber()).getArrivalTime();
+			long waitedTime = currentTime - arrival;
+//			logger.info("Wafer count: {}, first elements arrival {}, max wait:{}, total waited: {}", waferCount,
+//					arrival, details.getMaxWait(), waitedTime);
+			if ((waferCount < details.getMinBatch()) && (waitedTime < details.getMaxWait())) {// TODO
+																								// time
+																								// elapse
+																								// =>
+																								// create
+																								// candidate
+				result = null;
+			} else {
+				result = createNewBatch(this.peek());
+			}
 		}
-		if ((waferCount < details.getMinBatch())
-				&& ((peek().getTimeStamps(peek().getCurrentStepNumber()).getArrivalTime() - peek().getTime()) > details
-						.getMaxWait())) {// TODO time elapse => create candidate
-			return null;
-		}
-		result = createNewBatch(this.peek());
+//		logger.info("END createCandidate with {} and queue looking like {}", result, this);
 		return result;
 	}
 
@@ -106,7 +119,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<AbstractFlowItem> impl
 
 	@Override
 	public AbstractFlowItem takeCandidate(AbstractFlowItem item) { // TODO take candidate
-		logger.info("[{}] START takeCandidate for {} with queue looking like {}", item.getTime(), item, this);
+//		logger.info("[{}] START takeCandidate for {} with queue looking like {}", item.getTime(), item, this);
 		if (candidateMap != null) {
 			candidateMap.get(item).takeCandidate(item);
 		} else {
@@ -125,7 +138,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<AbstractFlowItem> impl
 				}
 			}
 		}
-		logger.info("[{}] END takeCandidate for {} with queue looking like {}", item.getTime(), item, this);
+//		logger.info("[{}] END takeCandidate for {} with queue looking like {}", item.getTime(), item, this);
 		return item;
 	}
 
