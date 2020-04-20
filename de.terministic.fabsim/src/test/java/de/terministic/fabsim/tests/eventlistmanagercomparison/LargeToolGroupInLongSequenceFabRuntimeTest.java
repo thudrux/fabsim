@@ -1,4 +1,4 @@
-package de.terministic.fabsim.tests.runtimetests;
+package de.terministic.fabsim.tests.eventlistmanagercomparison;
 
 import java.util.Random;
 

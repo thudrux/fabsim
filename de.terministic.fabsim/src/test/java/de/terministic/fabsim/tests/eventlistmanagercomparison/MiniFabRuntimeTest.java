@@ -1,4 +1,4 @@
-package de.terministic.fabsim.tests.runtimetests;
+package de.terministic.fabsim.tests.eventlistmanagercomparison;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
