@@ -9,7 +9,6 @@ import java.util.Set;
 
 import de.terministic.fabsim.batchrules.AbstractBatchRule;
 import de.terministic.fabsim.components.InvalidDataException;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
@@ -64,7 +63,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 
 	private boolean considersDedication = false;
 
-	public AbstractHomogeneousResourceGroup(FabModel model, final String name, final ToolGroupController tgController) {
+	public AbstractHomogeneousResourceGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
 		super(model, name, tgController);
 	}
 

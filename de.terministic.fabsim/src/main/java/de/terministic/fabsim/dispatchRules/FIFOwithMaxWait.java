@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import de.terministic.fabsim.components.equipment.BatchDetails;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.core.AbstractFlowItem;
+import de.terministic.fabsim.core.NotYetImplementedException;
 
 public class FIFOwithMaxWait extends AbstractDispatchRule {
 
@@ -91,5 +94,19 @@ public class FIFOwithMaxWait extends AbstractDispatchRule {
 	public ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items) {
 		items.add(item);
 		return items;
+	}
+
+	@Override
+	public IFlowItemQueue createBatchQueue(BatchDetails details) {
+		// TODO Auto-generated method stub
+//		return null;
+		throw new NotYetImplementedException();
+	}
+
+	@Override
+	public IFlowItemQueue createQueue() {
+		// TODO Auto-generated method stub
+//		return null;
+		throw new NotYetImplementedException();
 	}
 }

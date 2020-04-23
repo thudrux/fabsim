@@ -7,7 +7,6 @@ import de.terministic.fabsim.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
-import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
@@ -23,7 +22,7 @@ public class MaintenanceToolState extends AbstractToolState {
 	}
 
 	@Override
-	public boolean canProcess(final AbstractFlowItem item) {
+	public boolean canProcess() {
 		return false;
 	}
 

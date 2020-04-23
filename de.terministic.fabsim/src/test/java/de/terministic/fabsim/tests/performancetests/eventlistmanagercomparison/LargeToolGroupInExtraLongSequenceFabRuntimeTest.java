@@ -1,9 +1,10 @@
-package de.terministic.fabsim.tests.runtimetests;
+package de.terministic.fabsim.tests.performancetests.eventlistmanagercomparison;
 
 import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.ProcessStep.ProcessType;
@@ -14,17 +15,14 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.ComponentComparator;
 import de.terministic.fabsim.core.ComponentGroupedEventListManager;
-import de.terministic.fabsim.core.EventListTypeManager;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.TimeGroupedEventListManager;
 import de.terministic.fabsim.core.TreeSetEventListManager;
 import de.terministic.fabsim.core.duration.AbstractDurationObject;
 
-public class LargeToolGroupInSequenceFabRuntimeTest {
+public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 
 	private final long SECOND = 1000L;
 	private final long MINUTE = 60 * SECOND;
@@ -53,7 +51,7 @@ public class LargeToolGroupInSequenceFabRuntimeTest {
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");
-		for (int i = 1; i <= 20; i++) {
+		for (int i = 1; i <= 500; i++) {
 			createToolgroupAndAddAStepToRecipe(i, recipe, model);
 		}
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
@@ -74,34 +72,7 @@ public class LargeToolGroupInSequenceFabRuntimeTest {
 	}
 
 	@Test
-	public void runTimeForMiniModelWithTimeGroupedEventListManagerTest() {
-		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 1; i++) {
-			FabModel model = buildModel();
-			TimeGroupedEventListManager eventList = new TimeGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
-			engine.init(model);
-			engine.runSimulation(YEAR);
-		}
-		long duration = System.currentTimeMillis() - startTime;
-		Assertions.assertTrue(duration < 400000);
-	}
-
-	@Test
-	public void runTimeForMiniModelWithTypeGroupedEventListManagerTest() {
-		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 1; i++) {
-			FabModel model = buildModel();
-			EventListTypeManager eventList = new EventListTypeManager(new ComponentComparator());
-			SimulationEngine engine = new SimulationEngine(eventList);
-			engine.init(model);
-			engine.runSimulation(YEAR);
-		}
-		long duration = System.currentTimeMillis() - startTime;
-		Assertions.assertTrue(duration < 24000);
-	}
-
-	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithComponentGroupedEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
@@ -116,6 +87,7 @@ public class LargeToolGroupInSequenceFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithPriorityQueueEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
@@ -130,6 +102,7 @@ public class LargeToolGroupInSequenceFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void runTimeForMiniModelWithTreeSetEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {

@@ -1,6 +1,7 @@
 package de.terministic.fabsim.components.equipment.setup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,8 @@ public abstract class AbstractSetupStrategy {
 
 	public abstract boolean filterForValidItem(AbstractTool tool, AbstractFlowItem item);
 
-	public abstract ArrayList<AbstractFlowItem> filterValidItems(AbstractTool tool,
-			ArrayList<AbstractFlowItem> possibleItems);
+	public abstract Collection<AbstractFlowItem> filterValidItems(AbstractTool tool,
+			Collection<AbstractFlowItem> possibleItems);
 
 	public List<ISetupChangeCondition> getGlobalConditions() {
 		return this.globalConditions;

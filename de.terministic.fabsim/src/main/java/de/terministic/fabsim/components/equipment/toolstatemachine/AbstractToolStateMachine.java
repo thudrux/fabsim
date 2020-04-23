@@ -88,7 +88,7 @@ public class AbstractToolStateMachine {
 
 	}
 
-	public boolean readyToProcess(final AbstractTool abstractTool, final AbstractFlowItem item) {
+	public boolean readyToProcess(final AbstractTool abstractTool) {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 	}

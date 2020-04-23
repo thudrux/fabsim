@@ -4,13 +4,12 @@
  */
 package de.terministic.fabsim.components.equipment;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.terministic.fabsim.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.dedication.Dedication;
 import de.terministic.fabsim.components.equipment.dedication.DedicationDetails;
 import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -33,7 +32,7 @@ public abstract class AbstractTool extends AbstractResource {
 		this.dedications = dedications;
 	}
 
-	private ToolGroupController tgController;
+	private AbstractToolGroupController tgController;
 
 	protected AbstractFlowItem item;
 	protected AbstractToolStateMachine toolStateMachine;
@@ -60,12 +59,8 @@ public abstract class AbstractTool extends AbstractResource {
 	public abstract void becomesUnavailable();
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
-		this.logger.trace("[{}]canProcess: {} on {}({})", getTime(), item, this,
-				this.toolStateMachine.getCurrentSemiE10StateOfTool(this));
-		boolean result = this.toolStateMachine.readyToProcess(this, item);
-		this.logger.trace("result is {}", result);
-		return result;
+	public boolean canProcessItem() {
+		return this.toolStateMachine.readyToProcess(this);
 	}
 
 	public void finishProcessingOfFlowItem(final AbstractFlowItem flowItem) {
@@ -107,7 +102,7 @@ public abstract class AbstractTool extends AbstractResource {
 		return this.setupTransitions;
 	}
 
-	public ToolGroupController getTGController() {
+	public AbstractToolGroupController getTGController() {
 		return this.tgController;
 	}
 
@@ -222,7 +217,7 @@ public abstract class AbstractTool extends AbstractResource {
 		this.setupTransitions = setupTransitions;
 	}
 
-	public void setTGController(final ToolGroupController tgController) {
+	public void setTGController(final AbstractToolGroupController tgController) {
 		this.tgController = tgController;
 	}
 
@@ -237,15 +232,10 @@ public abstract class AbstractTool extends AbstractResource {
 		getSimulationEngine().getEventList().unscheduleEvent(event);
 	}
 
-	public ArrayList<AbstractFlowItem> dedicationFilter(ArrayList<AbstractFlowItem> possibleItems) {
-		ArrayList<AbstractFlowItem> result = new ArrayList<>();
-		for (AbstractFlowItem item : possibleItems) {
-			DedicationDetails details = ((DedicationDetails) item.getCurrentStep().getDetails());
-			if (this.dedications.contains(details.getNecessaryQualification())) {
-				result.add(item);
-			}
-		}
-		return result;
+	public Collection<AbstractFlowItem> dedicationFilter(Collection<AbstractFlowItem> possibleItems) {
+		possibleItems.removeIf(item -> !this.dedications
+				.contains(((DedicationDetails) item.getCurrentStep().getDetails()).getNecessaryQualification()));
+		return possibleItems;
 	}
 
 }

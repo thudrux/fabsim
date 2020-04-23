@@ -2,7 +2,6 @@ package de.terministic.fabsim.components;
 
 import java.util.HashSet;
 
-import de.terministic.fabsim.components.equipment.AbstractResourceContoller;
 import de.terministic.fabsim.components.equipment.InvalidEventForResourceException;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.core.AbstractFlowItem;
@@ -35,7 +34,7 @@ public class Source extends AbstractSource {
 	}
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		throw new NotYetImplementedException();
 	}
 
@@ -74,11 +73,6 @@ public class Source extends AbstractSource {
 
 	public int getReleaseSize() {
 		return this.releaseSize;
-	}
-
-	@Override
-	public AbstractResourceContoller getResourceController() {
-		return null;
 	}
 
 	@Override

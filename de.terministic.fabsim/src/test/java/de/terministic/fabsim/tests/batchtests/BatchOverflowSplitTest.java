@@ -2,6 +2,7 @@ package de.terministic.fabsim.tests.batchtests;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.LotSource;
@@ -31,6 +32,7 @@ public class BatchOverflowSplitTest {
 	ToolGroup toolGroup;
 	Sink sink;
 
+	@Tag("fast")
 	@Test
 	public void OverflowSplitTest() {
 		final FinishedFlowItemCounter counter = new FinishedFlowItemCounter();

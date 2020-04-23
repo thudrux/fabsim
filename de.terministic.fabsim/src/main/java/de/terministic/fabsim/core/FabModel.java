@@ -18,11 +18,12 @@ import de.terministic.fabsim.components.BasicRouting;
 import de.terministic.fabsim.components.Controller;
 import de.terministic.fabsim.components.Product;
 import de.terministic.fabsim.components.Recipe;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.components.equipment.AbstractToolGroup;
+import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.QueueCentricToolGroupController;
 import de.terministic.fabsim.core.duration.DurationObjectFactory;
 import de.terministic.fabsim.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.dispatchRules.FIFO;
@@ -61,7 +62,7 @@ public class FabModel {
 
 	private final AbstractRouting routing;
 	protected Controller dispatchController;
-	protected ToolGroupController tgController;
+	protected AbstractToolGroupController tgController;
 
 	protected AbstractDispatchRule globalDispatchRule;
 
@@ -99,7 +100,9 @@ public class FabModel {
 		this.batchRule = new BasicBatchRule(this);
 
 		this.dispatchController = new Controller(this, this.globalDispatchRule, this.batchRule);
-		this.tgController = new ToolGroupController(this, this.dispatchController);
+//		this.tgController = new ToolGroupController(this, this.dispatchController);
+		this.tgController = new QueueCentricToolGroupController(this, this.dispatchController); // TODO Just for Testing
+		// purposes
 
 		this.getElements().put(this.tgController.getId(), this.tgController);
 		this.getElements().put(this.dispatchController.getId(), this.dispatchController);
@@ -237,7 +240,7 @@ public class FabModel {
 		return this.sources;
 	}
 
-	public ToolGroupController getToolGroupController() {
+	public AbstractToolGroupController getToolGroupController() {
 		return this.tgController;
 	}
 

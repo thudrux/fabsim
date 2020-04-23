@@ -357,8 +357,8 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 * de.terministic.alternativefabsimulator.core.AbstractFlowItem)
 	 */
 	@Override
-	public boolean readyToProcess(final AbstractTool tool, final AbstractFlowItem item) {
-		return this.currentStateMap.get(tool).canProcess(item);
+	public boolean readyToProcess(final AbstractTool tool) {
+		return this.currentStateMap.get(tool).canProcess();
 	}
 
 	/*

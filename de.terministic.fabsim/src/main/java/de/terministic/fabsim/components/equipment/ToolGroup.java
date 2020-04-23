@@ -14,7 +14,6 @@ import java.util.Set;
 import de.terministic.fabsim.components.FlowItemArrivalEvent;
 import de.terministic.fabsim.components.Lot;
 import de.terministic.fabsim.components.ToolAndItem;
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -46,19 +45,14 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	/**
 	 * Instantiates a new tool group.
 	 *
-	 * @param name
-	 *            the name of the tool group
-	 * @param processingType
-	 *            the processing type
-	 * @param number
-	 *            the number of tools in the tool group
-	 * @param stateMachine
-	 *            the state machine which tools should follow
-	 * @param tgController
-	 *            the tg controller
+	 * @param name           the name of the tool group
+	 * @param processingType the processing type
+	 * @param number         the number of tools in the tool group
+	 * @param stateMachine   the state machine which tools should follow
+	 * @param tgController   the tg controller
 	 */
 	public ToolGroup(FabModel model, final String name, final ProcessingType processingType, final int number,
-			final AbstractToolStateMachine stateMachine, final ToolGroupController tgController,
+			final AbstractToolStateMachine stateMachine, final AbstractToolGroupController tgController,
 			final AbstractSetupStrategy setupStrategy) {
 		super(model, name, tgController);
 		this.processingType = processingType;
@@ -103,7 +97,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	}
 
 	@Override
-	public boolean canProcessItem(final AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 	}
@@ -150,12 +144,6 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	 */
 	public List<AbstractFlowItem> getQueue() {
 		return this.queue;
-	}
-
-	@Override
-	public AbstractResourceContoller getResourceController() {
-		// TODO Auto-generated method stub
-		throw new NotYetImplementedException();
 	}
 
 	/**
@@ -222,8 +210,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	/**
 	 * Sets the busy tools.
 	 *
-	 * @param busyTools
-	 *            the new busy tools
+	 * @param busyTools the new busy tools
 	 */
 	public void setBusyTools(final Set<Tool> busyTools) {
 		this.busyTools = busyTools;
@@ -232,8 +219,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	/**
 	 * Sets the standby tools.
 	 *
-	 * @param standbyTools
-	 *            the new standby tools
+	 * @param standbyTools the new standby tools
 	 */
 	public void setStandbyTools(final List<Tool> standbyTools) {
 		this.standbyTools = standbyTools;
@@ -242,8 +228,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	/**
 	 * Sets the started tools.
 	 *
-	 * @param tools
-	 *            the new started tools
+	 * @param tools the new started tools
 	 */
 	public void setStartedTools(final List<Tool> tools) {
 		this.busyTools.addAll(tools);
@@ -267,8 +252,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	/**
 	 * Start flow item on tool.
 	 *
-	 * @param toolAndItem
-	 *            the tool and item
+	 * @param toolAndItem the tool and item
 	 */
 	private void startFlowItemOnTool(final ToolAndItem toolAndItem) {
 		this.logger.trace("trying to start item on tool");

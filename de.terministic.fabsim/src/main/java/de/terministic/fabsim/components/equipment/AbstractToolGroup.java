@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.components.ToolGroupController;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.dispatchRules.AbstractDispatchRule;
@@ -25,7 +24,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	protected FabModel fabModel;
 
 	/** The tg controller. */
-	protected ToolGroupController tgController;
+	protected AbstractToolGroupController tgController;
 
 	/** The tools. */
 	protected Map<Long, AbstractTool> tools;
@@ -43,7 +42,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 * @param tgController
 	 *            the tg controller
 	 */
-	public AbstractToolGroup(FabModel model, final String name, final ToolGroupController tgController) {
+	public AbstractToolGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
 		super(model, name);
 		this.tgController = tgController;
 	}
@@ -91,7 +90,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 *
 	 * @return the TG controller
 	 */
-	public ToolGroupController getTGController() {
+	public AbstractToolGroupController getTGController() {
 		return this.tgController;
 	}
 

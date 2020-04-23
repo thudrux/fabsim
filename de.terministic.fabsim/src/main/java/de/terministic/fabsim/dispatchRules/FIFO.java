@@ -4,9 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.terministic.fabsim.components.equipment.BatchDetails;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.FifoBatchFlowItemQueue;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.FifoFlowItemQueue;
+import de.terministic.fabsim.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.core.AbstractFlowItem;
 
 public class FIFO extends AbstractDispatchRule {
+	protected Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
 
 	public FIFO() {
 		super("FIFO");
@@ -39,6 +47,18 @@ public class FIFO extends AbstractDispatchRule {
 	public ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items) {
 		items.add(item);
 		return items;
+	}
+
+	@Override
+	public IFlowItemQueue createBatchQueue(BatchDetails details) {
+//		logger.info("START createBatchQueue for {}", details);
+		return new FifoBatchFlowItemQueue(details);
+	}
+
+	@Override
+	public IFlowItemQueue createQueue() {
+//		logger.info("START createQueue");
+		return new FifoFlowItemQueue();
 	}
 
 }

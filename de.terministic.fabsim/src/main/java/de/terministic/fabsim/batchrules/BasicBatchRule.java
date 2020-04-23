@@ -75,8 +75,8 @@ public class BasicBatchRule extends AbstractBatchRule {
 
 	}
 
-	@Override
-	public QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> list) {
+	@Deprecated
+	private QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> list) {
 		int wafersInList = 0;
 		for (AbstractFlowItem item : list) {
 			wafersInList += item.getSize();
@@ -172,8 +172,8 @@ public class BasicBatchRule extends AbstractBatchRule {
 		return result;
 	}
 
-	@Override
-	public QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> possibleItems,
+	@Deprecated
+	private QueueChangeAndBatches selectPossibleBatches(ArrayList<AbstractFlowItem> possibleItems,
 			final AbstractDispatchRule drule) {
 		possibleItems = drule.sortWithDispatchRule(possibleItems);
 		return selectPossibleBatches(possibleItems);

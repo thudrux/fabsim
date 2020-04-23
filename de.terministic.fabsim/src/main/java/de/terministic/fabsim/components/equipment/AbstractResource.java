@@ -29,18 +29,15 @@ public abstract class AbstractResource extends AbstractComponent {
 	/**
 	 * Adds the breakdown.
 	 *
-	 * @param breakdown
-	 *            the breakdown
+	 * @param breakdown the breakdown
 	 */
 	public abstract void addBreakdown(final IBreakdown breakdown);
 
-	public abstract boolean canProcessItem(AbstractFlowItem item);
+	public abstract boolean canProcessItem();
 
 	public AbstractResourceGroup getParent() {
 		return this.parent;
 	}
-
-	public abstract AbstractResourceContoller getResourceController();
 
 	public void onBreakdownFinished(final BreakdownFinishedEvent event) {
 		throw new InvalidEventForResourceException("Trigger is not supported by " + this.getClass().getSimpleName());

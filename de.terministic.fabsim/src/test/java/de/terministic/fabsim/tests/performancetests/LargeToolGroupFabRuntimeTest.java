@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.ProcessStep.ProcessType;
@@ -63,6 +64,7 @@ public class LargeToolGroupFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void toolgroup20ToolsArrivalEvery9MinutesTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
@@ -78,6 +80,7 @@ public class LargeToolGroupFabRuntimeTest {
 	}
 
 	@Test
+	@Tag("slow")
 	public void toolgroup60ToolsArrivalEvery3MinutesTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 10; i++) {
@@ -92,16 +95,17 @@ public class LargeToolGroupFabRuntimeTest {
 		Assertions.assertTrue(duration < 64000);
 	}
 
-//	@Test
-//	public void toolgroup180ToolsArrivalEvery1MinutesTest() {
-//		long startTime = System.currentTimeMillis();
-//		FabModel model = buildModel(180, 1);
-//		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-//		SimulationEngine engine = new SimulationEngine(eventList);
-//		engine.init(model);
-//		engine.runSimulation(YEAR);
-//		long duration = System.currentTimeMillis() - startTime;
-//
-//		Assertions.assertTrue(duration < 64000);
-//	}
+	@Test
+	@Tag("slow")
+	public void toolgroup180ToolsArrivalEvery1MinutesTest() {
+		long startTime = System.currentTimeMillis();
+		FabModel model = buildModel(180, 1);
+		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
+		SimulationEngine engine = new SimulationEngine(eventList);
+		engine.init(model);
+		engine.runSimulation(10 * YEAR);
+		long duration = System.currentTimeMillis() - startTime;
+
+		Assertions.assertTrue(duration < 64000);
+	}
 }

@@ -44,11 +44,9 @@ public abstract class AbstractToolState {
 	/**
 	 * Returns whether a tool is able to process a flow item
 	 *
-	 * @param item
-	 *            the flow item which should be processed
 	 * @return true, if possible
 	 */
-	public abstract boolean canProcess(final AbstractFlowItem item);
+	public abstract boolean canProcess();
 
 	/**
 	 * Actions which need to be done when an equipment enters a state

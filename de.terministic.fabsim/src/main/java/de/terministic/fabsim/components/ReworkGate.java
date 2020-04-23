@@ -3,7 +3,6 @@ package de.terministic.fabsim.components;
 import java.util.Random;
 
 import de.terministic.fabsim.components.equipment.AbstractResource;
-import de.terministic.fabsim.components.equipment.AbstractResourceContoller;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.FabModel;
@@ -31,13 +30,8 @@ public class ReworkGate extends AbstractResource {
 	}
 
 	@Override
-	public boolean canProcessItem(AbstractFlowItem item) {
+	public boolean canProcessItem() {
 		return true;
-	}
-
-	@Override
-	public AbstractResourceContoller getResourceController() {
-		return null;
 	}
 
 	@Override

@@ -42,11 +42,11 @@ public class BasicConditionBasedSetupStrategy extends AbstractSetupStrategy {
 	}
 
 	/*
-	 * @Override public List<AbstractFlowItem>
-	 * filterValidItems(AbstractToolGroup toolGroup, List<AbstractFlowItem>
-	 * flowItems) { Map<SetupState, ArrayList<AbstractFlowItem>> stateItemMap =
-	 * new LinkedHashMap<>(); for (AbstractFlowItem item:flowItems){ SetupState
-	 * state = item.getCurrentStep().getSetupDetails(); if
+	 * @Override public List<AbstractFlowItem> filterValidItems(AbstractToolGroup
+	 * toolGroup, List<AbstractFlowItem> flowItems) { Map<SetupState,
+	 * ArrayList<AbstractFlowItem>> stateItemMap = new LinkedHashMap<>(); for
+	 * (AbstractFlowItem item:flowItems){ SetupState state =
+	 * item.getCurrentStep().getSetupDetails(); if
 	 * (!stateItemMap.containsKey(state)){ stateItemMap.put(state, new
 	 * ArrayList<AbstractFlowItem>()); } stateItemMap.get(state).add(item); }
 	 *
@@ -56,20 +56,21 @@ public class BasicConditionBasedSetupStrategy extends AbstractSetupStrategy {
 	 * }
 	 */
 	@Override
-	public ArrayList<AbstractFlowItem> filterValidItems(final AbstractTool tool,
-			final ArrayList<AbstractFlowItem> possibleItems) {
+	public Collection<AbstractFlowItem> filterValidItems(final AbstractTool tool,
+			final Collection<AbstractFlowItem> possibleItems) {
 		final Map<SetupState, Boolean> postStateValidity = new LinkedHashMap<>();
-		final ArrayList<AbstractFlowItem> resultList = new ArrayList<>();
+		final ArrayList<AbstractFlowItem> removeList = new ArrayList<>();
 		for (final AbstractFlowItem item : possibleItems) {
 			final SetupState postState = item.getCurrentStep().getSetupDetails();
 			if (!postStateValidity.containsKey(postState)) {
 				postStateValidity.put(postState, filterForValidItem(tool, item));
 			}
-			if (postStateValidity.get(postState)) {
-				resultList.add(item);
+			if (!postStateValidity.get(postState)) {
+				removeList.add(item);
 			}
 		}
-		return resultList;
+		possibleItems.removeAll(removeList);
+		return possibleItems;
 	}
 
 }
