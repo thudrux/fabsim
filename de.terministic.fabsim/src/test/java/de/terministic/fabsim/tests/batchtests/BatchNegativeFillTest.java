@@ -1,6 +1,7 @@
 package de.terministic.fabsim.tests.batchtests;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.components.Controller;
@@ -17,6 +18,7 @@ class BatchNegativeFillTest {
 
 	ToolGroup toolGroup;
 
+	@Tag("fast")
 	@Test
 	void NegativeFillTest() {
 		final FabModel model = new FabModel();
