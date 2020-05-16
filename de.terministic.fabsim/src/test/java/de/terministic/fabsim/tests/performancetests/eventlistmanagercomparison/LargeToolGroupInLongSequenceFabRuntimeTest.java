@@ -71,8 +71,8 @@ public class LargeToolGroupInLongSequenceFabRuntimeTest {
 		rand = new Random(9472934792347249L);
 	}
 
-	@Test
-	@Tag("slow")
+//	@Test
+//	@Tag("slow")
 	public void runTimeForMiniModelWithComponentGroupedEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
@@ -101,8 +101,8 @@ public class LargeToolGroupInLongSequenceFabRuntimeTest {
 		Assertions.assertTrue(duration < 24000);
 	}
 
-	@Test
-	@Tag("slow")
+//	@Test
+//	@Tag("slow")
 	public void runTimeForMiniModelWithTreeSetEventListManagerTest() {
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < 1; i++) {
