@@ -17,9 +17,9 @@ public class FabKPIOverview {
 	private long startedLots;
 	private long finishedLots;
 	private double minCycleTime;
-	private double q25CycleTime;
+	private double q25CycleTime = 0.0;
 	private double avgCycleTime;
-	private double q75CycleTime;
+	private double q75CycleTime = 0.0;
 	private double maxCycleTime;
 	private double cycleTimeVariance;
 	private double cycleTimeSkewness;
