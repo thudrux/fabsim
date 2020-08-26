@@ -2,6 +2,7 @@ package de.terministic.fabsim.statistics;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.terministic.fabsim.components.Product;
@@ -25,6 +26,7 @@ public class FabKPIOverview {
 	private double cycleTimeSkewness;
 	private double cycleTimeKurtosis;
 	private LinkedHashMap<Product, ProductKPIOverview> productKPIs = new LinkedHashMap<>();
+	private List<Long> ctList;
 
 	private long prTime;
 	private long sbTime;
@@ -232,6 +234,24 @@ public class FabKPIOverview {
 
 	public double getWipByDgr() {
 		return wipByDGR;
+	}
+
+	public List<Long> getCtList() {
+		return ctList;
+	}
+
+	public void setCtList(List<Long> list) {
+		this.ctList = list;
+	}
+
+	private double avgRpt;
+
+	public double getAvgRPT() {
+		return avgRpt;
+	}
+
+	public void setAvgRPT(double avgRpt) {
+		this.avgRpt = avgRpt;
 	}
 
 }

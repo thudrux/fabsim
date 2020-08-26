@@ -53,7 +53,8 @@ public class SimulationResultAggregator {
 		 * item.getStatistics().get(ItemLog.CREATIONTIMEMARKER); cycleTime += ct;
 		 * ctCount++; rptSum += item.getRPT(); } }
 		 */
-
+		FabKPIOverview result = new FabKPIOverview();
+		result.setCtList(ctLogger.getAllCycleTimes());
 		for (Long ct : ctLogger.getAllCycleTimes()) {
 			logger.trace("Cycletime is: {}", ct);
 			cycleTime += ct;
@@ -61,10 +62,10 @@ public class SimulationResultAggregator {
 		// logger.debug("{}", ctLogger.getCycleTimes());
 		logger.trace("cycleTime sum is {}", cycleTime);
 		ctCount = ctLogger.getAllCycleTimes().size();
-		FabKPIOverview result = new FabKPIOverview();
 		if (ctCount > 0L) {
 			result.setAvgCycleTime((cycleTime * 1.0) / (ctCount * 1.0));
 			result.setFlowFactor(cycleTime * 1.0 / (ctLogger.getRptSum() * 1.0));
+			result.setAvgRPT(ctLogger.getRptSum() * 1.0 / ctLogger.getAllCycleTimes().size() * 1.0);
 			ctMoments(result, result.getAvgCycleTime());
 			result.setAvgWIP(wipLogger.getAvgLotWip(start, end));
 			result.setMaxWIP(wipLogger.getMaxWip());
