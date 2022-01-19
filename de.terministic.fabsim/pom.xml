@@ -40,7 +40,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 	<artifactId>slf4j-api</artifactId>
 	<version>1.7.32</version>
 	</dependency>
-  	<dependency>
 <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
