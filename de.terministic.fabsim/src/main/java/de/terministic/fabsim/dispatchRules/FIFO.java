@@ -34,7 +34,7 @@ public class FIFO extends AbstractDispatchRule {
 		Collections.sort(items, new Comparator<AbstractFlowItem>() {
 			@Override
 			public int compare(final AbstractFlowItem o1, final AbstractFlowItem o2) {
-				final Long time1 = new Long(o1.getTimeStamps(o1.getCurrentStepNumber()).getArrivalTime());
+				final Long time1 = Long.valueOf(o1.getTimeStamps(o1.getCurrentStepNumber()).getArrivalTime());
 				final long time2 = (o2.getTimeStamps(o2.getCurrentStepNumber()).getArrivalTime());
 				return time1.compareTo(time2);
 			}

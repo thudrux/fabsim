@@ -27,9 +27,9 @@ public class StaticCapacityAnalysis {
 
 	public StaticCapacityAnalysisResult calculateStaticCapacityUtilization(FabModel model) {
 		for (AbstractResource resource : model.getComponents().values()) {
-			utilisationBasedCapaUsage.put(resource, new Double(0.0));
-			utilisationBasedCapaLoss.put(resource, new Double(0.0));
-			fixedCapaLoss.put(resource, new Double(0.0));
+			utilisationBasedCapaUsage.put(resource, Double.valueOf(0.0));
+			utilisationBasedCapaLoss.put(resource, Double.valueOf(0.0));
+			fixedCapaLoss.put(resource, Double.valueOf(0.0));
 		}
 
 		// Calculate capa usage of resources by all products
