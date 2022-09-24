@@ -2,7 +2,7 @@ package de.terministic.fabsim.core.duration;
 
 import org.apache.commons.math3.distribution.LogNormalDistribution;
 
-public class LogNormalCompoundDurationObject extends AbstractDurationObject {
+public class LogNormalCompoundDuration implements IDuration {
 
 	long mean;
 	long base;
@@ -10,7 +10,7 @@ public class LogNormalCompoundDurationObject extends AbstractDurationObject {
 	LogNormalDistribution rand;
 	double factor;
 
-	public LogNormalCompoundDurationObject(final long mean, LogNormalDistribution random, long base, long multiplier,
+	public LogNormalCompoundDuration(final long mean, LogNormalDistribution random, long base, long multiplier,
 			double factor) {
 		this.mean = mean;
 		this.rand = random;

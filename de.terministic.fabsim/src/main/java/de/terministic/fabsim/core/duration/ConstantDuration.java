@@ -1,10 +1,10 @@
 package de.terministic.fabsim.core.duration;
 
-public class ConstantDurationObject extends AbstractDurationObject {
+public class ConstantDuration implements IDuration {
 
 	private final long duration;
 
-	public ConstantDurationObject(final long duration) {
+	public ConstantDuration(final long duration) {
 		this.duration = duration;
 	}
 

@@ -5,25 +5,25 @@ import java.util.TreeMap;
 
 import de.terministic.fabsim.core.FabModel;
 
-public class DurationObjectFactory {
+public class DurationFactory {
 
-	private final TreeMap<Long, ConstantDurationObject> constMap = new TreeMap<>();
-	private final TreeMap<Long, ExponentialDurationObject> expMap = new TreeMap<>();
+	private final TreeMap<Long, ConstantDuration> constMap = new TreeMap<>();
+	private final TreeMap<Long, ExponentialDuration> expMap = new TreeMap<>();
 
-	public DurationObjectFactory(final FabModel model) {
+	public DurationFactory(final FabModel model) {
 	}
 
-	public ConstantDurationObject createConstantDurationObject(final long duration) {
+	public ConstantDuration createConstantDurationObject(final long duration) {
 		if (this.constMap.containsKey(duration))
 			return this.constMap.get(duration);
 		else {
-			final ConstantDurationObject result = new ConstantDurationObject(duration);
+			final ConstantDuration result = new ConstantDuration(duration);
 			this.constMap.put(duration, result);
 			return result;
 		}
 	}
 
-	public ExponentialDurationObject createExponentialDurationObject(final long mean) {
+	public ExponentialDuration createExponentialDurationObject(final long mean) {
 		throw new RuntimeException("ExponentialDistriWithoutRandomGen Given");
 		// if (this.expMap.containsKey(mean))
 		// return this.expMap.get(mean);
@@ -35,11 +35,11 @@ public class DurationObjectFactory {
 		// }
 	}
 
-	public ExponentialDurationObject createExponentialDurationObject(final long mean, Random rand) {
+	public ExponentialDuration createExponentialDurationObject(final long mean, Random rand) {
 		if (this.expMap.containsKey(mean))
 			return this.expMap.get(mean);
 		else {
-			final ExponentialDurationObject result = new ExponentialDurationObject(mean, rand);
+			final ExponentialDuration result = new ExponentialDuration(mean, rand);
 			this.expMap.put(mean, result);
 			return result;
 		}

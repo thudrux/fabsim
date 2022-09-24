@@ -35,8 +35,8 @@ import de.terministic.fabsim.components.equipment.setup.MinProducedItemsSinceCha
 import de.terministic.fabsim.components.equipment.setup.MinProductiveTimeSinceSetupChangeCondition;
 import de.terministic.fabsim.components.equipment.toolstatemachine.AbstractToolStateMachine;
 import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
-import de.terministic.fabsim.core.duration.ConstantDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.ConstantDuration;
 
 public class SimComponentFactory {
 	private final FabModel model;
@@ -85,14 +85,14 @@ public class SimComponentFactory {
 	}
 
 	public ItemCountBasedMaintenance createItemBasedMaintenance(final String name,
-			final AbstractDurationObject duration, final int count) {
+			final IDuration duration, final int count) {
 		final ItemCountBasedMaintenance maint = new ItemCountBasedMaintenance(model, name, duration, count);
 		this.model.addMaintenance(maint);
 		return maint;
 	}
 
 	public ItemCountBasedMaintenance createItemBasedMaintenanceAndAddToToolGroup(final String name,
-			final AbstractDurationObject duration, final int count, final ToolGroup toolGroup) {
+			final IDuration duration, final int count, final ToolGroup toolGroup) {
 		final ItemCountBasedMaintenance maint = new ItemCountBasedMaintenance(model, name, duration, count);
 		toolGroup.addMaintenance(maint);
 		this.model.addMaintenance(maint);
@@ -139,7 +139,7 @@ public class SimComponentFactory {
 	}
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component,
-			final AbstractDurationObject duration, ProcessType type) {
+			final IDuration duration, ProcessType type) {
 		return createProcessStep(name, component, duration, null, null, type);
 	}
 
@@ -149,15 +149,15 @@ public class SimComponentFactory {
 	}
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component,
-			final AbstractDurationObject duration, final BatchDetails batchDetails, ProcessType type) {
+			final IDuration duration, final BatchDetails batchDetails, ProcessType type) {
 		return createProcessStep(name, component, duration, batchDetails, null, type);
 	}
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component,
-			final AbstractDurationObject durObj, final BatchDetails batchDetails, final SetupState setupState,
+			final IDuration durObj, final BatchDetails batchDetails, final SetupState setupState,
 			ProcessType type) {
-		final ConstantDurationObject loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantDurationObject unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
 
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
@@ -166,10 +166,10 @@ public class SimComponentFactory {
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component, final long duration,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type) {
-		final ConstantDurationObject loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantDurationObject durObj = this.model.getDurationObjectFactory()
+		final ConstantDuration loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration durObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(duration);
-		final ConstantDurationObject unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
 
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
@@ -178,11 +178,11 @@ public class SimComponentFactory {
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component, final long loadTime,
 			final long duration, final long unloadTime, ProcessType type) {
-		final ConstantDurationObject loadObj = this.model.getDurationObjectFactory()
+		final ConstantDuration loadObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(loadTime);
-		final ConstantDurationObject durObj = this.model.getDurationObjectFactory()
+		final ConstantDuration durObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(duration);
-		final ConstantDurationObject unloadObj = this.model.getDurationObjectFactory()
+		final ConstantDuration unloadObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(unloadTime);
 		return new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, null, null, type);
 	}
@@ -196,11 +196,11 @@ public class SimComponentFactory {
 			final AbstractOperatorGroup operatorGroup, final long loadTime, final long duration, final long unloadTime,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type, final Recipe recipe) {
 		this.logger.trace("OperatorGroup needed for step {} is {}", name, operatorGroup);
-		final ConstantDurationObject loadObj = this.model.getDurationObjectFactory()
+		final ConstantDuration loadObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(loadTime);
-		final ConstantDurationObject durObj = this.model.getDurationObjectFactory()
+		final ConstantDuration durObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(duration);
-		final ConstantDurationObject unloadObj = this.model.getDurationObjectFactory()
+		final ConstantDuration unloadObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(unloadTime);
 
 		final ProcessStep step = new ProcessStep(model, name, component, operatorGroup, loadObj, durObj, unloadObj,
@@ -217,10 +217,10 @@ public class SimComponentFactory {
 	public ProcessStep createProcessStepAndAddToRecipe(final String name, final AbstractComponent component,
 			final long duration, final BatchDetails batchDetails, final SetupState setupState, ProcessType type,
 			final Recipe recipe) {
-		final ConstantDurationObject loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantDurationObject durObj = this.model.getDurationObjectFactory()
+		final ConstantDuration loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration durObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(duration);
-		final ConstantDurationObject unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantDuration unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
 		recipe.add(step);
@@ -246,14 +246,14 @@ public class SimComponentFactory {
 	}
 
 	public ProcessTimeBasedMaintenance createProcessTimeBasedMaintenance(final String name,
-			final AbstractDurationObject duration, final AbstractDurationObject processTime) {
+			final IDuration duration, final IDuration processTime) {
 		final ProcessTimeBasedMaintenance maint = new ProcessTimeBasedMaintenance(model, name, duration, processTime);
 		this.model.addMaintenance(maint);
 		return maint;
 	}
 
 	public ProcessTimeBasedMaintenance createProcessTimeBasedMaintenanceAndAddToToolGroup(final String name,
-			final AbstractDurationObject duration, final AbstractDurationObject processTime,
+			final IDuration duration, final IDuration processTime,
 			final AbstractHomogeneousResourceGroup toolGroup) {
 		final ProcessTimeBasedMaintenance maint = createProcessTimeBasedMaintenance(name, duration, processTime);
 		toolGroup.addMaintenance(maint);
@@ -291,14 +291,14 @@ public class SimComponentFactory {
 	}
 
 	public SimTimeBasedBreakdown createSimulationTimeBasedBreakdown(final String name,
-			final AbstractDurationObject mttr, final AbstractDurationObject mtbf) {
+			final IDuration mttr, final IDuration mtbf) {
 		final SimTimeBasedBreakdown down = new SimTimeBasedBreakdown(model, name, mttr, mtbf);
 		this.model.addBreakdown(down);
 		return down;
 	}
 
 	public SimTimeBasedBreakdown createSimulationTimeBasedBreakdownAndAddToToolGroup(final String name,
-			final AbstractDurationObject mttr, final AbstractDurationObject mtbf,
+			final IDuration mttr, final IDuration mtbf,
 			final AbstractHomogeneousResourceGroup toolGroup) {
 		final SimTimeBasedBreakdown down = createSimulationTimeBasedBreakdown(name, mttr, mtbf);
 		toolGroup.addBreakdown(down);
@@ -306,7 +306,7 @@ public class SimComponentFactory {
 	}
 
 	public SimTimeBasedMaintenance createSimulationTimeBasedMaintenanceAndAddToToolGroup(final String name,
-			final AbstractDurationObject duration, final AbstractDurationObject processTime,
+			final IDuration duration, final IDuration processTime,
 			final AbstractHomogeneousResourceGroup toolGroup) {
 		final SimTimeBasedMaintenance maint = new SimTimeBasedMaintenance(model, name, duration, processTime);
 		toolGroup.addMaintenance(maint);
@@ -332,7 +332,7 @@ public class SimComponentFactory {
 
 	public AbstractSource createSource(final String name, final Product product, final long interarrivalTime) {
 		final LotSource source = (LotSource) createSource(name);
-		final ConstantDurationObject interarrivalTimeObj = this.model.getDurationObjectFactory()
+		final ConstantDuration interarrivalTimeObj = this.model.getDurationObjectFactory()
 				.createConstantDurationObject(interarrivalTime);
 
 		source.setInterArrivalTime(interarrivalTimeObj);
@@ -341,7 +341,7 @@ public class SimComponentFactory {
 	}
 
 	public AbstractSource createSource(final String name, final Product product,
-			final AbstractDurationObject interarrivalTimeObj) {
+			final IDuration interarrivalTimeObj) {
 		final LotSource source = (LotSource) createSource(name);
 		source.setInterArrivalTime(interarrivalTimeObj);
 		source.setProduct(product);
