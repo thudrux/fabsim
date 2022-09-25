@@ -29,7 +29,6 @@ public class MaintenanceFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractTool) getComponent()).onMaintenanceFinished(this);
 	}
 

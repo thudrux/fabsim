@@ -18,7 +18,6 @@ public class UnloadingFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractTool) getComponent()).onUnloadingFinished(this);
 	}
 

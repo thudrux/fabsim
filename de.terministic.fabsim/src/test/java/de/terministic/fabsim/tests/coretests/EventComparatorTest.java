@@ -13,7 +13,7 @@ import de.terministic.fabsim.components.equipment.maintenance.SimTimeBasedMainte
 import de.terministic.fabsim.core.EventComparator;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.duration.ConstantDurationObject;
+import de.terministic.fabsim.core.duration.ConstantDuration;
 
 public class EventComparatorTest {
 
@@ -22,8 +22,8 @@ public class EventComparatorTest {
 		FabModel model = new FabModel();
 		ISimEvent event1 = new BreakdownTriggeredEvent(model, 0L, null,
 				new SimTimeBasedBreakdown(model, "breakdown", null, null));
-		ConstantDurationObject obj1 = new ConstantDurationObject(1L);
-		ConstantDurationObject obj10 = new ConstantDurationObject(10L);
+		ConstantDuration obj1 = new ConstantDuration(1L);
+		ConstantDuration obj10 = new ConstantDuration(10L);
 		ISimEvent event2 = new MaintenanceTriggeredEvent(model, 0L, null,
 				new SimTimeBasedMaintenance(model, "Maintenance", obj1, obj10));
 		ArrayList<ISimEvent> events = new ArrayList<>();
@@ -41,8 +41,8 @@ public class EventComparatorTest {
 		FabModel model = new FabModel();
 		ISimEvent event1 = new BreakdownTriggeredEvent(model, 0L, null,
 				new SimTimeBasedBreakdown(model, "breakdown", null, null));
-		ConstantDurationObject obj1 = new ConstantDurationObject(1L);
-		ConstantDurationObject obj10 = new ConstantDurationObject(10L);
+		ConstantDuration obj1 = new ConstantDuration(1L);
+		ConstantDuration obj10 = new ConstantDuration(10L);
 		ISimEvent event2 = new MaintenanceTriggeredEvent(model, 0L, null,
 				new SimTimeBasedMaintenance(model, "Maintenance", obj1, obj10));
 		ArrayList<ISimEvent> events = new ArrayList<>();

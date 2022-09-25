@@ -20,7 +20,7 @@ import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.TreeSetEventListManager;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 
@@ -31,9 +31,9 @@ public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 	private final long YEAR = 365 * DAY;
 
 	private void createToolgroupAndAddAStepToRecipe(int i, Recipe recipe, FabModel model) {
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 200,
+		IDuration mttr = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 200,
 				rand);
-		AbstractDurationObject mttf = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 800,
+		IDuration mttf = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 800,
 				rand);
 		AbstractHomogeneousResourceGroup toolGroup = (ToolGroup) model.getSimComponentFactory()
 				.createToolGroup("Toolgroup_" + i, 10, ProcessingType.BATCH);
@@ -56,7 +56,7 @@ public class LargeToolGroupInExtraLongSequenceFabRuntimeTest {
 		}
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
-		AbstractDurationObject interarrival = model.getDurationObjectFactory()
+		IDuration interarrival = model.getDurationObjectFactory()
 				.createExponentialDurationObject(18 * MINUTE, rand);
 
 		model.getSimComponentFactory().createSource("Source1", product, interarrival);

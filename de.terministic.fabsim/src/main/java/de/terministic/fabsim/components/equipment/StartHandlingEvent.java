@@ -20,7 +20,6 @@ public class StartHandlingEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 	}
 
 }

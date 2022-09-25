@@ -32,7 +32,6 @@ public class BreakdownTriggeredEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractResource) this.component).onBreakdownTriggered(this);
 
 	}

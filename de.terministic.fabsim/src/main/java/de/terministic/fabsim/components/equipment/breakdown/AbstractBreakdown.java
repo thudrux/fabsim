@@ -8,16 +8,16 @@ import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.components.equipment.BreakdownTriggeredEvent;
 import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public abstract class AbstractBreakdown extends AbstractModelElement implements IBreakdown {
 	protected String name;
-	protected AbstractDurationObject duration;
+	protected IDuration duration;
 	protected HashMap<AbstractResource, Long> nextOccuranceOnTool = new LinkedHashMap<>();
 	protected long defaultFirstOccurance = 0L;
 	protected FabModel model;
 
-	public AbstractBreakdown(FabModel model, final String name, final AbstractDurationObject timeToRepair) {
+	public AbstractBreakdown(FabModel model, final String name, final IDuration timeToRepair) {
 		super(model);
 		this.name = name;
 		this.duration = timeToRepair;
@@ -93,7 +93,7 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 		return event;
 	}
 
-	public void setDuration(final AbstractDurationObject duration) {
+	public void setDuration(final IDuration duration) {
 		this.duration = duration;
 	}
 

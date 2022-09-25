@@ -47,4 +47,10 @@ public class StateChangeEvent extends AbstractSimEvent {
 		return super.toString() + " => " + this.newState;
 	}
 
+	@Override
+	public void resolveEvent() {
+		// do nothing
+
+	}
+
 }

@@ -13,7 +13,7 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
 
 /*
@@ -35,8 +35,8 @@ public class TimedMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		AbstractDurationObject obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
-		AbstractDurationObject obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IDuration obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
+		IDuration obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3,
 				obj20, toolGroup);// name, duration, simtime, toolGroup

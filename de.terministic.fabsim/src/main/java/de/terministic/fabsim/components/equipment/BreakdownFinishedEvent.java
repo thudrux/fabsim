@@ -32,7 +32,6 @@ public class BreakdownFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractResource) getComponent()).onBreakdownFinished(this);
 	}
 }

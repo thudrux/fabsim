@@ -9,12 +9,12 @@ import de.terministic.fabsim.core.AbstractSource;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.NotYetImplementedException;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class Source extends AbstractSource {
 	private Recipe recipe;
 
-	protected AbstractDurationObject interArrivalTime;
+	protected IDuration interArrivalTime;
 	private boolean createFirstAtTimeZero = false;
 
 	private Product product;
@@ -58,7 +58,7 @@ public class Source extends AbstractSource {
 		return flowItem;
 	}
 
-	public AbstractDurationObject getInterArrivalTime() {
+	public IDuration getInterArrivalTime() {
 		return this.interArrivalTime;
 	}
 
@@ -96,7 +96,7 @@ public class Source extends AbstractSource {
 		this.createFirstAtTimeZero = createFirstAtTimeZero;
 	}
 
-	public void setInterArrivalTime(final AbstractDurationObject interArrivalTime) {
+	public void setInterArrivalTime(final IDuration interArrivalTime) {
 		this.interArrivalTime = interArrivalTime;
 
 	}

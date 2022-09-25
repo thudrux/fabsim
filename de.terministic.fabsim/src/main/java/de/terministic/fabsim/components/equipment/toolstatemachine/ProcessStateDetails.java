@@ -82,7 +82,7 @@ public class ProcessStateDetails {
 
 	public void resume() {
 		this.state = State.ONGOING;
-		this.endEvent.setTime(this.tool.getTime() + this.remainingProcessTime);
+		this.endEvent.setEventTime(this.tool.getTime() + this.remainingProcessTime);
 		this.tool.rescheduleEvent(this.endEvent);
 	}
 

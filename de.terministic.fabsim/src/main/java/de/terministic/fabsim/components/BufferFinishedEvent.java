@@ -12,7 +12,6 @@ public class BufferFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((CoolDownBuffer) getComponent()).onProcessFinished(this);
 	}
 

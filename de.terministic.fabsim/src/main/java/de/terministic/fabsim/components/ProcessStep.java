@@ -15,7 +15,7 @@ import de.terministic.fabsim.core.AbstractFixedModelElement;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractOperatorGroup;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -40,13 +40,13 @@ public class ProcessStep extends AbstractFixedModelElement {
 	private List<Program> programs;
 
 	/** The load time. */
-	private final AbstractDurationObject loadTime;
+	private final IDuration loadTime;
 
 	/** The duration. */
-	private AbstractDurationObject duration;
+	private IDuration duration;
 
 	/** The unload time. */
-	private final AbstractDurationObject unloadTime;
+	private final IDuration unloadTime;
 
 	/** Process type has influence on duration calculation */
 	private final ProcessType processType;
@@ -91,8 +91,8 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 *            the setup details
 	 */
 	public ProcessStep(FabModel model, final String name, final AbstractComponent component,
-			final AbstractOperatorGroup opGroup, final AbstractDurationObject loadTime,
-			final AbstractDurationObject duration, final AbstractDurationObject unloadTime,
+			final AbstractOperatorGroup opGroup, final IDuration loadTime,
+			final IDuration duration, final IDuration unloadTime,
 			final BatchDetails batchDetails, final SetupState setupDetails, final ProcessType type) {
 		super(model, name);
 
@@ -202,7 +202,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 * @param duration
 	 *            the new duration
 	 */
-	public void setDuration(final AbstractDurationObject duration) {
+	public void setDuration(final IDuration duration) {
 		this.duration = duration;
 
 	}

@@ -31,12 +31,10 @@ public class FlowItemArrivalEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		component.onFlowItemArrival(this);
 		/*
-		 * if (component.take(getFlowItem())) {
-		 * sender.onAcceptedFlowItemTransfer(this); } else {
-		 * sender.onRejectedFlowItemTransfer(this); }
+		 * if (component.take(getFlowItem())) { sender.onAcceptedFlowItemTransfer(this);
+		 * } else { sender.onRejectedFlowItemTransfer(this); }
 		 */
 	}
 

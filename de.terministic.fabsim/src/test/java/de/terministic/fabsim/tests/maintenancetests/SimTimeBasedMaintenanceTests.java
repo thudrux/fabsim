@@ -17,7 +17,7 @@ import de.terministic.fabsim.components.equipment.setup.AllAllowedSetupStrategy;
 import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.ConstantDurationObject;
+import de.terministic.fabsim.core.duration.ConstantDuration;
 import de.terministic.fabsim.dispatchRules.FIFO;
 import de.terministic.fabsim.statistics.ToolStateChangeLog;
 import de.terministic.fabsim.statistics.ToolStateLogEntry;
@@ -27,8 +27,8 @@ public class SimTimeBasedMaintenanceTests {
 	@Test
 	public void testBasicObjectCreation() {
 		FabModel model = new FabModel();
-		ConstantDurationObject obj3 = new ConstantDurationObject(3L);
-		ConstantDurationObject obj5 = new ConstantDurationObject(5L);
+		ConstantDuration obj3 = new ConstantDuration(3L);
+		ConstantDuration obj5 = new ConstantDuration(5L);
 		SimTimeBasedMaintenance maint = new SimTimeBasedMaintenance(model, "maint", obj3, obj5);
 		Assertions.assertEquals("maint", maint.getName());
 		Assertions.assertEquals(3L, maint.getDuration());
@@ -40,8 +40,8 @@ public class SimTimeBasedMaintenanceTests {
 		FabModel fabModel = new FabModel();
 		Controller cr = new Controller(fabModel, new FIFO(), new BasicBatchRule(fabModel));
 		AbstractToolGroupController tgController = new ToolGroupController(fabModel, cr);
-		ConstantDurationObject obj3 = new ConstantDurationObject(3L);
-		ConstantDurationObject obj5 = new ConstantDurationObject(5L);
+		ConstantDuration obj3 = new ConstantDuration(3L);
+		ConstantDuration obj5 = new ConstantDuration(5L);
 		SimTimeBasedMaintenanceTestUmbrella maint = new SimTimeBasedMaintenanceTestUmbrella(fabModel, "maint", obj3,
 				obj5);
 		ToolGroup toolGroup = new ToolGroup(fabModel, "Tool1", ProcessingType.LOT, 1,
@@ -57,8 +57,8 @@ public class SimTimeBasedMaintenanceTests {
 		ToolGroup toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1,
 				ProcessingType.LOT);
 		Tool tool = (Tool) toolGroup.getToolByIndex(0);
-		ConstantDurationObject obj3 = new ConstantDurationObject(3L);
-		ConstantDurationObject obj7 = new ConstantDurationObject(7L);
+		ConstantDuration obj3 = new ConstantDuration(3L);
+		ConstantDuration obj7 = new ConstantDuration(7L);
 		SimTimeBasedMaintenance maint = model.getSimComponentFactory()
 				.createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3, obj7, toolGroup);
 		maint.setFirstOccuranceForTool(tool, 5L);

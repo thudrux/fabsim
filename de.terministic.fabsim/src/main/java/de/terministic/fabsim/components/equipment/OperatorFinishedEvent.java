@@ -19,7 +19,6 @@ public class OperatorFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractTool) this.component).onOperatorFinishedProcessing(this);
 	}
 

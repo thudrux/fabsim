@@ -2,13 +2,13 @@ package de.terministic.fabsim.components.equipment.breakdown;
 
 import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class SimTimeBasedBreakdown extends AbstractBreakdown {
-	private final AbstractDurationObject timeBetweenFailures;
+	private final IDuration timeBetweenFailures;
 
-	public SimTimeBasedBreakdown(FabModel model, final String name, final AbstractDurationObject timeToRepair,
-			final AbstractDurationObject timeBetweenFailures) {
+	public SimTimeBasedBreakdown(FabModel model, final String name, final IDuration timeToRepair,
+			final IDuration timeBetweenFailures) {
 		super(model, name, timeToRepair);
 		this.timeBetweenFailures = timeBetweenFailures;
 	}
@@ -32,7 +32,7 @@ public class SimTimeBasedBreakdown extends AbstractBreakdown {
 			return super.getFirstDefaultOccurance();
 	}
 
-	public AbstractDurationObject getTimeBetweenBreakdowns() {
+	public IDuration getTimeBetweenBreakdowns() {
 		return this.timeBetweenFailures;
 	}
 

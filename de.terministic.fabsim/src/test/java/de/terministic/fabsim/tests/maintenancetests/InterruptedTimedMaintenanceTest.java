@@ -13,7 +13,7 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
 
 /*
@@ -37,8 +37,8 @@ public class InterruptedTimedMaintenanceTest {
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
 
-		AbstractDurationObject obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
-		AbstractDurationObject obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IDuration obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
+		IDuration obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
 		model.getSimComponentFactory().createProcessTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj10, obj20,
 				toolGroup);// name, duration, processtime, toolGroup
 

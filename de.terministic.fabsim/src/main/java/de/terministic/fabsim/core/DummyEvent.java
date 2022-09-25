@@ -13,4 +13,10 @@ public class DummyEvent extends AbstractSimEvent {
 		return 0;
 	}
 
+	@Override
+	public void resolveEvent() {
+		// Do nothing
+
+	}
+
 }

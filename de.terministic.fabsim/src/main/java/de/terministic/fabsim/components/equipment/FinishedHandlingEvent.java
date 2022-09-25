@@ -19,7 +19,6 @@ public class FinishedHandlingEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 	}
 
 }

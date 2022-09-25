@@ -24,7 +24,7 @@ import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.components.equipment.queuecentriccontroller.QueueCentricToolGroupController;
-import de.terministic.fabsim.core.duration.DurationObjectFactory;
+import de.terministic.fabsim.core.duration.DurationFactory;
 import de.terministic.fabsim.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.dispatchRules.FIFO;
 
@@ -70,14 +70,14 @@ public class FabModel {
 
 	private SimComponentFactory componentFactory;
 
-	private final DurationObjectFactory durationFactory;
+	private final DurationFactory durationFactory;
 
 	private SimulationEngine engine;
 
 	public FabModel() {
 		this.setName("FabModel");
 		this.componentFactory = new SimComponentFactory(this);
-		this.durationFactory = new DurationObjectFactory(this);
+		this.durationFactory = new DurationFactory(this);
 		this.components = new LinkedHashMap<>();
 		this.toolGroups = new LinkedHashMap<>();
 		this.elements = new LinkedHashMap<>();
@@ -177,7 +177,7 @@ public class FabModel {
 		return this.dispatchController;
 	}
 
-	public DurationObjectFactory getDurationObjectFactory() {
+	public DurationFactory getDurationObjectFactory() {
 		return this.durationFactory;
 	}
 

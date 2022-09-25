@@ -20,7 +20,6 @@ public class SetupFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractTool) this.component).onSetupFinished(this);
 	}
 

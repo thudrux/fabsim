@@ -28,7 +28,6 @@ public class MaintenanceTriggeredEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		// logger.debug("[{}] resolveEvent {}", component.getTime(), this);
 		((AbstractTool) this.component).onMaintenanceTriggered(this);
 	}

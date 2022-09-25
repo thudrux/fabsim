@@ -9,10 +9,10 @@ import de.terministic.fabsim.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.core.AbstractComponent;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements IMaintenance {
-	private final AbstractDurationObject processTime;
+	private final IDuration processTime;
 	private final HashMap<AbstractResource, Long> timeSinceLastMaintMap = new LinkedHashMap<>();
 	private final HashMap<AbstractResource, Long> lastStartMap = new LinkedHashMap<>();
 	private final HashMap<AbstractResource, Long> timeUntilNextMap = new LinkedHashMap<>();
@@ -20,8 +20,8 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 	private final ProcessTimeBasedMaintenanceListener listener;
 	private final HashMap<AbstractResource, Boolean> inInteruptionMap = new LinkedHashMap<>();
 
-	public ProcessTimeBasedMaintenance(FabModel model, final String name, final AbstractDurationObject duration,
-			final AbstractDurationObject processTime) {
+	public ProcessTimeBasedMaintenance(FabModel model, final String name, final IDuration duration,
+			final IDuration processTime) {
 		super(model, name, duration);
 		this.processTime = processTime;
 		this.listener = new ProcessTimeBasedMaintenanceListener(this);

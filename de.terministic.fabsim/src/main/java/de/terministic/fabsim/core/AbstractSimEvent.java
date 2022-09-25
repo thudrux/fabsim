@@ -43,7 +43,7 @@ public abstract class AbstractSimEvent extends AbstractModelElement implements I
 	}
 
 	@Override
-	public void setTime(final long time) {
+	public void setEventTime(final long time) {
 		this.time = time;
 	}
 
@@ -51,11 +51,6 @@ public abstract class AbstractSimEvent extends AbstractModelElement implements I
 	public String toString() {
 		return this.getClass().getSimpleName() + "_" + this.getId() + " " + this.time + " " + this.component + " "
 				+ this.item;
-	}
-
-	@Override
-	public void resolveEvent() {
-		// logger.debug("[{}] Resolving Event {}", time, this);
 	}
 
 }

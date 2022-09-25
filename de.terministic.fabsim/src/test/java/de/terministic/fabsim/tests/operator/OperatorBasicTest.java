@@ -25,7 +25,7 @@ import de.terministic.fabsim.core.AbstractOperatorGroup;
 import de.terministic.fabsim.core.AbstractSink;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.statistics.FirstCycleTimeTracker;
 import de.terministic.fabsim.statistics.ToolStateChangeLog;
 import de.terministic.fabsim.statistics.ToolStateLogEntry;
@@ -268,8 +268,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(100);
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
@@ -298,8 +298,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(10);
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);

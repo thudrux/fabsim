@@ -203,9 +203,9 @@ public abstract class AbstractProductiveToolState extends AbstractToolState {
 					this.logger.trace("Operator was available and loading is starting");
 				}
 				if (details.getEndEvent() != null) {
-					details.getOperatorEvent().setTime(tool.getTime() + details.getRemainingOperatorTime());
+					details.getOperatorEvent().setEventTime(tool.getTime() + details.getRemainingOperatorTime());
 					tool.rescheduleEvent(details.getOperatorEvent());
-					details.getEndEvent().setTime(tool.getTime() + details.getRemainingProcessTime());
+					details.getEndEvent().setEventTime(tool.getTime() + details.getRemainingProcessTime());
 					tool.rescheduleEvent(details.getEndEvent());
 				} else {
 					final AbstractSimEvent toolEvent = createAndScheduleProcessEvent(details);
@@ -225,7 +225,7 @@ public abstract class AbstractProductiveToolState extends AbstractToolState {
 				logger.trace("RemainingProcessTime is {}", details.getRemainingProcessTime());
 			}
 			if (details.getEndEvent() != null) {
-				details.getEndEvent().setTime(tool.getTime() + details.getRemainingProcessTime());
+				details.getEndEvent().setEventTime(tool.getTime() + details.getRemainingProcessTime());
 				tool.rescheduleEvent(details.getEndEvent());
 			} else {
 				final AbstractSimEvent toolEvent = createAndScheduleProcessEvent(details);

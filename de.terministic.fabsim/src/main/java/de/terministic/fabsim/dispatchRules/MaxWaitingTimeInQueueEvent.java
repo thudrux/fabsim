@@ -19,7 +19,6 @@ public class MaxWaitingTimeInQueueEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		item.setMaxWaitEvent(null);
 		((ToolGroup) this.component).tryToStartAfterMaxWaitingTime(this.item);
 

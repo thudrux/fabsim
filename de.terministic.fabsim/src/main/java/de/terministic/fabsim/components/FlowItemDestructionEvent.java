@@ -19,7 +19,7 @@ public class FlowItemDestructionEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
+		// do nothing
 	}
 
 }

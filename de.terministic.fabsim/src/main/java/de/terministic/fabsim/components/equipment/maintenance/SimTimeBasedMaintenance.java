@@ -2,14 +2,14 @@ package de.terministic.fabsim.components.equipment.maintenance;
 
 import de.terministic.fabsim.components.equipment.AbstractResource;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class SimTimeBasedMaintenance extends AbstractMaintenance {
 
-	private final AbstractDurationObject time;
+	private final IDuration time;
 
-	public SimTimeBasedMaintenance(FabModel model, final String name, final AbstractDurationObject duration,
-			final AbstractDurationObject time) {
+	public SimTimeBasedMaintenance(FabModel model, final String name, final IDuration duration,
+			final IDuration time) {
 		super(model, name, duration);
 		this.time = time;
 	}
@@ -29,7 +29,7 @@ public class SimTimeBasedMaintenance extends AbstractMaintenance {
 			return super.getFirstDefaultOccurance();
 	}
 
-	public AbstractDurationObject getTimeBetweenMaintenances() {
+	public IDuration getTimeBetweenMaintenances() {
 		return this.time;
 	}
 

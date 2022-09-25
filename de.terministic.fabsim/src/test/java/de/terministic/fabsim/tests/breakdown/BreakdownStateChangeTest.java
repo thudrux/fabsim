@@ -19,7 +19,7 @@ import de.terministic.fabsim.components.equipment.SetupState;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.AbstractDurationObject;
+import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.statistics.ToolStateChangeLog;
 import de.terministic.fabsim.statistics.ToolStateLogEntry;
 
@@ -62,8 +62,8 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsIdleTest() {
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(23L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(23L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -85,8 +85,8 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsProductiveTest() {
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -114,12 +114,12 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsInMaintenanceTest() {
-		AbstractDurationObject obj7 = model.getDurationObjectFactory().createConstantDurationObject(7L);
-		AbstractDurationObject obj19 = model.getDurationObjectFactory().createConstantDurationObject(19L);
+		IDuration obj7 = model.getDurationObjectFactory().createConstantDurationObject(7L);
+		IDuration obj19 = model.getDurationObjectFactory().createConstantDurationObject(19L);
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup("SmallMaintenance", obj7,
 				obj19, (ToolGroup) toolGroup);
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(20L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -148,8 +148,8 @@ public class BreakdownStateChangeTest {
 	@Test
 	public void breakdownStateWhileToolIsInSetupTest() {
 		toolGroup.setInitialSetup(s2);
-		AbstractDurationObject mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -180,13 +180,13 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownDuringToolBreakdownWhileProductiveTest() {
-		AbstractDurationObject mttr1 = model.getDurationObjectFactory().createConstantDurationObject(3L);
-		AbstractDurationObject mtbf1 = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IDuration mttr1 = model.getDurationObjectFactory().createConstantDurationObject(3L);
+		IDuration mtbf1 = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("FirstBreakdown", mttr1,
 				mtbf1, toolGroup);
 
-		AbstractDurationObject mttr2 = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		AbstractDurationObject mtbf2 = model.getDurationObjectFactory().createConstantDurationObject(55L);
+		IDuration mttr2 = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IDuration mtbf2 = model.getDurationObjectFactory().createConstantDurationObject(55L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SecondBreakdown", mttr2,
 				mtbf2, toolGroup);
 

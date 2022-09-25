@@ -18,7 +18,6 @@ public class ProcessFinishedEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		((AbstractTool) getComponent()).onProcessFinished(this);
 	}
 

@@ -23,7 +23,6 @@ public class ProcessStartEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		super.resolveEvent();
 		this.tool.finishProcessingOfFlowItem(this.flowItem);
 	}
 
