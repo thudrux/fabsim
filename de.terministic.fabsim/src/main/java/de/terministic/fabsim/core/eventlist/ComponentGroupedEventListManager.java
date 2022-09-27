@@ -1,10 +1,15 @@
-package de.terministic.fabsim.core;
+package de.terministic.fabsim.core.eventlist;
 
 import java.util.LinkedHashMap;
 import java.util.PriorityQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.terministic.fabsim.core.AbstractComponent;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.core.IEventListManager;
+import de.terministic.fabsim.core.ISimEvent;
 
 public class ComponentGroupedEventListManager implements IEventListManager {
 	private final PriorityQueue<ComponentEventList> events = new PriorityQueue<>();

@@ -1,8 +1,11 @@
-package de.terministic.fabsim.core;
+package de.terministic.fabsim.core.eventlist;
 
-import java.util.PriorityQueue;
+import java.util.TreeSet;
 
-public class PriorityQueueEventListManager extends PriorityQueue<AbstractSimEvent> implements IEventListManager {
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.core.IEventListManager;
+
+public class TreeSetEventListManager extends TreeSet<AbstractSimEvent> implements IEventListManager {
 
 	/**
 	 * 
@@ -13,8 +16,9 @@ public class PriorityQueueEventListManager extends PriorityQueue<AbstractSimEven
 
 	@Override
 	public AbstractSimEvent getNextEvent() {
-		// TODO Auto-generated method stub
-		return this.poll();
+		AbstractSimEvent event = this.first();
+		this.remove(event);
+		return event;
 	}
 
 	@Override

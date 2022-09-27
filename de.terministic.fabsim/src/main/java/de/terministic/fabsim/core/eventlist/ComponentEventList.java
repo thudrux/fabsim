@@ -1,6 +1,8 @@
-package de.terministic.fabsim.core;
+package de.terministic.fabsim.core.eventlist;
 
 import java.util.PriorityQueue;
+
+import de.terministic.fabsim.core.AbstractSimEvent;
 
 public class ComponentEventList extends PriorityQueue<AbstractSimEvent> implements Comparable<ComponentEventList> {
 
