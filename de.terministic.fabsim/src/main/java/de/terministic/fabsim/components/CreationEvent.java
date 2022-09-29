@@ -7,7 +7,7 @@ import de.terministic.fabsim.core.FabModel;
 public class CreationEvent extends AbstractSimEvent {
 	private Product product;
 
-	public CreationEvent(FabModel model, final long time, final Source source, final Product product) {
+	public CreationEvent(FabModel model, long time, Source source, Product product) {
 		super(model, time, source, null);
 		this.product = product;
 	}
@@ -19,7 +19,7 @@ public class CreationEvent extends AbstractSimEvent {
 
 	@Override
 	public void resolveEvent() {
-		final AbstractFlowItem newItem = ((Source) getComponent()).generateFlowItemOfProduct(this, product);
+		AbstractFlowItem newItem = ((Source) getComponent()).generateFlowItemOfProduct(this, product);
 		setFlowItem(newItem);
 	}
 

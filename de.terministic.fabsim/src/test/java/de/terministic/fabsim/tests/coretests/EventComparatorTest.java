@@ -10,10 +10,10 @@ import de.terministic.fabsim.components.equipment.BreakdownTriggeredEvent;
 import de.terministic.fabsim.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.components.equipment.maintenance.SimTimeBasedMaintenance;
-import de.terministic.fabsim.core.EventComparator;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.duration.ConstantDuration;
+import de.terministic.fabsim.core.eventlist.EventComparator;
 
 public class EventComparatorTest {
 

@@ -7,7 +7,7 @@ import de.terministic.fabsim.components.equipment.OperatorFinishedEvent;
 import de.terministic.fabsim.components.equipment.ProcessFinishedEvent;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.PriorityQueueEventListManager;
+import de.terministic.fabsim.core.eventlist.PriorityQueueEventListManager;
 
 public class EventListManagerTest {
 
