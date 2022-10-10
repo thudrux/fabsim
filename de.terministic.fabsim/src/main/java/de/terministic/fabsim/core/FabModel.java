@@ -166,6 +166,13 @@ public class FabModel {
 		this.toolGroups.put(toolGroup.getId(), toolGroup);
 	}
 
+	public void addSpecialBlock(final AbstractResource res) {
+		this.logger.trace("Adding a special block with the name {}", res.getName());
+		this.components.put(res.getId(), res);
+		this.sortedComponentList.add(res);
+		this.sortedComponentList.sort(this.compComparator);
+	}
+
 	public boolean canProcessItem(final AbstractFlowItem item) {
 		throw new NotYetImplementedException();
 	}

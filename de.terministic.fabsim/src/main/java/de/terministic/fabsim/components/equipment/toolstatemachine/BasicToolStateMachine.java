@@ -24,9 +24,9 @@ import de.terministic.fabsim.components.equipment.SetupFinishedEvent;
 import de.terministic.fabsim.components.equipment.UnloadingFinishedEvent;
 import de.terministic.fabsim.core.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.core.EventComparator;
 import de.terministic.fabsim.core.FabModel;
 import de.terministic.fabsim.core.OperatorDemand;
+import de.terministic.fabsim.core.eventlist.EventComparator;
 
 public class BasicToolStateMachine extends AbstractToolStateMachine {
 	private final Set<AbstractToolState> states = new HashSet<>();
