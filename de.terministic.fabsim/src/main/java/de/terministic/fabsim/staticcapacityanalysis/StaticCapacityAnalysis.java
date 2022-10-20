@@ -28,7 +28,9 @@ public class StaticCapacityAnalysis {
 	public StaticCapacityAnalysisResult calculateStaticCapacityUtilization(FabModel model) {
 		for (AbstractResource resource : model.getComponents().values()) {
 			utilisationBasedCapaUsage.put(resource, new Double(0.0));
+//			System.out.println("initial usage: " + utilisationBasedCapaUsage.get(resource));
 			utilisationBasedCapaLoss.put(resource, new Double(0.0));
+//			System.out.println("initial loss: " + utilisationBasedCapaLoss.get(resource));
 			fixedCapaLoss.put(resource, new Double(0.0));
 		}
 
@@ -47,9 +49,13 @@ public class StaticCapacityAnalysis {
 
 		// Calculate capa usage of resources by breakdowns
 		for (AbstractResource resource : fixedCapaLoss.keySet()) {
+//			System.out.println("resource found breakdown: " + resource.getName());
 			for (IBreakdown breakdown : resource.getBreakdowns()) {
+//				System.out.println("Breakdown found for: " + resource.getName());
 				double avgCycleLength = breakdown.getAvgCycleLength() * 1.0;
+//				System.out.println("Avg Breakdown length:\t" + breakdown.getAvgCycleLength());
 				double avgDownTimePerCycle = breakdown.getAvgDownTimePerCycle() * 1.0;
+//				System.out.println("avgDownTimePerCycle:\t" + avgDownTimePerCycle);
 				// logger.debug("cycle length:{} , downperCycle: {}",
 				// avgCycleLength, avgDownTimePerCycle);
 				double numberOfCyclesInCapaHorizon = CAPA_HORIZON / avgCycleLength;
@@ -59,6 +65,8 @@ public class StaticCapacityAnalysis {
 				currentCapa += numberOfCyclesInCapaHorizon * avgDownTimePerCycle;
 				// logger.debug("Capa usage for breakdowns:{}",
 				// numberOfCyclesInCapaHorizon * avgDownTimePerCycle);
+//				System.out.println("New fixed CapaLoss: " + CAPA_HORIZON / currentCapa);
+//				System.out.println("Breakdown capa loss for: " + resource.getName() + " is " + currentCapa);
 				fixedCapaLoss.put(resource, currentCapa);
 			}
 		}
@@ -67,9 +75,12 @@ public class StaticCapacityAnalysis {
 
 		// Calculate capa usage of resources by maintenance
 		for (AbstractResource resource : utilisationBasedCapaLoss.keySet()) {
+//			System.out.println("resource found Maint: " + resource.getName());
 			for (IMaintenance maint : resource.getMaintenance()) {
 				double avgCycleLength = maint.getAvgCycleLength();
+//				System.out.println("avgCycleLength:\t" + avgCycleLength);
 				double avgDownTimePerCycle = maint.getAvgDownTimePerCycle();
+//				System.out.println("avgDownTimePerCycle:\t" + avgDownTimePerCycle);
 
 				double numberOfCyclesInCapaHorizon = CAPA_HORIZON / avgCycleLength;
 				double currentCapa = utilisationBasedCapaLoss.get(resource);
@@ -84,7 +95,10 @@ public class StaticCapacityAnalysis {
 
 		// calculate utilisation percentages
 		for (AbstractResource resource : utilisationBasedCapaUsage.keySet()) {
+//			System.out.println(
+//					"Calc percentages(" + resource.getName() + ") : " + utilisationBasedCapaLoss.get(resource));
 			if (utilisationBasedCapaUsage.get(resource) > 0.001) {
+//				System.out.println("usage>0: " + utilisationBasedCapaUsage.get(resource));
 				// logger.debug("Toolcount:{} {}", resource, ((ToolGroup)
 				// resource).getToolCount());
 				double resultUtil = ((ToolGroup) resource).getToolCount() * CAPA_HORIZON
@@ -119,10 +133,15 @@ public class StaticCapacityAnalysis {
 		// logger.debug("Tool dedication multiplier is: {} and utilUsage is {}",
 		// bottleneck.getDedicationBasedCapaMultiplier(),
 		// utilisationBasedCapaUsage.get(maxResource));
+//		StaticCapacityAnalysisResult result = new StaticCapacityAnalysisResult(
+//				100.0 * bottleneck.getDedicationBasedCapaMultiplier() / utilisationBasedCapaUsage.get(maxResource),
+//				100.0 / (CAPA_HORIZON / fixedCapaLoss.get(maxResource)),
+//				100.0 / utilisationBasedCapaLoss.get(maxResource));
 		StaticCapacityAnalysisResult result = new StaticCapacityAnalysisResult(
 				100.0 * bottleneck.getDedicationBasedCapaMultiplier() / utilisationBasedCapaUsage.get(maxResource),
-				100.0 / (CAPA_HORIZON / fixedCapaLoss.get(maxResource)),
-				100.0 / utilisationBasedCapaLoss.get(maxResource));
+				(fixedCapaLoss.get(maxResource) > 0.0) ? (100.0 / (CAPA_HORIZON / fixedCapaLoss.get(maxResource))) : 0,
+				(utilisationBasedCapaLoss.get(maxResource) > 0) ? (100.0 / utilisationBasedCapaLoss.get(maxResource))
+						: 0);
 
 		return result;
 	}
