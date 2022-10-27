@@ -16,20 +16,65 @@ import de.terministic.fabsim.core.IEventListManager;
 
 public class CalendarEventList implements IEventListManager {
 
-	ArrayList<ArrayList<AbstractSimEvent>> bucketList;
+	ArrayList<CalendarQueueBucket> bucketList;
 	int nbuckets = 1; // number of buckets
 	int qsize = 0; // number of elements in the queue
-	int bucketWidth = 1;// width of a single bucket;
+	double bucketWidth = 1.0;// width of a single bucket;
 	int lastBucket;
-	private int topThreshold;
+	long lastprio;
+	private int topThreshold;// twice the number of buckets cf. paper
+	private int botThreshold;
 
 	@Override
 	public AbstractSimEvent getNextEvent() {
+		AbstractSimEvent result = null;
 		int i;
 		if (qsize == 0)
 			return null;
-
-		return null;
+		while (result == null) {
+			i = lastBucket;
+			if (bucketList.get(i).get(0) != null
+					&& bucketList.get(i).get(0).getEventTime() < bucketList.get(i).getBucketTop()) {
+				result = bucketList.get(i).remove(0);
+				lastBucket = i;
+				lastprio = result.getEventTime();
+				qsize--;
+				if (qsize < botThreshold)
+					resize(nbuckets / 2);
+				return result;
+			} else { /*
+						 * Prepare to check next bucket or else go to a direct search.
+						 */
+				++i;
+				if (i == nbuckets)
+					i = 0;
+				bucketList.get(i).setBucketTop(bucketList.get(i).getBucketTop() + bucketWidth);
+				if (i == lastBucket)
+					break; /* Go to direct search */
+			}
+		}
+		/* Directly search for minimum priority event. */
+		// Find lowest priority by examining first event of each
+		// bucket;
+		// Set lastbucket, lastprio, and buckettop for this event;
+		// return(dequeue( 1); / * Resume search at minnode. */
+		long highestPrio = Long.MAX_VALUE;
+		int bestBucket = lastBucket;
+		for (int j = 0; j < nbuckets; j++) {
+			int bucketId = lastBucket + j;
+			if (bucketId >= nbuckets)
+				bucketId -= nbuckets;
+			if ((bucketList.get(bucketId).get(0) != null)
+					&& (bucketList.get(bucketId).get(0).getEventTime() < highestPrio)) {
+				highestPrio = bucketList.get(bucketId).get(0).getEventTime();
+				bestBucket = bucketId;
+			}
+		}
+		bestBucket = lastBucket;
+		result = bucketList.get(bestBucket).remove(0);
+		lastprio = result.getEventTime();
+		// TODO update bucketTop
+		return result;
 	}
 
 	@Override
