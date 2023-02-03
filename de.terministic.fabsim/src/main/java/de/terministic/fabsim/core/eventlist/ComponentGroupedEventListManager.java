@@ -92,10 +92,10 @@ public class ComponentGroupedEventListManager implements IEventListManager {
 	}
 
 	public void logEventListState() {
-		logger.trace("Component events: {}", events.size());
+//		logger.trace("Component events: {}", events.size());
 		for (ComponentEventList componentList : events) {
 			for (ISimEvent event : componentList) {
-				logger.trace("Event left: {}", event);
+//				logger.trace("Event left: {}", event);
 			}
 		}
 	}

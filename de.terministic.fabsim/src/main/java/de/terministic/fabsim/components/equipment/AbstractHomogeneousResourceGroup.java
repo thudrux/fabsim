@@ -55,23 +55,20 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/** The initial setup. */
 	protected SetupState initialSetup;
 
-	/** The maintenance map. */
-	protected Map<String, IMaintenance> maintenanceMap = new LinkedHashMap<>();
-
 	/** The tool count. */
 	private int toolCount;
 
 	private boolean considersDedication = false;
 
-	public AbstractHomogeneousResourceGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
+	public AbstractHomogeneousResourceGroup(FabModel model, final String name,
+			final AbstractToolGroupController tgController) {
 		super(model, name, tgController);
 	}
 
 	/**
 	 * Adds a batch detail set.
 	 *
-	 * @param details
-	 *            the details
+	 * @param details the details
 	 */
 	public void addBatchDetails(final BatchDetails details) {
 		if (this.batchDetails == null) {
@@ -94,8 +91,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Adds the maintenance.
 	 *
-	 * @param maint
-	 *            the maint
+	 * @param maint the maint
 	 */
 	public void addMaintenance(final IMaintenance maint) {
 		this.maintenanceMap.put(maint.getName(), maint);
@@ -107,14 +103,10 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Adds the setup change.
 	 *
-	 * @param state1
-	 *            the s 1
-	 * @param s2
-	 *            the s 2
-	 * @param setupTime
-	 *            the setup time
-	 * @param twoWay
-	 *            the two way
+	 * @param state1    the s 1
+	 * @param s2        the s 2
+	 * @param setupTime the setup time
+	 * @param twoWay    the two way
 	 */
 	public void addSetupChange(final SetupState state1, final SetupState state2, final Long setupTime,
 			final boolean twoWay) {
@@ -134,8 +126,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Adds the setup state.
 	 *
-	 * @param state
-	 *            the state
+	 * @param state the state
 	 */
 	public void addSetupState(final SetupState state) {
 		this.setupStates.add(state);
@@ -235,8 +226,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the batch details.
 	 *
-	 * @param batchDetails
-	 *            the new batch details
+	 * @param batchDetails the new batch details
 	 */
 	public void setBatchDetails(final List<BatchDetails> batchDetails) {
 		this.batchDetails = batchDetails;
@@ -245,8 +235,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the batch rule.
 	 *
-	 * @param rule
-	 *            the new batch rule
+	 * @param rule the new batch rule
 	 */
 	public void setBatchRule(final AbstractBatchRule rule) {
 		this.batchRule = rule;
@@ -255,8 +244,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the dispatch rule.
 	 *
-	 * @param rule
-	 *            the new dispatch rule
+	 * @param rule the new dispatch rule
 	 */
 	public void setDispatchRule(final AbstractDispatchRule rule) {
 		this.dispatchRule = rule;
@@ -265,8 +253,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the initial setup.
 	 *
-	 * @param state
-	 *            the new initial setup
+	 * @param state the new initial setup
 	 */
 	public void setInitialSetup(final SetupState state) {
 		this.initialSetup = state;
@@ -299,8 +286,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the setup states.
 	 *
-	 * @param setupStates
-	 *            the new setup states
+	 * @param setupStates the new setup states
 	 */
 	public void setSetupStates(final Set<SetupState> setupStates) {
 		this.setupStates = setupStates;
@@ -309,8 +295,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the setup strategy.
 	 *
-	 * @param setupStrategy
-	 *            the new setup strategy
+	 * @param setupStrategy the new setup strategy
 	 */
 	public void setSetupStrategy(final AbstractSetupStrategy setupStrategy) {
 		this.setupStrategy = setupStrategy;
@@ -319,8 +304,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the setup transitions.
 	 *
-	 * @param setupTransitions
-	 *            the setup transitions
+	 * @param setupTransitions the setup transitions
 	 */
 	public void setSetupTransitions(final Map<SetupState, LinkedHashMap<SetupState, Long>> setupTransitions) {
 		this.setupTransitions = setupTransitions;
@@ -329,8 +313,7 @@ public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup
 	/**
 	 * Sets the tool count.
 	 *
-	 * @param number
-	 *            the new tool count
+	 * @param number the new tool count
 	 */
 	public void setToolCount(final int number) {
 		this.toolCount = number;

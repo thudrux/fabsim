@@ -254,4 +254,14 @@ public class FabKPIOverview {
 		this.avgRpt = avgRpt;
 	}
 
+	private long finalTime;
+
+	public void setFinalTime(long time) {
+		this.finalTime = time;
+	}
+
+	public long getFinalTime() {
+		return finalTime;
+	}
+
 }

@@ -33,6 +33,8 @@ public abstract class AbstractResource extends AbstractComponent {
 	 */
 	public abstract void addBreakdown(final IBreakdown breakdown);
 
+//	public abstract void addMaintenance(final IMaintenance maintenance);
+
 	public abstract boolean canProcessItem();
 
 	public AbstractResourceGroup getParent() {

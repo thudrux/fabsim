@@ -16,9 +16,9 @@ import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGro
 import de.terministic.fabsim.components.equipment.BatchDetails;
 import de.terministic.fabsim.components.equipment.ToolGroup;
 import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.PriorityQueueEventListManager;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.eventlist.PriorityQueueEventListManager;
 
 public class LargeToolGroupFabRuntimeTest {
 

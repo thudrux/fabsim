@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.terministic.fabsim.core.eventlist.PriorityQueueEventListManager;
+import de.terministic.fabsim.statistics.FinishedFlowItemCounter;
 import de.terministic.fabsim.statistics.FlowItemCounter;
 
 public class SimulationEngine {
@@ -90,12 +91,19 @@ public class SimulationEngine {
 		eventList.setSimulationEndTime(endTime);
 		boolean logStart = false;
 		while (this.eventList.size() > 0 && this.currentSimTime <= endTime) {
+//			if (eventCounter > 17138) {
+//				System.out.println(eventList.toString());
+//			}
 			final ISimEvent event = this.eventList.getNextEvent();
+			eventCounter++;
 //			this.logger.info("[{}] Resolving event: {}", event.getEventTime(), event);
-
-			if (event.getEventTime() < this.currentSimTime)
+			if (event.getEventTime() < this.currentSimTime) {
+				System.out.println("EventTime: " + event.getEventTime() + " EventCouter= " + eventCounter);
+				System.out.println("Event (" + event.getClass() + ") was scheduled before(" + event.getEventTime()
+						+ ") current simulation time(" + getTime() + ")");
 				throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
 						+ event.getEventTime() + ") current simulation time(" + getTime() + ")");
+			}
 			this.currentSimTime = event.getEventTime();
 			if (this.currentSimTime > endTime) {
 				break;
@@ -106,13 +114,11 @@ public class SimulationEngine {
 //					this.logger.info("[{}] Resolving event: {}", getTime(), event);
 //				}
 				event.resolveEvent();
-				eventCounter++;
 				notifyListener(event);
 				// if (eventCounter % 1000000 == 0) {
 				// logger.trace("At {} there are {} events left in the event
 				// list", event.getTime(), eventList.size());
 				// }
-
 			}
 		}
 		this.currentSimTime = endTime;
@@ -139,26 +145,40 @@ public class SimulationEngine {
 				break;
 			} else {
 				this.currentSimTime = event.getEventTime();
-
-				if ((event.getComponent().getName().equals("ToolGroup_2"))) {
-					// &&(this.currentSimTime > 25173869486L)) {
-//					this.logger.trace("[{}] Resolving event: {}", getTime(), event);
-				}
 				event.resolveEvent();
 				eventCounter++;
 				notifyListener(event);
-				// if (eventCounter % 1000000 == 0) {
-				// logger.trace("At {} there are {} events left in the event
-				// list", event.getTime(), eventList.size());
-				// }
-
 			}
 		}
-		// this.logger.trace("Simulation run completed(Number of resolved events
-		// was: {} events left in event list: {})",
-		// eventCounter, eventList.size());
-		// eventList.logEventListState();
+	}
 
+	public void runSimulationWithMinLotFinishedAndTime(long minTime, long minLots) {
+		runSimulationWithMinLotFinishedAndTime(minTime, minLots, 1000 * 60 * 60 * 24 * 10);
+	}
+
+	public void runSimulationWithMinLotFinishedAndTime(long minTime, long minLots, long warmup) {
+		this.logger.trace("Starting simulation run");
+		FinishedFlowItemCounter finishedLots = new FinishedFlowItemCounter();
+		addListener(finishedLots);
+		long eventCounter = 0L;
+		eventList.scheduleEvent(new DummyEvent(model, Long.MAX_VALUE, null, null));
+		eventList.scheduleEvent(new EndOfWarmupEvent(model, warmup, null, null));
+		eventList.setSimulationEndTime(Long.MAX_VALUE);
+		while ((this.eventList.size() > 0) && (this.currentSimTime <= minTime + warmup)
+				|| (finishedLots.getItemCount() < minLots)) {
+			final ISimEvent event = this.eventList.getNextEvent();
+			if (event.getEventTime() < this.currentSimTime)
+				throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
+						+ event.getEventTime() + ") current simulation time(" + getTime() + ")");
+			if ((event.getEventTime() > minTime) && (finishedLots.getItemCount() > minLots)) {
+				break;
+			} else {
+				this.currentSimTime = event.getEventTime();
+				event.resolveEvent();
+				eventCounter++;
+				notifyListener(event);
+			}
+		}
 	}
 
 	public void setEventFactory(final SimEventFactory eventFactory) {

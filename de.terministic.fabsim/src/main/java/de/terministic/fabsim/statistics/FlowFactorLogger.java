@@ -10,6 +10,7 @@ import de.terministic.fabsim.core.SimEventListener;
 public class FlowFactorLogger extends SimEventListener {
 	private Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getSimpleName());
 	private long counter = 0L;
+	private boolean warmup = true;
 
 	public long getCounter() {
 		return counter;

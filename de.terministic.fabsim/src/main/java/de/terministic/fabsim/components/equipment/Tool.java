@@ -52,4 +52,5 @@ public class Tool extends AbstractTool {
 	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// TODO Reject all further canProcess requests
 	}
+
 }
