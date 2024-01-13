@@ -1,4 +1,4 @@
-package de.terministic.fabsimmetamodel;
+package de.terministic.fabsim.core;
 
 /**
  * Hello world!
