@@ -1,4 +1,4 @@
-package de.terministic.fabsimcore;
+package de.terministic.fabsim.metamodel;
 
 import static org.junit.Assert.assertTrue;
 
