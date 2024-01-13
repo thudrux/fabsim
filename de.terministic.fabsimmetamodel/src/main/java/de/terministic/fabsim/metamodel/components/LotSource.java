@@ -13,7 +13,7 @@ public class LotSource extends Source {
 
 	@Override
 	public AbstractFlowItem generateFlowItemOfProduct(final CreationEvent event, final Product product) {
-		final Lot flowItem = new Lot(getSimulationEngine().getModel(), product, getLotSize(), 1, Long.MAX_VALUE);
+		final Lot flowItem = new Lot((FabModel) getModel(), product, getLotSize(), 1, Long.MAX_VALUE);
 		flowItem.setupForSimulation(getSimulationEngine());
 		flowItem.setCreationTime(getTime());
 		this.outstandingEvents.remove(event);
@@ -21,7 +21,7 @@ public class LotSource extends Source {
 			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
 			createAndScheduleNextCreationEvent(product, nextCreationTime);
 		}
-		sendFlowItemToResource(flowItem, getModel().getRouting());
+		sendFlowItemToResource(flowItem, ((FabModel) getModel()).getRouting());
 		return flowItem;
 	}
 

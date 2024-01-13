@@ -7,14 +7,14 @@ import java.util.PriorityQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
 
-public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlowItemQueue {
+public class FifoBatchFlowItemQueue extends PriorityQueue<AbstractFlowItem> implements IFlowItemQueue {
 
 	/**
 	 * 
@@ -26,11 +26,11 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 	private BatchDetails details;
 
 	public FifoBatchFlowItemQueue(BatchDetails details) {
-		super(new Comparator<IFlowItem>() {
+		super(new Comparator<AbstractFlowItem>() {
 			@Override
-			public int compare(final IFlowItem o1, final IFlowItem o2) {
-				final Long time1 = Long.valueOf(((AbstractFlowItem)o1).getTimeStamps(((AbstractFlowItem)o1).getCurrentStepNumber()).getArrivalTime());
-				final Long time2 = Long.valueOf(((AbstractFlowItem)o2).getTimeStamps(((AbstractFlowItem)o2).getCurrentStepNumber()).getArrivalTime());
+			public int compare(final AbstractFlowItem o1, final AbstractFlowItem o2) {
+				final Long time1 = Long.valueOf(o1.getTimeStamps(o1.getCurrentStepNumber()).getArrivalTime());
+				final long time2 = (o2.getTimeStamps(o2.getCurrentStepNumber()).getArrivalTime());
 				return time1.compareTo(time2);
 			}
 		});
@@ -52,14 +52,14 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 	}
 
 	@Override
-	public IFlowItem takeHighestPriorityFlowItem() {
+	public AbstractFlowItem takeHighestPriorityFlowItem() {
 		return this.takeCandidate(this.lookAtHighestPriorityFlowItem());
 	}
 
 	private Batch createNewBatch(final AbstractFlowItem item) {
 		final Recipe r = new Recipe(item.getCurrentStep().getBatchDetails().getBatchId());
 		r.add(item.getCurrentStep());
-		final Batch b = new Batch(item.getModel(), r);
+		final Batch b = new Batch((FabModel) item.getModel(), r);
 		b.setupForSimulation(item.getModel().getSimulationEngine());
 		b.getTimeStampMap().put(0, item.getCurrentTimeStemp());
 		return b;
@@ -71,7 +71,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 		if (this.isEmpty()) {
 			result = null;
 		} else {
-			AbstractFlowItem firstInQueue = (AbstractFlowItem)peek();
+			AbstractFlowItem firstInQueue = peek();
 			long currentTime = firstInQueue.getTime();
 			long arrival = firstInQueue.getTimeStamps(firstInQueue.getCurrentStepNumber()).getArrivalTime();
 			long waitedTime = currentTime - arrival;
@@ -85,7 +85,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 																								// candidate
 				result = null;
 			} else {
-				result = createNewBatch(firstInQueue);
+				result = createNewBatch(this.peek());
 			}
 		}
 //		logger.info("END createCandidate with {} and queue looking like {}", result, this);
@@ -98,7 +98,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 	}
 
 	@Override
-	public boolean addFlowItem(IFlowItem item) {
+	public boolean addFlowItem(AbstractFlowItem item) {
 //		logger.info("[{}] START addFlowItem for {} with queue looking like {}", item.getTime(), item, this);
 		waferCount += item.getSize();
 		boolean result = this.add(item);
@@ -106,10 +106,10 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 		return result;
 	}
 
-	LinkedHashMap<IFlowItem, IFlowItemQueue> candidateMap;
+	LinkedHashMap<AbstractFlowItem, IFlowItemQueue> candidateMap;
 
 	@Override
-	public boolean addFlowItemCandidate(IFlowItem item, IFlowItemQueue queue) {
+	public boolean addFlowItemCandidate(AbstractFlowItem item, IFlowItemQueue queue) {
 		if (candidateMap == null) {
 			candidateMap = new LinkedHashMap<>();
 		}
@@ -119,7 +119,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 	}
 
 	@Override
-	public IFlowItem takeCandidate(IFlowItem item) { // TODO take candidate
+	public AbstractFlowItem takeCandidate(AbstractFlowItem item) { // TODO take candidate
 //		logger.info("[{}] START takeCandidate for {} with queue looking like {}", item.getTime(), item, this);
 		if (candidateMap != null) {
 			candidateMap.get(item).takeCandidate(item);
@@ -144,7 +144,7 @@ public class FifoBatchFlowItemQueue extends PriorityQueue<IFlowItem> implements 
 	}
 
 	@Override
-	public IFlowItem takeBestCandidate() {
+	public AbstractFlowItem takeBestCandidate() {
 		return this.takeCandidate(this.lookAtHighestPriorityFlowItem());
 	}
 }

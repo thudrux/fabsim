@@ -2,10 +2,9 @@ package de.terministic.fabsim.metamodel.dispatchRules;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
 public abstract class AbstractDispatchRule {
 
@@ -15,7 +14,7 @@ public abstract class AbstractDispatchRule {
 		this.name = name;
 	}
 
-	public abstract AbstractFlowItem getBestItem(ArrayList<IFlowItem> possibleItems);
+	public abstract AbstractFlowItem getBestItem(ArrayList<AbstractFlowItem> items);
 
 	public String getName() {
 		return this.name;

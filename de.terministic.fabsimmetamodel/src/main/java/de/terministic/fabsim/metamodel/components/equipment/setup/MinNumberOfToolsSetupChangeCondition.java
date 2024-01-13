@@ -2,11 +2,11 @@ package de.terministic.fabsim.metamodel.components.equipment.setup;
 
 import java.util.List;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.NotYetImplementedException;
 
 public class MinNumberOfToolsSetupChangeCondition implements ISetupChangeCondition {
 	private final SetupState state;

@@ -1,9 +1,8 @@
 package de.terministic.fabsim.metamodel.components;
 
-import de.terministic.fabsim.core.IFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.AbstractSink;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
@@ -34,11 +33,11 @@ public class Sink extends AbstractSink {
 	public void onFlowItemArrival(FlowItemArrivalEvent event) {
 		event.getSender().onAcceptedFlowItemTransfer(event);
 		getSimulationEngine().getEventList().scheduleEvent(
-				new FlowItemDestructionEvent(getModel(), getSimulationEngine().getTime(), this, event.getFlowItem()));
+				new FlowItemDestructionEvent((FabModel)getModel(), getSimulationEngine().getTime(), this, (AbstractFlowItem) event.getFlowItem()));
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing as this resource has no capa limit
 	}
 

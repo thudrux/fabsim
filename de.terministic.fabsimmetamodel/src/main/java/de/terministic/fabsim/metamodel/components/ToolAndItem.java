@@ -1,6 +1,5 @@
 package de.terministic.fabsim.metamodel.components;
 
-import de.terministic.fabsim.core.IFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 
@@ -9,7 +8,7 @@ public class ToolAndItem {
 	private AbstractTool t;
 	private AbstractFlowItem item;
 
-	public ToolAndItem(final AbstractTool tool, final IFlowItem item) {
+	public ToolAndItem(final AbstractTool tool, final AbstractFlowItem item) {
 		this.setTool(tool);
 		this.setItem(item);
 	}
@@ -22,8 +21,8 @@ public class ToolAndItem {
 		return this.t;
 	}
 
-	public void setItem(final IFlowItem item) {
-		this.item = (AbstractFlowItem)item;
+	public void setItem(final AbstractFlowItem item) {
+		this.item = item;
 	}
 
 	public void setTool(final AbstractTool t) {

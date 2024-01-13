@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.ISimEvent;
 
 public class BreakdownToolState extends AbstractToolState {
 	private final HashMap<AbstractTool, AbstractToolState> previousStateMap = new LinkedHashMap<>();
@@ -43,7 +43,7 @@ public class BreakdownToolState extends AbstractToolState {
 	@Override
 	public SemiE10EquipmentState enterState(final AbstractTool tool, final IBreakdown breakdown) {
 		tool.becomesUnavailable();
-		getFabModel().getSimulationEngine().getEventFactory().scheduleNewBreakdownFinishedEvent(breakdown.getDuration(),
+		getFabModel().getEventFactory().scheduleNewBreakdownFinishedEvent(breakdown.getDuration(),
 				tool, breakdown);
 		return SemiE10EquipmentState.UD;
 	}

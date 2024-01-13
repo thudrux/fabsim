@@ -2,9 +2,9 @@ package de.terministic.fabsim.metamodel.batchrules;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.core.IFlowItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.AbstractModelElement;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 
@@ -27,8 +27,8 @@ public abstract class AbstractBatchRule extends AbstractModelElement {
 		this.name = name;
 	}
 
-	public abstract QueueChangeAndBatches selectFirstPossibleBatch(ArrayList<IFlowItem> list);
+	public abstract QueueChangeAndBatches selectFirstPossibleBatch(ArrayList<AbstractFlowItem> list);
 
-	public abstract QueueChangeAndBatches selectFirstPossibleBatch(ArrayList<IFlowItem> possibleItems,
+	public abstract QueueChangeAndBatches selectFirstPossibleBatch(ArrayList<AbstractFlowItem> possibleItems,
 			AbstractDispatchRule drule);
 }

@@ -2,13 +2,13 @@ package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class SetupToolState extends AbstractToolState {
 
@@ -36,7 +36,7 @@ public class SetupToolState extends AbstractToolState {
 		final SetupState currentState = tool.getCurrentSetupState();
 		this.logger.trace("currentState is {}", currentState);
 		final long duration = tool.getSetupTransitions().get(currentState).get(followingState);
-		final AbstractSimEvent event = getFabModel().getSimulationEngine().getEventFactory()
+		final AbstractSimEvent event = getFabModel().getEventFactory()
 				.scheduleNewSetupFinishedEvent(duration, tool, item);
 		final ProcessStateDetails details = new ProcessStateDetails(tool, event, SemiE10EquipmentState.SD_SETUP, null,
 				null, null);

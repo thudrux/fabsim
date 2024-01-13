@@ -11,6 +11,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.core.IModel;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.DurationFactory;
@@ -31,7 +32,7 @@ import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMainten
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 
-public class FabModel implements IModel {
+public class FabModel implements IModel{
 	private String name;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 	private long lastFlowItemId;
@@ -130,13 +131,9 @@ public class FabModel implements IModel {
 
 	public void addMaintenance(final IMaintenance maint) {
 		this.maints.add(maint);
-		maint.setModel(this);
+		maint.setFabModel(this);
 	}
 
-	public FabSimEventFactory getEventFactory() {
-		return (FabSimEventFactory)getSimulationEngine().getEventFactory();
-	}
-	
 	public void addOperatorGroup(final BasicOperatorGroup operator) {
 		this.operators.put(operator.getId(), operator);
 
@@ -238,7 +235,6 @@ public class FabModel implements IModel {
 		return this.componentFactory;
 	}
 
-	@Override
 	public SimulationEngine getSimulationEngine() {
 		return this.engine;
 	}
@@ -263,7 +259,6 @@ public class FabModel implements IModel {
 		return this.toolGroups;
 	}
 
-	@Override
 	public void initialize() {
 		for (final AbstractComponent comp : this.sortedComponentList) {
 			comp.initialize();
@@ -296,7 +291,6 @@ public class FabModel implements IModel {
 		this.recipes = recipes;
 	}
 
-	@Override
 	public void setSimulationEngine(final SimulationEngine engine) {
 		this.engine = engine;
 	}
@@ -317,7 +311,6 @@ public class FabModel implements IModel {
 		this.toolGroups = toolGroups;
 	}
 
-	@Override
 	public void setupForSimulation(final SimulationEngine engine) {
 		this.logger.trace("Starting setup for Simulation");
 		this.engine = engine;
@@ -366,4 +359,9 @@ public class FabModel implements IModel {
 	public LinkedHashMap<Long, AbstractModelElement> getElements() {
 		return elements;
 	}
+
+	public FabSimEventFactory getEventFactory() {
+		return (FabSimEventFactory) getSimulationEngine().getEventFactory();
+	}
+
 }

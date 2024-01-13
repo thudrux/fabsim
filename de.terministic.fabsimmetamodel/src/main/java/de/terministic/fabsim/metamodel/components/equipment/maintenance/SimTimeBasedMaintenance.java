@@ -1,8 +1,8 @@
 package de.terministic.fabsim.metamodel.components.equipment.maintenance;
 
+import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IDuration;
-import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 
 public class SimTimeBasedMaintenance extends AbstractMaintenance {
 

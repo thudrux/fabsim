@@ -131,7 +131,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	public void setCurrentToolGroupState(final SemiE10EquipmentState currentToolGroupState) {
 		this.logger.trace("Starting setCurrentToolGroupState({})", currentToolGroupState);
 		if (currentToolGroupState != null) {
-			final StateChangeEvent event = new StateChangeEvent(getModel(), getSimulationEngine().getTime(), this,
+			final StateChangeEvent event = new StateChangeEvent((FabModel)getModel(), getSimulationEngine().getTime(), this,
 					currentToolGroupState);
 			event.setSetupState(this.currentSetupState);
 			getSimulationEngine().getEventList().scheduleEvent(event);

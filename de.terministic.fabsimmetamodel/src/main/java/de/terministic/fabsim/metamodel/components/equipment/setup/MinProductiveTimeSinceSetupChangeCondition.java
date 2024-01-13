@@ -4,12 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.metamodel.AbstractComponent;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
+import de.terministic.fabsim.metamodel.AbstractComponent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.NotYetImplementedException;
 
 public class MinProductiveTimeSinceSetupChangeCondition implements ISetupChangeCondition {
 	private final Map<AbstractTool, Long> toolMap = new LinkedHashMap<>();

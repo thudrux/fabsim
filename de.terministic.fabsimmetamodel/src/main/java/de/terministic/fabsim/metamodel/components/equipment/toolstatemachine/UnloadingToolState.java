@@ -1,11 +1,11 @@
 package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.UnloadingFinishedEvent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class UnloadingToolState extends AbstractProductiveToolState {
 	private StandbyToolState standbyToolState;
@@ -43,7 +43,7 @@ public class UnloadingToolState extends AbstractProductiveToolState {
 	public AbstractToolState onUnloadingFinished(final UnloadingFinishedEvent unloadingFinishedEvent) {
 		getStateDetails().remove(unloadingFinishedEvent.getComponent());
 		((AbstractTool) unloadingFinishedEvent.getComponent())
-				.finishProcessingOfFlowItem(unloadingFinishedEvent.getFlowItem());
+				.finishProcessingOfFlowItem((AbstractFlowItem) unloadingFinishedEvent.getFlowItem());
 		return this.standbyToolState;
 	}
 

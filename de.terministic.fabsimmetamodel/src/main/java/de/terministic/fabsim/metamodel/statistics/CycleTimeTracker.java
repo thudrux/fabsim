@@ -1,8 +1,9 @@
 package de.terministic.fabsim.metamodel.statistics;
 
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 
 public class CycleTimeTracker extends SimEventListener {
 
@@ -18,7 +19,7 @@ public class CycleTimeTracker extends SimEventListener {
 	public void processEvent(final ISimEvent event) {
 		if (event instanceof FlowItemDestructionEvent) {
 			this.counter += 1;
-			final long cycleTime = event.getEventTime() - event.getFlowItem().getCreationTime();
+			final long cycleTime = event.getEventTime() - ((AbstractFlowItem) event.getFlowItem()).getCreationTime();
 			this.combinedCycleTime += cycleTime;
 			this.averageCycleTime = this.combinedCycleTime / this.counter;
 		}

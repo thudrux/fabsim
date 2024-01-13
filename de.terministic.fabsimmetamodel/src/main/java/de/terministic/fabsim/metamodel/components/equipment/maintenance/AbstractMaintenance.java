@@ -3,13 +3,11 @@ package de.terministic.fabsim.metamodel.components.equipment.maintenance;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.FabSimulationEngine;
-import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.IDuration;
-import de.terministic.fabsim.metamodel.AbstractModelElement;
 import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
+import de.terministic.fabsim.core.AbstractModelElement;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public abstract class AbstractMaintenance extends AbstractModelElement implements IMaintenance {
 	protected String name;
@@ -74,8 +72,7 @@ public abstract class AbstractMaintenance extends AbstractModelElement implement
 	@Override
 	public void initialize() {
 		for (final AbstractResource resource : this.nextOccuranceOnTool.keySet()) {
-			final SimulationEngine engine = this.model.getSimulationEngine();
-			this.model.getEventFactory().scheduleNewMaintenanceTriggeredEvent(resource, this);
+			model.getEventFactory().scheduleNewMaintenanceTriggeredEvent(resource, this);
 		}
 
 	}
@@ -94,7 +91,7 @@ public abstract class AbstractMaintenance extends AbstractModelElement implement
 	}
 
 	@Override
-	public void setModel(final FabModel model) {
+	public void setFabModel(final FabModel model) {
 		this.model = model;
 	}
 

@@ -1,8 +1,8 @@
 package de.terministic.fabsim.metamodel.components;
 
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.AbstractModelElement;
 import de.terministic.fabsim.metamodel.batchrules.AbstractBatchRule;
+import de.terministic.fabsim.core.AbstractModelElement;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;

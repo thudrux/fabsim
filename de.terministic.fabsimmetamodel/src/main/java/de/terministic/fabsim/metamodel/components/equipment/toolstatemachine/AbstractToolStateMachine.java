@@ -1,8 +1,5 @@
 package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
@@ -14,6 +11,9 @@ import de.terministic.fabsim.metamodel.components.equipment.ProcessFinishedEvent
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.UnloadingFinishedEvent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.NotYetImplementedException;
+import de.terministic.fabsim.metamodel.OperatorDemand;
 
 public class AbstractToolStateMachine {
 
@@ -22,7 +22,7 @@ public class AbstractToolStateMachine {
 		throw new NotYetImplementedException();
 	}
 
-	public void handleFlowItemArrival(final AbstractTool tool, final IFlowItem flowItem) {
+	public void handleFlowItemArrival(final AbstractTool tool, final AbstractFlowItem flowItem) {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 

@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.terministic.fabsim.metamodel.AbstractComponent;
+import de.terministic.fabsim.metamodel.AbstractFixedModelElement;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IDuration;
-import de.terministic.fabsim.metamodel.AbstractFixedModelElement;
-import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 

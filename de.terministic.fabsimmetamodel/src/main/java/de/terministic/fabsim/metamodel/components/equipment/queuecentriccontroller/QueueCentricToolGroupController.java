@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Controller;
 import de.terministic.fabsim.metamodel.components.ToolAndItem;
@@ -17,6 +13,9 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroupCon
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
 
@@ -33,7 +32,7 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 	@Deprecated
 	private void createMaxWaitingTimeEvent(final AbstractFlowItem flowItem, final ToolGroup tg) {
 		if (flowItem.getCurrentStep().getBatchDetails().getMaxWait() < Long.MAX_VALUE) {
-			final MaxWaitingTimeInQueueEvent event = new MaxWaitingTimeInQueueEvent(getModel(),
+			final MaxWaitingTimeInQueueEvent event = new MaxWaitingTimeInQueueEvent((FabModel) getModel(),
 					this.getTime() + flowItem.getCurrentStep().getBatchDetails().getMaxWait(), tg, flowItem);
 			this.getSimulationEngine().getEventList().scheduleEvent(event);
 			flowItem.setMaxWaitEvent(event);
@@ -77,10 +76,10 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 	}
 
 	@Override
-	public List<IFlowItem> canUnbatch(IFlowItem flowItem) {
-		List<IFlowItem> ret = new ArrayList<>();
+	public List<AbstractFlowItem> canUnbatch(AbstractFlowItem flowItem) {
+		List<AbstractFlowItem> ret = new ArrayList<>();
 		if (flowItem instanceof Batch) {
-			if (((AbstractFlowItem)flowItem).getCurrentStepNumber() >= ((AbstractFlowItem)flowItem).getRecipe().size()) {
+			if (flowItem.getCurrentStepNumber() >= flowItem.getRecipe().size()) {
 				ret = ((Batch) flowItem).getItems();
 			} else {
 				ret.add(flowItem);
@@ -97,7 +96,7 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 	}
 
 	@Override
-	public Collection<IFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId) {
+	public Collection<AbstractFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId) {
 		return itemMap.get(toolGroup).get(batchId);
 	}
 
@@ -134,12 +133,12 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 		IFlowItemQueue queue;
 		queue = this.getController().getDispatchRule(tg).createQueue();
 		if (this.itemMap.get(tg).containsKey(NO_BATCH_BATCH_ID)) {
-			for (IFlowItem item : this.itemMap.get(tg).get(NO_BATCH_BATCH_ID)) {
+			for (AbstractFlowItem item : this.itemMap.get(tg).get(NO_BATCH_BATCH_ID)) {
 				queue.addFlowItemCandidate(item, this.itemMap.get(tg).get(NO_BATCH_BATCH_ID));
 			}
 		} else {
 			for (IFlowItemQueue q : itemMap.get(tg).values()) {
-				IFlowItem candidate = q.lookAtHighestPriorityFlowItem();
+				AbstractFlowItem candidate = q.lookAtHighestPriorityFlowItem();
 				if (candidate != null) {
 					queue.addFlowItemCandidate(candidate, q);
 				}
@@ -162,7 +161,7 @@ public class QueueCentricToolGroupController extends AbstractToolGroupController
 			tg.getSetupStrategy().filterValidItems(tool, possibleItems);
 			this.logger.trace("items with fitting setup : {}", possibleItems);
 			if (possibleItems.size() > 0) {
-				final IFlowItem item = possibleItems.takeBestCandidate();
+				final AbstractFlowItem item = possibleItems.takeBestCandidate();
 				result = new ToolAndItem(tool, item);
 			}
 		}

@@ -3,14 +3,13 @@ package de.terministic.fabsim.metamodel.components.equipment.maintenance;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import de.terministic.fabsim.metamodel.AbstractComponent;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.IComponent;
-import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
+import de.terministic.fabsim.metamodel.AbstractComponent;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements IMaintenance {
 	private final IDuration processTime;
@@ -63,12 +62,17 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 		timeUntilNextMap.put(resource, processTime.getDuration());
 	}
 
-	public void notifyOfProcessFinishedAt(final IComponent component) {
+	public void notifyOfProcessFinishedAt(final AbstractComponent component) {
 		// logger.trace(component.getName());
 		if (maintenanceForToolIsNotYetTriggered(component)) {
 			final AbstractResource resource = (AbstractResource) component;
 			// update time total since last maintenance
 			// if (component.getName().equals("ToolGroup_5")) {
+			if ((component.getName().equals("ToolGroup_7")) && (component.getTime() > 25173869486L)) {
+
+				logger.trace("\nResource: {} \nTime: {} \nlastStartMap: {} \ntimeSinceLastMaintMap:{}", resource,
+						getTime(), lastStartMap, timeSinceLastMaintMap);
+			}
 
 			final long newTotal = this.timeSinceLastMaintMap.get(resource) + getTime()
 					- this.lastStartMap.remove(resource);
@@ -78,7 +82,10 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 			this.timeSinceLastMaintMap.put(resource, newTotal);
 			if (maintForecastMap.get(resource).getEventTime() > getTime()) {
 				// remove forecast trigger event from eventList
+				if ((component.getName().equals("ToolGroup_7")) && (component.getTime() > 25173869486L)) {
 
+					logger.trace("Removing Event {}", maintForecastMap.get(resource));
+				}
 				getSimulationEngine().getEventList().unscheduleEvent(maintForecastMap.get(resource));
 			} else {
 				this.timeSinceLastMaintMap.put(resource, Long.MIN_VALUE);
@@ -87,7 +94,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 		}
 	}
 
-	public void notifyOfProcessInteruption(final IComponent component) {
+	public void notifyOfProcessInteruption(final AbstractComponent component) {
 		logger.trace("[{}] notifyOfProcessInteruption {}", getTime(), component);
 		if (component.getName().equals("ToolGroup_0")) {
 			logger.trace("\nResource: {} \nTime: {} \nlastStartMap: {} \ntimeSinceLastMaintMap:{}", component,
@@ -131,7 +138,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 		return 0.0;
 	}
 
-	public void notifyOfProcessEndedInteruption(IComponent component) {
+	public void notifyOfProcessEndedInteruption(AbstractComponent component) {
 		if (inInteruptionMap.get(component)) {
 			if (maintenanceForToolIsNotYetTriggered(component)) {
 				final AbstractTool tool = (AbstractTool) component;
@@ -147,7 +154,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 					logger.trace("[{}] timeUntilMaint {}", getTime(), timeUntilMaint);
 				}
 				// create MaintTriggeredEvent for Maintenance to come
-				MaintenanceTriggeredEvent event = this.model.getEventFactory()
+				MaintenanceTriggeredEvent event = (model.getEventFactory())
 						.scheduleNewMaintenanceTriggeredEvent(timeUntilMaint, tool, this);
 				maintForecastMap.put(tool, event);
 			}
@@ -155,20 +162,20 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 
 	}
 
-	private boolean maintenanceForToolIsNotYetTriggered(IComponent component) {
+	private boolean maintenanceForToolIsNotYetTriggered(AbstractComponent component) {
 		return timeSinceLastMaintMap.get(component) > Long.MIN_VALUE;
 	}
 
-	public void notifyOfProcessStartedAt(final IComponent iComponent) {
-		if (iComponent.getName().equals("ToolGroup_3")) {
+	public void notifyOfProcessStartedAt(final AbstractComponent component) {
+		if (component.getName().equals("ToolGroup_3")) {
 			logger.trace("process started was notified");
 		}
 
-		final AbstractTool tool = (AbstractTool) iComponent;
+		final AbstractTool tool = (AbstractTool) component;
 		if (inInteruptionMap.get(tool)) {
 			inInteruptionMap.put(tool, false);
 		} else {
-			if (maintenanceForToolIsNotYetTriggered(iComponent)) {
+			if (maintenanceForToolIsNotYetTriggered(component)) {
 
 				this.lastStartMap.put(tool, getTime());
 				long timeUntilMaint = this.timeUntilNextMap.get(tool) - this.timeSinceLastMaintMap.get(tool);

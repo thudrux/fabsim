@@ -2,8 +2,8 @@ package de.terministic.fabsim.metamodel.components.equipment.setup;
 
 import java.util.Collection;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
 public class AllAllowedSetupStrategy extends AbstractSetupStrategy {
 

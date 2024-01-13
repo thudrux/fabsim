@@ -3,11 +3,11 @@ package de.terministic.fabsim.metamodel.statistics;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.StateChangeEvent;
+import de.terministic.fabsim.core.ISimEvent;
+import de.terministic.fabsim.core.SimEventListener;
 
 public class ResourceUtilisationLogger extends SimEventListener {
 

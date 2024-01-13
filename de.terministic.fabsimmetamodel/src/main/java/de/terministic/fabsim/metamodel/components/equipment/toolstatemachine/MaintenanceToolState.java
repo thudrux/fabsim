@@ -2,14 +2,14 @@ package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.ISimEvent;
 
 public class MaintenanceToolState extends AbstractToolState {
 	private StandbyToolState standbyToolState;
@@ -30,7 +30,7 @@ public class MaintenanceToolState extends AbstractToolState {
 	public SemiE10EquipmentState enterState(final AbstractTool tool, final IMaintenance maintenance) {
 		// logger.trace("enter state {} with {}", tool, maintenance);
 		tool.becomesUnavailable();
-		final AbstractSimEvent event = getFabModel().getSimulationEngine().getEventFactory()
+		final AbstractSimEvent event = getFabModel().getEventFactory()
 				.scheduleNewMaintenanceFinishedEvent(maintenance.getDuration(), tool, maintenance);
 		final ProcessStateDetails details = new ProcessStateDetails(tool, event, SemiE10EquipmentState.SD_MAINT, null,
 				null, null);

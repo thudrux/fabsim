@@ -1,11 +1,11 @@
 package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
-import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.OperatorDemand;
 
 public class ProcessStateDetails {
 	public enum State {
@@ -20,7 +20,7 @@ public class ProcessStateDetails {
 	private AbstractOperatorGroup operatorInUse;
 	private AbstractSimEvent operatorEvent;
 	private OperatorDemand demand;
-	private IFlowItem item;
+	private AbstractFlowItem item;
 	private long remainingOperatorTime;
 
 	public ProcessStateDetails(final AbstractTool tool, final AbstractSimEvent event,
@@ -42,7 +42,7 @@ public class ProcessStateDetails {
 		return this.endEvent;
 	}
 
-	public IFlowItem getItem() {
+	public AbstractFlowItem getItem() {
 		return this.item;
 	}
 
@@ -94,7 +94,7 @@ public class ProcessStateDetails {
 		this.endEvent = endEvent;
 	}
 
-	public void setItem(final IFlowItem item) {
+	public void setItem(final AbstractFlowItem item) {
 		this.item = item;
 	}
 

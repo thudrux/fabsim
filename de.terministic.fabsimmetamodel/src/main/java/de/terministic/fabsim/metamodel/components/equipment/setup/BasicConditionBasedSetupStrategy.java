@@ -8,9 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
 public class BasicConditionBasedSetupStrategy extends AbstractSetupStrategy {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());

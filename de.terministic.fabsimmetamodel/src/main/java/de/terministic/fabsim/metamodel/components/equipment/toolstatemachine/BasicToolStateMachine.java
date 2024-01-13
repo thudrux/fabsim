@@ -11,12 +11,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.core.EventComparator;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
@@ -28,6 +22,11 @@ import de.terministic.fabsim.metamodel.components.equipment.ProcessFinishedEvent
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.UnloadingFinishedEvent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.core.EventComparator;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.OperatorDemand;
 
 public class BasicToolStateMachine extends AbstractToolStateMachine {
 	private final Set<AbstractToolState> states = new HashSet<>();
@@ -36,7 +35,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());
 	protected Map<AbstractTool, ArrayList<AbstractSimEvent>> queuedEvents;
 
-	public BasicToolStateMachine(final de.terministic.fabsim.metamodel.FabModel model) {
+	public BasicToolStateMachine(final FabModel model) {
 		this.currentStateMap = new LinkedHashMap<>();
 		this.queuedEvents = new LinkedHashMap<>();
 
@@ -130,7 +129,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 * de.terministic.alternativefabsimulator.core.AbstractFlowItem)
 	 */
 	@Override
-	public void handleFlowItemArrival(final AbstractTool tool, final IFlowItem item) {
+	public void handleFlowItemArrival(final AbstractTool tool, final AbstractFlowItem item) {
 		this.logger.trace("[{}] onFlowItemArrival", tool.getTime());
 		this.logger.trace("Tool: {}  Item: {}", tool, item);
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
@@ -149,16 +148,11 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onBreakdownFinished(final BreakdownFinishedEvent event) {
-		this.logger.trace("[{}] onBreakdownFinishedEvent", event.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", event.getComponent(), event.getFlowItem());
 		final AbstractTool tool = (AbstractTool) event.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
-		this.logger.trace("Current State: {}", currentState);
 		final AbstractToolState newState = currentState.onBreakdownFinished(tool, event.getBreakdown());
 		if (newState == currentState) {
 			BreakdownToolState udState = (BreakdownToolState) newState;
-
-			this.logger.trace("[{}] next breakdown is handled {}", tool.getTime(), newState);
 			tool.setCurrentToolState(newState.getSemiE10State(tool));
 			this.currentStateMap.put(tool, newState);
 
@@ -179,11 +173,8 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onBreakdownTriggered(final BreakdownTriggeredEvent event) {
-		this.logger.trace("[{}] onBreakdownTriggeredEvent", event.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", event.getComponent(), event.getFlowItem());
 		final AbstractTool tool = (AbstractTool) event.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
-		this.logger.trace("Current State: {}", currentState);
 		final BreakdownToolState newState = (BreakdownToolState) currentState.onBreakdownTriggered(tool,
 				event.getBreakdown());
 		if (newState != null) {
@@ -215,7 +206,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		final AbstractTool tool = (AbstractTool) loadingFinishedEvent.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		final AbstractToolState newState = currentState.onLoadingFinished(loadingFinishedEvent);
-		updateStateAndStartNewStateWithItem(tool, loadingFinishedEvent.getFlowItem(), newState);
+		updateStateAndStartNewStateWithItem(tool, (AbstractFlowItem) loadingFinishedEvent.getFlowItem(), newState);
 	}
 
 	/*
@@ -227,8 +218,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onMaintenanceFinished(final MaintenanceFinishedEvent event) {
-		this.logger.trace("[{}] onMaintenanceFinishedEvent", event.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", event.getComponent(), event.getFlowItem());
+
 		final AbstractTool tool = (AbstractTool) event.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		this.logger.trace("Current State: {}", currentState);
@@ -246,8 +236,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onMaintenanceTriggered(final MaintenanceTriggeredEvent event) {
-		this.logger.trace("[{}] onMaintenanceTriggeredEvent", event.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", event.getComponent(), event.getFlowItem());
+
 		final AbstractTool tool = (AbstractTool) event.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		this.logger.trace("Current State: {}", currentState);
@@ -296,13 +285,11 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onProcessFinished(final ProcessFinishedEvent processFinishedEvent) {
-		this.logger.trace("[{}] onProcessFinishedEvent", processFinishedEvent.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", processFinishedEvent.getComponent(),
-				processFinishedEvent.getFlowItem());
+
 		final AbstractTool tool = (AbstractTool) processFinishedEvent.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		this.logger.trace("Current State: {}", currentState);
-		final AbstractFlowItem item = processFinishedEvent.getFlowItem();
+		final AbstractFlowItem item = (AbstractFlowItem) processFinishedEvent.getFlowItem();
 		final AbstractToolState newState = currentState.onProcessFinished(tool, item);
 		if (currentState != newState) {
 			this.logger.trace("Current State: {} new State: {}", currentState, newState);
@@ -319,12 +306,11 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 	 */
 	@Override
 	public void onSetupFinishedEvent(final SetupFinishedEvent event) {
-		this.logger.trace("[{}] onSetupFinishedEvent", event.getComponent().getTime());
-		this.logger.trace("Tool: {}  Item: {}", event.getComponent(), event.getFlowItem());
+
 		final AbstractTool tool = (AbstractTool) event.getComponent();
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 		this.logger.trace("Current State: {}", currentState);
-		final AbstractFlowItem item = event.getFlowItem();
+		final AbstractFlowItem item = (AbstractFlowItem) event.getFlowItem();
 		final AbstractToolState newState = currentState.onSetupFinished(tool, item);
 		updateStateAndStartNewStateWithItem(tool, item, newState);
 	}
@@ -342,7 +328,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		final AbstractToolState currentState = this.currentStateMap.get(tool);
 
 		final AbstractToolState newState = currentState.onUnloadingFinished(unloadingFinishedEvent);
-		updateStateAndStartNewStateWithItem(tool, unloadingFinishedEvent.getFlowItem(), newState);
+		updateStateAndStartNewStateWithItem(tool, (AbstractFlowItem) unloadingFinishedEvent.getFlowItem(), newState);
 	}
 
 	public void pause(final AbstractTool tool) {
@@ -443,7 +429,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		}
 	}
 
-	public void updateStateAndStartNewStateWithItem(final AbstractTool tool, final IFlowItem item,
+	public void updateStateAndStartNewStateWithItem(final AbstractTool tool, final AbstractFlowItem item,
 			final AbstractToolState newState) {
 		if (tool.getName().equals("ToolGroup_3")) {
 			this.logger.trace("[{}] new state is {}", tool.getTime(), newState);

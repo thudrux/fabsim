@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.ToolAndItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.NotYetImplementedException;
+import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -103,11 +102,11 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 		throw new NotYetImplementedException();
 	}
 
-	private void checkIfItemIsLot(final List<IFlowItem> flowItems) {
-		for (final IFlowItem item : flowItems) {
+	private void checkIfItemIsLot(final List<AbstractFlowItem> flowItems) {
+		for (final AbstractFlowItem item : flowItems) {
 			if (item instanceof Lot) {
 				if (((Lot) item).getCurrentLotSize() == ((Lot) item).getOriginalLotSize()) {
-					sendFlowItemToResource(item, getModel().getRouting());
+					sendFlowItemToResource(item,((FabModel) getModel()).getRouting());
 				} else {
 					mergeLotIfPossibleOrPutItInQueue(item);
 				}
@@ -156,7 +155,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 		return this.standbyTools;
 	}
 
-	private void mergeLotIfPossibleOrPutItInQueue(final IFlowItem item) {
+	private void mergeLotIfPossibleOrPutItInQueue(final AbstractFlowItem item) {
 		Lot originalLot;
 		if (((Lot) item).getOriginalLot() != null) {
 			originalLot = ((Lot) item).getOriginalLot();
@@ -172,7 +171,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 					getSimulationEngine().getEventList().unscheduleEvent(originalLot.getMaxWaitEvent());
 					originalLot.setMaxWaitEvent(null);
 				}
-				sendFlowItemToResource(lot, getModel().getRouting());
+				sendFlowItemToResource(lot, ((FabModel) getModel()).getRouting());
 			} else {
 				this.finishedLot.put(originalLot, lot);
 			}
@@ -280,7 +279,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 		flowItem.markCurrentStepAsFinished();
 		this.inProcessMap.remove(flowItem);
 		// this.busyTools.remove(abstractTool);
-		final List<IFlowItem> flowItems = this.tgController.canUnbatch(flowItem);
+		final List<AbstractFlowItem> flowItems = this.tgController.canUnbatch(flowItem);
 		checkIfItemIsLot(flowItems);
 		// this.logger.debug("FINISH takeAfterProcessing");
 	}
@@ -309,7 +308,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing tool group has no capa limit
 	}
 }

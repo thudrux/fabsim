@@ -6,11 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
 public abstract class AbstractSetupStrategy {
 	private Map<SetupState, ArrayList<ISetupChangeCondition>> preStateConditionMap = new LinkedHashMap<>();
@@ -39,8 +38,8 @@ public abstract class AbstractSetupStrategy {
 
 	public abstract boolean filterForValidItem(AbstractTool tool, AbstractFlowItem item);
 
-	public abstract Collection<IFlowItem> filterValidItems(AbstractTool tool,
-			Collection<IFlowItem> possibleItems);
+	public abstract Collection<AbstractFlowItem> filterValidItems(AbstractTool tool,
+			Collection<AbstractFlowItem> possibleItems);
 
 	public List<ISetupChangeCondition> getGlobalConditions() {
 		return this.globalConditions;

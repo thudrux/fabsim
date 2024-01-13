@@ -1,9 +1,9 @@
 package de.terministic.fabsim.metamodel.statistics;
 
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.metamodel.components.CreationEvent;
 import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
+import de.terministic.fabsim.core.ISimEvent;
+import de.terministic.fabsim.core.SimEventListener;
 
 public class FirstCycleTimeTracker extends SimEventListener {
 

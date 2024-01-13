@@ -3,12 +3,11 @@ package de.terministic.fabsim.metamodel.components.equipment;
 import java.util.Collection;
 import java.util.List;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.AbstractModelElement;
 import de.terministic.fabsim.metamodel.components.Controller;
 import de.terministic.fabsim.metamodel.components.ToolAndItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractModelElement;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public abstract class AbstractToolGroupController extends AbstractModelElement {
 
@@ -27,9 +26,9 @@ public abstract class AbstractToolGroupController extends AbstractModelElement {
 
 	public abstract Collection<String> getBatchIdsForToolGroup(ToolGroup toolGroup);
 
-	public abstract Collection<IFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId);
+	public abstract Collection<AbstractFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId);
 
-	public abstract List<IFlowItem> canUnbatch(final IFlowItem flowItem);
+	public abstract List<AbstractFlowItem> canUnbatch(final AbstractFlowItem flowItem);
 
 	public abstract void addNewToolGroup(final ToolGroup toolGroup);
 

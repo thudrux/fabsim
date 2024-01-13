@@ -3,12 +3,11 @@ package de.terministic.fabsim.metamodel.components;
 import java.util.HashSet;
 
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.AbstractSource;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
+import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.equipment.InvalidEventForResourceException;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
@@ -41,7 +40,7 @@ public class Source extends AbstractSource {
 
 	protected void createAndScheduleNextCreationEvent(final Product product, final long nextCreationTime) {
 		for (int i = 0; i < this.releaseSize; i++) {
-			final CreationEvent newEvent = new CreationEvent(getModel(), nextCreationTime, this, product);
+			final CreationEvent newEvent = new CreationEvent((FabModel) getModel(), nextCreationTime, this, product);
 			getSimulationEngine().getEventList().scheduleEvent(newEvent);
 			this.outstandingEvents.add(newEvent);
 		}
@@ -49,13 +48,13 @@ public class Source extends AbstractSource {
 
 	public AbstractFlowItem generateFlowItemOfProduct(final CreationEvent event, final Product product) {
 		logger.debug("generateFlowItemwithRecipe was called");
-		final BasicFlowItem flowItem = new BasicFlowItem(getSimulationEngine().getModel(), product);
+		final BasicFlowItem flowItem = new BasicFlowItem((FabModel) getSimulationEngine().getModel(), product);
 		this.outstandingEvents.remove(event);
 		if (this.outstandingEvents.size() == 0) {
 			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
 			createAndScheduleNextCreationEvent(product, nextCreationTime);
 		}
-		sendFlowItemToResource(flowItem, getModel().getRouting());
+		sendFlowItemToResource(flowItem, ((FabModel) getModel()).getRouting());
 		return flowItem;
 	}
 
@@ -115,7 +114,7 @@ public class Source extends AbstractSource {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		throw new InvalidEventForResourceException(
 				"Component does not support arriving flow items " + this.getClass().getSimpleName());
 	}

@@ -1,8 +1,8 @@
 package de.terministic.fabsim.metamodel.statistics;
 
+import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 
 public class FinishedFlowItemCounter extends SimEventListener {
 	private long itemCount = 0L;

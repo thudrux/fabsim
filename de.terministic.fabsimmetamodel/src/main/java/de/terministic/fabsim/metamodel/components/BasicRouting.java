@@ -5,11 +5,10 @@
 package de.terministic.fabsim.metamodel.components;
 
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.core.SimulatorEngineException;
 import de.terministic.fabsim.metamodel.AbstractRouting;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
+import de.terministic.fabsim.core.SimulatorEngineException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
@@ -48,7 +47,7 @@ public class BasicRouting extends AbstractRouting {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing as this resource has no capa limit
 
 	}

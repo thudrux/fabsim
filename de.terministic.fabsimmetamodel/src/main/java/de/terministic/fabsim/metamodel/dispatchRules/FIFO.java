@@ -7,11 +7,11 @@ import java.util.Comparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoBatchFlowItemQueue;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoFlowItemQueue;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
 public class FIFO extends AbstractDispatchRule {
 	protected Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());

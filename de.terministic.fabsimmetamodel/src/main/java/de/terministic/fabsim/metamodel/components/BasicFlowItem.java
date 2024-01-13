@@ -4,8 +4,8 @@
  */
 package de.terministic.fabsim.metamodel.components;
 
-import de.terministic.fabsim.core.IModel;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -21,7 +21,7 @@ public class BasicFlowItem extends AbstractFlowItem {
 	 * @param recipe
 	 *            the recipe the flow item follows
 	 */
-	public BasicFlowItem(final IModel model, final Product product) {
+	public BasicFlowItem(final FabModel model, final Product product) {
 		super(model);
 		setType(FlowItemType.LOT);
 		this.product = product;

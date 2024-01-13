@@ -2,9 +2,9 @@ package de.terministic.fabsim.metamodel.components.equipment.queuecentriccontrol
 
 import java.util.Collection;
 
-import de.terministic.fabsim.core.IFlowItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
-public interface IFlowItemQueue extends Collection<IFlowItem> {
+public interface IFlowItemQueue extends Collection<AbstractFlowItem> {
 
 	public int size();
 
@@ -12,16 +12,16 @@ public interface IFlowItemQueue extends Collection<IFlowItem> {
 
 	public int sizeInWafers();
 
-	public IFlowItem takeHighestPriorityFlowItem();
+	public AbstractFlowItem takeHighestPriorityFlowItem();
 
-	public IFlowItem lookAtHighestPriorityFlowItem();
+	public AbstractFlowItem lookAtHighestPriorityFlowItem();
 
-	public boolean addFlowItem(IFlowItem item);
+	public boolean addFlowItem(AbstractFlowItem item);
 
-	public boolean addFlowItemCandidate(IFlowItem item, IFlowItemQueue queue);
+	public boolean addFlowItemCandidate(AbstractFlowItem item, IFlowItemQueue queue);
 
-	public IFlowItem takeBestCandidate();
+	public AbstractFlowItem takeBestCandidate();
 
-	public IFlowItem takeCandidate(IFlowItem item);
+	public AbstractFlowItem takeCandidate(AbstractFlowItem item);
 
 }

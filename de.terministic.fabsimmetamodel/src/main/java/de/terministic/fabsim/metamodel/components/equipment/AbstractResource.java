@@ -4,12 +4,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.terministic.fabsim.core.IFlowItem;
+import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.AbstractComponent;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.OperatorDemand;
-import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 
 public abstract class AbstractResource extends AbstractComponent {
@@ -85,10 +84,10 @@ public abstract class AbstractResource extends AbstractComponent {
 		this.parent = parent;
 	}
 
-	protected void sendFlowItemToResource(IFlowItem flowItem, AbstractResource resource) {
+	protected void sendFlowItemToResource(AbstractFlowItem flowItem, AbstractResource resource) {
 		logger.trace("starting to send {} to {}", flowItem, resource);
 		resource.announceFlowItemArrival(flowItem);
-		model.getEventFactory().scheduleNewFlowItemArrivalEvent(resource, flowItem, this);
+		((FabModel) getModel()).getEventFactory().scheduleNewFlowItemArrivalEvent(resource, flowItem, this);
 	}
 
 	public Collection<IBreakdown> getBreakdowns() {

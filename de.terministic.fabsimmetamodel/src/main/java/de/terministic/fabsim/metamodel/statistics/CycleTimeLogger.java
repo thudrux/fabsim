@@ -8,11 +8,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.SimEventListener;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.CreationEvent;
 import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 import de.terministic.fabsim.metamodel.components.Product;
+import de.terministic.fabsim.core.ISimEvent;
+import de.terministic.fabsim.core.SimEventListener;
 
 public class CycleTimeLogger extends SimEventListener {
 	private Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getSimpleName());
@@ -33,19 +34,19 @@ public class CycleTimeLogger extends SimEventListener {
 	@Override
 	public void processEvent(final ISimEvent event) {
 		if (event instanceof CreationEvent) {
-			event.getFlowItem().getStatistics().put(CREATIONTIMEMARKER, event.getEventTime());
+			((AbstractFlowItem) event.getFlowItem()).getStatistics().put(CREATIONTIMEMARKER, event.getEventTime());
 		}
 		if (event instanceof FlowItemDestructionEvent) {
-			event.getFlowItem().getStatistics().put(DESTRUCTIONTIMEMARKER, event.getEventTime());
+			((AbstractFlowItem) event.getFlowItem()).getStatistics().put(DESTRUCTIONTIMEMARKER, event.getEventTime());
 			// logger.debug("Event: {}\n", event);
 			// logger.debug("FlowItemStats: {}\n",
 			// event.getFlowItem().getStatistics());
-			if (!ctLists.containsKey(event.getFlowItem().getProduct())) {
-				ctLists.put(event.getFlowItem().getProduct(), new ArrayList<Long>());
+			if (!ctLists.containsKey(((AbstractFlowItem) event.getFlowItem()).getProduct())) {
+				ctLists.put(((AbstractFlowItem) event.getFlowItem()).getProduct(), new ArrayList<Long>());
 			}
-			ctLists.get(event.getFlowItem().getProduct())
-					.add(event.getEventTime() - event.getFlowItem().getStatistics().get(CREATIONTIMEMARKER));
-			setRptSum(getRptSum() + event.getFlowItem().getRPT());
+			ctLists.get(((AbstractFlowItem) event.getFlowItem()).getProduct())
+					.add(event.getEventTime() - ((AbstractFlowItem) event.getFlowItem()).getStatistics().get(CREATIONTIMEMARKER));
+			setRptSum(getRptSum() + ((AbstractFlowItem) event.getFlowItem()).getRPT());
 		}
 	}
 

@@ -3,12 +3,11 @@ package de.terministic.fabsim.metamodel.components.equipment.maintenance;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import de.terministic.fabsim.metamodel.AbstractComponent;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.IComponent;
-import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
+import de.terministic.fabsim.metamodel.AbstractComponent;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.duration.IDuration;
 
 public class ItemCountBasedMaintenance extends AbstractMaintenance {
 	private final int count;
@@ -64,12 +63,12 @@ public class ItemCountBasedMaintenance extends AbstractMaintenance {
 		this.finishedCountMap.put(resource, 0);
 	}
 
-	public void notifyOfProcessFinishedAt(final IComponent component) {
+	public void notifyOfProcessFinishedAt(final AbstractComponent component) {
 		final AbstractTool tool = (AbstractTool) component;
 		this.finishedCountMap.put(tool, this.finishedCountMap.get(tool) + 1);
 	}
 
-	public void notifyOfProcessStartedAt(final IComponent component) {
+	public void notifyOfProcessStartedAt(final AbstractComponent component) {
 		final AbstractResource resource = (AbstractResource) component;
 		if (this.finishedCountMap.get(resource) >= this.count - 1) {
 			this.model.getEventFactory().scheduleNewMaintenanceTriggeredEvent(resource, this);

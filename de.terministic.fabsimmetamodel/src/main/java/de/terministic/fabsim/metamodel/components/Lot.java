@@ -3,7 +3,6 @@ package de.terministic.fabsim.metamodel.components;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-import de.terministic.fabsim.core.IModel;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 
@@ -17,16 +16,16 @@ public class Lot extends AbstractFlowItem {
 	private boolean splitLotAlreadyRemerged = false;
 	private final HashSet<Lot> children = new LinkedHashSet<>();
 
-	public Lot(final IModel model, final Product product) {
+	public Lot(final FabModel model, final Product product) {
 		this(model, product, 1, 1, Long.MAX_VALUE, 1, null);
 	}
 
-	public Lot(final IModel model, final Product product, final int originalLotSize, final int prio,
+	public Lot(final FabModel model, final Product product, final int originalLotSize, final int prio,
 			final long dueDate) {
 		this(model, product, originalLotSize, prio, Long.MAX_VALUE, originalLotSize, null);
 	}
 
-	protected Lot(final IModel model, final Product product, final int originalLotSize, final int prio,
+	protected Lot(final FabModel model, final Product product, final int originalLotSize, final int prio,
 			final long dueDate, final int currentLotSize, final Lot originalLot) {
 		super(model);
 		setType(FlowItemType.LOT);
@@ -138,7 +137,7 @@ public class Lot extends AbstractFlowItem {
 				baseLot = this.originalLot;
 			}
 
-			final Lot result = new Lot(getModel(), getProduct(), this.originalLotSize, this.prio, this.dueDate,
+			final Lot result = new Lot((FabModel) getModel(), getProduct(), this.originalLotSize, this.prio, this.dueDate,
 					numberOfWafer, baseLot);
 			result.setupForSimulation(getSimulationEngine());
 			result.setCurrentStepNumber(this.getCurrentStepNumber());

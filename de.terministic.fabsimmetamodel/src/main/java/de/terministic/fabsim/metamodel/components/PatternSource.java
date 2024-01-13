@@ -15,7 +15,7 @@ public class PatternSource extends Source {
 
 	@Override
 	public AbstractFlowItem generateFlowItemOfProduct(final CreationEvent event, final Product product) {
-		final Lot flowItem = new Lot(getSimulationEngine().getModel(), product, getLotSize(), 1, Long.MAX_VALUE);
+		final Lot flowItem = new Lot((FabModel) getModel(), product, getLotSize(), 1, Long.MAX_VALUE);
 		flowItem.setCreationTime(getTime());
 		this.outstandingEvents.remove(event);
 		long nextCreationTime;
@@ -34,8 +34,8 @@ public class PatternSource extends Source {
 			}
 			createAndScheduleNextCreationEvent(product, nextCreationTime);
 		}
-		getModel().getEventFactory()
-				.scheduleNewFlowItemArrivalEvent(getModel().getRouting(), flowItem, this);
+		((FabModel) getModel()).getEventFactory()
+				.scheduleNewFlowItemArrivalEvent(((FabModel) getModel()).getRouting(), flowItem, this);
 
 		return flowItem;
 

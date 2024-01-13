@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.metamodel.components.CreationEvent;
 import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
+import de.terministic.fabsim.core.ISimEvent;
+import de.terministic.fabsim.core.SimEventListener;
 
 public class TotalWipLogger extends SimEventListener {
 	protected Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());

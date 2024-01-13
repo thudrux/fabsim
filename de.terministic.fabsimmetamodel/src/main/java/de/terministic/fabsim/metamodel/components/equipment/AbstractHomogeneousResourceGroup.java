@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.batchrules.AbstractBatchRule;
 import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;

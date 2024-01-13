@@ -1,6 +1,5 @@
 package de.terministic.fabsim.metamodel.components;
 
-import de.terministic.fabsim.core.IFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
@@ -21,8 +20,8 @@ public class CoolDownBuffer extends AbstractResource {
 	}
 
 	public void onProcessFinished(final BufferFinishedEvent event) {
-		((AbstractFlowItem)event.getFlowItem()).markCurrentStepAsFinished();
-		sendFlowItemToResource( event.getFlowItem(), getModel().getRouting());
+		((AbstractFlowItem) event.getFlowItem()).markCurrentStepAsFinished();
+		sendFlowItemToResource((AbstractFlowItem)event.getFlowItem(), ((FabModel) getModel()).getRouting());
 
 	}
 
@@ -31,14 +30,14 @@ public class CoolDownBuffer extends AbstractResource {
 		AbstractFlowItem flowItem = (AbstractFlowItem) event.getFlowItem();
 		this.logger.debug("{} item {} arrived", getTime(), flowItem);
 		this.coolDownTime = flowItem.getCurrentStep().getDuration(flowItem);
-		final BufferFinishedEvent endEvent = new BufferFinishedEvent(getModel(), getTime() + this.coolDownTime, this,
+		final BufferFinishedEvent endEvent = new BufferFinishedEvent((FabModel) getModel(), getTime() + this.coolDownTime, this,
 				flowItem);
 		getSimulationEngine().getEventList().scheduleEvent(endEvent);
 
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing resource has no capa limit
 
 	}

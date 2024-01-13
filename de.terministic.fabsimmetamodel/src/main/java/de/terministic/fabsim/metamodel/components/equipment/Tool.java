@@ -1,11 +1,10 @@
 package de.terministic.fabsim.metamodel.components.equipment;
 
-import de.terministic.fabsim.core.IFlowItem;
+import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
+import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
 
 public class Tool extends AbstractTool {
@@ -40,7 +39,7 @@ public class Tool extends AbstractTool {
 		super.onFlowItemArrival(event);
 
 		if (this.toolStateMachine.readyToProcess(this)) {
-			this.toolStateMachine.handleFlowItemArrival(this, event.getFlowItem());
+			this.toolStateMachine.handleFlowItemArrival(this, (AbstractFlowItem)event.getFlowItem());
 			event.getSender().onAcceptedFlowItemTransfer(event);
 		} else {
 			logger.trace("Tool can not accept new flowItem, is in state: {}",
@@ -50,7 +49,7 @@ public class Tool extends AbstractTool {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// TODO Reject all further canProcess requests
 	}
 }

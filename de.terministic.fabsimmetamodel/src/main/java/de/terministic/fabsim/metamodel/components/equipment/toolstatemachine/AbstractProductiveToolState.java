@@ -2,13 +2,6 @@ package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
-import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
@@ -16,6 +9,12 @@ import de.terministic.fabsim.metamodel.components.equipment.OperatorFinishedEven
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.ISimEvent;
+import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.ProcessStateDetails.State;
 
 public abstract class AbstractProductiveToolState extends AbstractToolState {
@@ -39,7 +38,7 @@ public abstract class AbstractProductiveToolState extends AbstractToolState {
 	protected abstract AbstractSimEvent createAndScheduleProcessEvent(ProcessStateDetails details);
 
 	@Override
-	public SemiE10EquipmentState enterState(final AbstractTool tool, final IFlowItem item) {
+	public SemiE10EquipmentState enterState(final AbstractTool tool, final AbstractFlowItem item) {
 		SemiE10EquipmentState resultState = null;
 		if (tool.getName().equals("ToolGroup_2")) {
 			this.logger.trace("{} is loaded into {}", item, tool);

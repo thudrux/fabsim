@@ -3,9 +3,10 @@ package de.terministic.fabsim.metamodel.statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.metamodel.components.FlowItemDestructionEvent;
 
 public class FlowFactorLogger extends SimEventListener {
 	private Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getSimpleName());
@@ -34,8 +35,8 @@ public class FlowFactorLogger extends SimEventListener {
 	public void processEvent(final ISimEvent event) {
 		if (event instanceof FlowItemDestructionEvent) {
 			counter++;
-			double ct = ((FlowItemDestructionEvent) event).getEventTime() - event.getFlowItem().getCreationTime();
-			double rpt = event.getFlowItem().getRPT();
+			double ct = ((FlowItemDestructionEvent) event).getEventTime() - ((AbstractFlowItem) event.getFlowItem()).getCreationTime();
+			double rpt = ((AbstractFlowItem) event.getFlowItem()).getRPT();
 			ffSum += ct / rpt;
 		}
 	}

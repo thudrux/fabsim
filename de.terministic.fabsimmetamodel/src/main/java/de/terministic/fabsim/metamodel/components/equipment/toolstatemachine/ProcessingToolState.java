@@ -1,10 +1,10 @@
 package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 
+import de.terministic.fabsim.metamodel.components.ProcessStep;
+import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.components.ProcessStep;
-import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 
 public class ProcessingToolState extends AbstractProductiveToolState {
 
@@ -19,7 +19,7 @@ public class ProcessingToolState extends AbstractProductiveToolState {
 
 	@Override
 	protected AbstractSimEvent createAndScheduleProcessEvent(final ProcessStateDetails details) {
-		return getFabModel().getSimulationEngine().getEventFactory().scheduleNewProcessFinishedEvent(
+		return getFabModel().getEventFactory().scheduleNewProcessFinishedEvent(
 				details.getRemainingProcessTime(), details.getTool(), details.getItem());
 	}
 

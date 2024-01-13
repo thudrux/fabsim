@@ -7,10 +7,9 @@ import java.util.PriorityQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.core.IFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 
-public class FifoFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlowItemQueue {
+public class FifoFlowItemQueue extends PriorityQueue<AbstractFlowItem> implements IFlowItemQueue {
 
 	/**
 	 * 
@@ -21,11 +20,11 @@ public class FifoFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlow
 	private int waferCount = 0;
 
 	public FifoFlowItemQueue() {
-		super(new Comparator<IFlowItem>() {
+		super(new Comparator<AbstractFlowItem>() {
 			@Override
-			public int compare(final IFlowItem o1, final IFlowItem o2) {
-				final Long time1 = Long.valueOf(((AbstractFlowItem)o1).getTimeStamps(((AbstractFlowItem)o1).getCurrentStepNumber()).getArrivalTime());
-				final Long time2 = Long.valueOf(((AbstractFlowItem)o2).getTimeStamps(((AbstractFlowItem)o2).getCurrentStepNumber()).getArrivalTime());
+			public int compare(final AbstractFlowItem o1, final AbstractFlowItem o2) {
+				final Long time1 = Long.valueOf(o1.getTimeStamps(o1.getCurrentStepNumber()).getArrivalTime());
+				final long time2 = (o2.getTimeStamps(o2.getCurrentStepNumber()).getArrivalTime());
 				return time1.compareTo(time2);
 			}
 		});
@@ -42,28 +41,28 @@ public class FifoFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlow
 	}
 
 	@Override
-	public IFlowItem takeHighestPriorityFlowItem() {
-		IFlowItem item = this.poll();
+	public AbstractFlowItem takeHighestPriorityFlowItem() {
+		AbstractFlowItem item = this.poll();
 		waferCount -= item.getSize();
 		return item;
 	}
 
 	@Override
-	public IFlowItem lookAtHighestPriorityFlowItem() {
+	public AbstractFlowItem lookAtHighestPriorityFlowItem() {
 		return this.peek();
 	}
 
 	@Override
-	public boolean addFlowItem(IFlowItem item) {
+	public boolean addFlowItem(AbstractFlowItem item) {
 //		logger.info("[{}] START addFlowItem for {} with queue looking like {}", item.getTime(), item, this);
 		waferCount += item.getSize();
 		return this.add(item);
 	}
 
-	LinkedHashMap<IFlowItem, IFlowItemQueue> candidateMap;
+	LinkedHashMap<AbstractFlowItem, IFlowItemQueue> candidateMap;
 
 	@Override
-	public boolean addFlowItemCandidate(IFlowItem item, IFlowItemQueue queue) {
+	public boolean addFlowItemCandidate(AbstractFlowItem item, IFlowItemQueue queue) {
 		if (candidateMap == null) {
 			candidateMap = new LinkedHashMap<>();
 		}
@@ -73,7 +72,7 @@ public class FifoFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlow
 	}
 
 	@Override
-	public IFlowItem takeCandidate(IFlowItem item) {
+	public AbstractFlowItem takeCandidate(AbstractFlowItem item) {
 		if (candidateMap != null) {
 			candidateMap.get(item).takeCandidate(item);
 		}
@@ -84,7 +83,7 @@ public class FifoFlowItemQueue extends PriorityQueue<IFlowItem> implements IFlow
 	}
 
 	@Override
-	public IFlowItem takeBestCandidate() {
+	public AbstractFlowItem takeBestCandidate() {
 		return this.takeCandidate(this.lookAtHighestPriorityFlowItem());
 	}
 }

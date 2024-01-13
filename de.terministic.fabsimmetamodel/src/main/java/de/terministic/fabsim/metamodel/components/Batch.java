@@ -2,22 +2,21 @@ package de.terministic.fabsim.metamodel.components;
 
 import java.util.ArrayList;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.core.IModel;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class Batch extends AbstractFlowItem {
 
-	private ArrayList<IFlowItem> items = new ArrayList<>();
+	private ArrayList<AbstractFlowItem> items = new ArrayList<>();
 
-	public Batch(final IModel model, final Recipe recipe) {
+	public Batch(final FabModel model, final Recipe recipe) {
 		super(model);
 		this.recipe = recipe;
 		setType(FlowItemType.BATCH);
 
 	}
 
-	public void addItem(final IFlowItem item) {
+	public void addItem(final AbstractFlowItem item) {
 		this.items.add(item);
 		size += item.getSize();
 	}
@@ -26,7 +25,7 @@ public class Batch extends AbstractFlowItem {
 		return this.items.contains(item);
 	}
 
-	public ArrayList<IFlowItem> getItems() {
+	public ArrayList<AbstractFlowItem> getItems() {
 		return this.items;
 	}
 
@@ -40,15 +39,15 @@ public class Batch extends AbstractFlowItem {
 	@Override
 	public void markCurrentStepAsFinished() {
 		super.markCurrentStepAsFinished();
-		for (final IFlowItem item : this.items) {
-			((AbstractFlowItem)item).markCurrentStepAsFinished();
+		for (final AbstractFlowItem item : this.items) {
+			item.markCurrentStepAsFinished();
 		}
 	}
 
-	public void setItems(final ArrayList<IFlowItem> items) {
+	public void setItems(final ArrayList<AbstractFlowItem> items) {
 		this.items = items;
 		size = 0;
-		for (IFlowItem item : items) {
+		for (AbstractFlowItem item : items) {
 			size += item.getSize();
 		}
 	}
@@ -60,8 +59,8 @@ public class Batch extends AbstractFlowItem {
 
 	@Override
 	public void unscheduleMaxQueueTimeEvents() {
-		for (IFlowItem item : items) {
-			((AbstractFlowItem)item).unscheduleMaxQueueTimeEvents();
+		for (AbstractFlowItem item : items) {
+			item.unscheduleMaxQueueTimeEvents();
 		}
 	}
 

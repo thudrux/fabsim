@@ -5,22 +5,21 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.AbstractFlowItem.FlowItemType;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.batchrules.AbstractBatchRule;
 import de.terministic.fabsim.metamodel.batchrules.QueueChangeAndBatches;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Controller;
 import de.terministic.fabsim.metamodel.components.ToolAndItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.AbstractFlowItem.FlowItemType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class ToolGroupController extends AbstractToolGroupController {
 
-	private final LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<IFlowItem>>> itemMap;
+	private final LinkedHashMap<ToolGroup, LinkedHashMap<String, ArrayList<AbstractFlowItem>>> itemMap;
 
 	public ToolGroupController(final FabModel model, final Controller controller) {
 		super(model, controller);
@@ -30,7 +29,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 
 	// add items to the hashMap, key is the batchID
 	@Override
-	public void addNewItem(final IFlowItem flowItem, final ToolGroup tg) {
+	public void addNewItem(final AbstractFlowItem flowItem, final ToolGroup tg) {
 		String id;
 		id = checkIfItemHasBatchDetailsAndReturnThem(flowItem, tg);
 		logger.trace("Item {} has {} as batch id", flowItem, id);
@@ -53,10 +52,10 @@ public class ToolGroupController extends AbstractToolGroupController {
 	}
 
 	@Override
-	public List<IFlowItem> canUnbatch(final IFlowItem flowItem) {
-		List<IFlowItem> ret = new ArrayList<>();
+	public List<AbstractFlowItem> canUnbatch(final AbstractFlowItem flowItem) {
+		List<AbstractFlowItem> ret = new ArrayList<>();
 		if (flowItem instanceof Batch) {
-			if (((AbstractFlowItem)flowItem).getCurrentStepNumber() >= ((AbstractFlowItem)flowItem).getRecipe().size()) {
+			if (flowItem.getCurrentStepNumber() >= flowItem.getRecipe().size()) {
 				ret = ((Batch) flowItem).getItems();
 			} else {
 				ret.add(flowItem);
@@ -67,23 +66,23 @@ public class ToolGroupController extends AbstractToolGroupController {
 		return ret;
 	}
 
-	private String checkIfItemHasBatchDetailsAndReturnThem(final IFlowItem flowItem, final ToolGroup tg) {
+	private String checkIfItemHasBatchDetailsAndReturnThem(final AbstractFlowItem flowItem, final ToolGroup tg) {
 		String r;
-		if (((AbstractFlowItem)flowItem).getCurrentStep().getBatchDetails() != null) {
+		if (flowItem.getCurrentStep().getBatchDetails() != null) {
 			createMaxWaitingTimeEvent(flowItem, tg);
-			r = ((AbstractFlowItem)flowItem).getCurrentStep().getBatchDetails().getBatchId();
+			r = flowItem.getCurrentStep().getBatchDetails().getBatchId();
 		} else {
 			r = this.NO_BATCH_BATCH_ID;
 		}
 		return r;
 	}
 
-	private void createMaxWaitingTimeEvent(final IFlowItem flowItem, final ToolGroup tg) {
-		if (((AbstractFlowItem)flowItem).getCurrentStep().getBatchDetails().getMaxWait() < Long.MAX_VALUE) {
-			final MaxWaitingTimeInQueueEvent event = new MaxWaitingTimeInQueueEvent(getModel(),
-					this.getTime() + ((AbstractFlowItem)flowItem).getCurrentStep().getBatchDetails().getMaxWait(), tg, ((AbstractFlowItem)flowItem));
+	private void createMaxWaitingTimeEvent(final AbstractFlowItem flowItem, final ToolGroup tg) {
+		if (flowItem.getCurrentStep().getBatchDetails().getMaxWait() < Long.MAX_VALUE) {
+			final MaxWaitingTimeInQueueEvent event = new MaxWaitingTimeInQueueEvent((FabModel) getModel(),
+					this.getTime() + flowItem.getCurrentStep().getBatchDetails().getMaxWait(), tg, flowItem);
 			this.getSimulationEngine().getEventList().scheduleEvent(event);
-			((AbstractFlowItem)flowItem).setMaxWaitEvent(event);
+			flowItem.setMaxWaitEvent(event);
 		}
 	}
 
@@ -105,7 +104,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 	}
 
 	@Override
-	public Collection<IFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId) {
+	public Collection<AbstractFlowItem> getQueueForBatchId(ToolGroup toolGroup, String batchId) {
 		return itemMap.get(toolGroup).get(batchId);
 	}
 
@@ -151,7 +150,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 		logger.trace("removeItemFromItemMapRemoving:  Item {} from map", item);
 		final String batchId = getBatchIDFromItem(item);
 		if (item.getType() == FlowItemType.BATCH) {
-			for (final IFlowItem i : ((Batch) item).getItems()) {
+			for (final AbstractFlowItem i : ((Batch) item).getItems()) {
 				logger.trace("removeItemFromItemMap: SingleItem for Batch is removed: {}", i);
 				this.itemMap.get(tg).get(batchId).remove(i);
 			}
@@ -184,14 +183,14 @@ public class ToolGroupController extends AbstractToolGroupController {
 //		this.logger.trace("Starting to select item for tool in ToolGroup");
 		final AbstractDispatchRule drule = this.getController().getDispatchRule(tg);
 		ToolAndItem result = null;
-		ArrayList<IFlowItem> possibleItems = new ArrayList<IFlowItem>(
+		ArrayList<AbstractFlowItem> possibleItems = new ArrayList<AbstractFlowItem>(
 				getPossibleItemsForTheTool(tg, tool));
 //		this.logger.debug("start :{} ", possibleItems);
 		if (tg.isConsidersDedication()) {
-			possibleItems = (ArrayList<IFlowItem>) tool.dedicationFilter(possibleItems);
+			possibleItems = (ArrayList<AbstractFlowItem>) tool.dedicationFilter(possibleItems);
 		}
 //		this.logger.debug("dedication filter done {}", possibleItems);
-		possibleItems = (ArrayList<IFlowItem>) tg.getSetupStrategy().filterValidItems(tool, possibleItems);
+		possibleItems = (ArrayList<AbstractFlowItem>) tg.getSetupStrategy().filterValidItems(tool, possibleItems);
 //		this.logger.debug("setup filter done {}", possibleItems);
 		if (possibleItems.size() > 0) {
 			final AbstractFlowItem item = drule.getBestItem(possibleItems);

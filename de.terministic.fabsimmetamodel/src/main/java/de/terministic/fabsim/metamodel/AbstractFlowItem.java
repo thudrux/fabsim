@@ -73,7 +73,6 @@ public abstract class AbstractFlowItem extends AbstractModelElement implements I
 		return this.id;
 	}
 
-	@Override
 	public IModel getModel() {
 		return this.model;
 	}

@@ -5,8 +5,6 @@ import java.util.LinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.AbstractSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.ReworkDetails;
@@ -16,6 +14,8 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.metamodel.AbstractSource;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class StaticCapacityAnalysis {
 	private final Logger logger = LoggerFactory.getILoggerFactory().getLogger("StaticCapacityAnalysis");

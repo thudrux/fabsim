@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import de.terministic.fabsim.core.duration.ConstantDuration;
 import de.terministic.fabsim.core.duration.IDuration;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.BasicOperatorGroup;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessDetails;

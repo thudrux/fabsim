@@ -81,7 +81,7 @@ public class FabSimEventFactory implements ISimEventFactory {
 	}
 
 	public AbstractSimEvent scheduleNewOperatorFinishedEvent(final long duration, final AbstractResource resource,
-			final IFlowItem item) {
+			final AbstractFlowItem item) {
 		final OperatorFinishedEvent event = new OperatorFinishedEvent(model, getSimulationEngine().getTime() + duration,
 				resource, resource.getParent(), item);
 		getSimulationEngine().getEventList().scheduleEvent(event);
@@ -118,7 +118,7 @@ public class FabSimEventFactory implements ISimEventFactory {
 	}
 
 	public FlowItemArrivalEvent scheduleNewFlowItemArrivalEvent(final AbstractComponent receiver,
-			final IFlowItem item, AbstractComponent sender) {
+			final AbstractFlowItem item, AbstractComponent sender) {
 		final FlowItemArrivalEvent event = new FlowItemArrivalEvent(model, getSimulationEngine().getTime(), receiver,
 				item, sender);
 		getSimulationEngine().getEventList().scheduleEvent(event);

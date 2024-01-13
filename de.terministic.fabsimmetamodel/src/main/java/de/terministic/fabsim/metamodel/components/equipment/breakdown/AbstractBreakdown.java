@@ -3,10 +3,10 @@ package de.terministic.fabsim.metamodel.components.equipment.breakdown;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import de.terministic.fabsim.metamodel.components.InvalidDataException;
+import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IDuration;
-import de.terministic.fabsim.metamodel.AbstractModelElement;
-import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
 

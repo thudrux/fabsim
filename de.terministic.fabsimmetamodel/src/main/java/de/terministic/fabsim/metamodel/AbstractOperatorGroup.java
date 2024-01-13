@@ -3,7 +3,7 @@ package de.terministic.fabsim.metamodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.terministic.fabsim.core.IFlowItem;
+import de.terministic.fabsim.core.IModel;
 
 public class AbstractOperatorGroup extends AbstractComponent {
 	private final int count;
@@ -11,7 +11,7 @@ public class AbstractOperatorGroup extends AbstractComponent {
 	private final List<OperatorDemand> unfullfilledDemandList = new ArrayList<>();
 	private final List<OperatorDemand> fullfilledDemandList = new ArrayList<>();
 
-	public AbstractOperatorGroup(FabModel model, final String name, final int count) {
+	public AbstractOperatorGroup(IModel model, final String name, final int count) {
 		super(model, name);
 		this.count = count;
 		this.available = count;
@@ -56,7 +56,7 @@ public class AbstractOperatorGroup extends AbstractComponent {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 

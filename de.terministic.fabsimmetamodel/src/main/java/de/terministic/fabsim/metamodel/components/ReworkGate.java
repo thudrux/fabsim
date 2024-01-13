@@ -2,7 +2,6 @@ package de.terministic.fabsim.metamodel.components;
 
 import java.util.Random;
 
-import de.terministic.fabsim.core.IFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
@@ -40,7 +39,7 @@ public class ReworkGate extends AbstractResource {
 	}
 
 	@Override
-	public void announceFlowItemArrival(IFlowItem item) {
+	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing rework gate has no capacity limit
 
 	}
@@ -56,7 +55,7 @@ public class ReworkGate extends AbstractResource {
 		} else {
 			item.markCurrentStepAsFinished();
 		}
-		sendFlowItemToResource(item, getModel().getRouting());
+		sendFlowItemToResource(item, ((FabModel) getModel()).getRouting());
 	}
 
 	public long getReworkCounter() {

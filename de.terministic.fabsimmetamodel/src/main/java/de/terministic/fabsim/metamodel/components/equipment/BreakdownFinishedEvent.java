@@ -1,10 +1,10 @@
 package de.terministic.fabsim.metamodel.components.equipment;
 
+import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.AbstractComponent;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
 public class BreakdownFinishedEvent extends AbstractSimEvent {
 	private final IBreakdown breakdown;

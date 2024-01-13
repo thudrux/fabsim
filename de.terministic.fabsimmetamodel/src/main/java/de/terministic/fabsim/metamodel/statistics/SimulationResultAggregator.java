@@ -7,9 +7,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
+import de.terministic.fabsim.core.SimEventListener;
 
 public class SimulationResultAggregator {
 	protected Logger logger = LoggerFactory.getILoggerFactory().getLogger(this.getClass().getName());

@@ -10,14 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.OperatorDemand;
 import de.terministic.fabsim.metamodel.components.equipment.dedication.Dedication;
 import de.terministic.fabsim.metamodel.components.equipment.dedication.DedicationDetails;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.core.AbstractSimEvent;
-import de.terministic.fabsim.core.IFlowItem;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.OperatorDemand;
 
 public abstract class AbstractTool extends AbstractResource {
 
@@ -65,7 +64,7 @@ public abstract class AbstractTool extends AbstractResource {
 	}
 
 	public void finishProcessingOfFlowItem(final AbstractFlowItem flowItem) {
-		final FinishedHandlingEvent event = new FinishedHandlingEvent(getModel(), getTime(), this, flowItem);
+		final FinishedHandlingEvent event = new FinishedHandlingEvent((FabModel) getModel(), getTime(), this, flowItem);
 		getSimulationEngine().getEventList().scheduleEvent(event);
 		((AbstractToolGroup) this.parent).takeAfterProcessing(flowItem, this);
 	}
@@ -189,7 +188,7 @@ public abstract class AbstractTool extends AbstractResource {
 	public void setCurrentToolState(final SemiE10EquipmentState currentToolState) {
 		this.logger.trace("Starting setCurrentToolState({})", currentToolState);
 		if (currentToolState != null) {
-			final StateChangeEvent event = new StateChangeEvent(getModel(), getSimulationEngine().getTime(), this,
+			final StateChangeEvent event = new StateChangeEvent((FabModel)getModel(), getSimulationEngine().getTime(), this,
 					currentToolState);
 			event.setSetupState(this.currentSetupState);
 			getSimulationEngine().getEventList().scheduleEvent(event);
@@ -225,7 +224,7 @@ public abstract class AbstractTool extends AbstractResource {
 	@Override
 	public void onFlowItemArrival(FlowItemArrivalEvent event) {
 		getSimulationEngine().getEventList()
-				.scheduleEvent(new StartHandlingEvent(getModel(), getTime(), this, event.getFlowItem()));
+				.scheduleEvent(new StartHandlingEvent((FabModel)getModel(), getTime(), this, (AbstractFlowItem) event.getFlowItem()));
 
 	}
 
@@ -233,9 +232,9 @@ public abstract class AbstractTool extends AbstractResource {
 		getSimulationEngine().getEventList().unscheduleEvent(event);
 	}
 
-	public Collection<IFlowItem> dedicationFilter(Collection<IFlowItem> possibleItems) {
+	public Collection<AbstractFlowItem> dedicationFilter(Collection<AbstractFlowItem> possibleItems) {
 		possibleItems.removeIf(item -> !this.dedications
-				.contains(((DedicationDetails) ((AbstractFlowItem)item).getCurrentStep().getDetails()).getNecessaryQualification()));
+				.contains(((DedicationDetails) item.getCurrentStep().getDetails()).getNecessaryQualification()));
 		return possibleItems;
 	}
 
