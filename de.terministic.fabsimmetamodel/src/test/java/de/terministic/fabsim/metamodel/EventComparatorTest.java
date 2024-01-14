@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.core.EventComparator;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.IModel;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
@@ -20,7 +20,7 @@ public class EventComparatorTest {
 
 	@Test
 	public void orderTest1() {
-		IModel model = new FabModel();
+		FabModel model = new FabModel();
 		ISimEvent event1 = new BreakdownTriggeredEvent(model, 0L, null,
 				new SimTimeBasedBreakdown(model, "breakdown", null, null));
 		ConstantDurationObject obj1 = new ConstantDurationObject(1L);
@@ -39,7 +39,7 @@ public class EventComparatorTest {
 
 	@Test
 	public void orderTest2() {
-		IModel model = new FabModel();
+		FabModel model = new FabModel();
 		ISimEvent event1 = new BreakdownTriggeredEvent(model, 0L, null,
 				new SimTimeBasedBreakdown(model, "breakdown", null, null));
 		ConstantDurationObject obj1 = new ConstantDurationObject(1L);

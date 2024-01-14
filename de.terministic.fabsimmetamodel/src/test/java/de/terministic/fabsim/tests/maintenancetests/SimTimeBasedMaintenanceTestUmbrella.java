@@ -1,6 +1,6 @@
 package de.terministic.fabsim.tests.maintenancetests;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.SimTimeBasedMaintenance;
 

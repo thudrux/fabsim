@@ -3,8 +3,9 @@ package de.terministic.fabsim.tests.setuptests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.AbstractSink;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.AbstractSink;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -53,7 +54,7 @@ public class MinItemsInQueueBasicTest {
 		model.getSimComponentFactory().createSource("Source1", product1, 7L);
 		model.getSimComponentFactory().createSource("Source2", product2, 5L);
 
-		engine = new SimulationEngine();
+		engine = new FabSimulationEngine();
 
 	}
 

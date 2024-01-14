@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -43,7 +44,7 @@ public class DelayTest {
 
 		source = (Source) model.getSimComponentFactory().createSource("Source1", product, 1L);
 
-		engine = new SimulationEngine();
+		engine = new FabSimulationEngine();
 	}
 
 	@AfterEach

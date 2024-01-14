@@ -5,7 +5,8 @@ import java.util.Random;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.core.eventlist.PriorityQueueEventListManager;
@@ -67,7 +68,7 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		FabModel model = buildModel(20, 60);
 		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new FabSimulationEngine(eventList);
 		engine.init(model);
 		SimulationResultAggregator agg = new SimulationResultAggregator();
 		FlowFactorLogger ffLogger = new FlowFactorLogger();
@@ -86,7 +87,7 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		FabModel model = buildModel(20, 30);
 		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new FabSimulationEngine(eventList);
 		engine.init(model);
 		FlowFactorLogger ffLogger = new FlowFactorLogger();
 		engine.addListener(ffLogger);
@@ -102,7 +103,7 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		FabModel model = buildModel(20, 30);
 		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new FabSimulationEngine(eventList);
 		engine.init(model);
 		SimulationResultAggregator agg = new SimulationResultAggregator();
 		FlowFactorLogger ffLogger = new FlowFactorLogger();
@@ -121,7 +122,7 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 		long startTime = System.currentTimeMillis();
 		FabModel model = buildModel(20, 60);
 		PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-		SimulationEngine engine = new SimulationEngine(eventList);
+		SimulationEngine engine = new FabSimulationEngine(eventList);
 		engine.init(model);
 		FlowFactorLogger ffLogger = new FlowFactorLogger();
 		engine.addListener(ffLogger);

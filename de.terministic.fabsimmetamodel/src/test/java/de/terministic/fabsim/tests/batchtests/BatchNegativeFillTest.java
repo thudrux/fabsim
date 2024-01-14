@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.Controller;
-import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
-import de.terministic.fabsim.components.equipment.AbstractToolGroupController;
-import de.terministic.fabsim.components.equipment.BatchDetails;
-import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.components.equipment.ToolGroupController;
-import de.terministic.fabsim.components.equipment.toolstatemachine.BasicToolStateMachine;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.components.Controller;
+import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
+import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroupController;
+import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
+import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.components.equipment.ToolGroupController;
+import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.BasicToolStateMachine;
+import de.terministic.fabsim.metamodel.FabModel;
 
 //Test, if the Batch can be filled with a negative number.
 class BatchNegativeFillTest {

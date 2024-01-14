@@ -3,10 +3,10 @@ package de.terministic.fabsim.tests.setuptests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
-import de.terministic.fabsim.components.equipment.SetupState;
-import de.terministic.fabsim.components.equipment.ToolGroup;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
+import de.terministic.fabsim.metamodel.components.equipment.SetupState;
+import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.FabModel;
 
 public class NegativeSetupTimeTest {
 

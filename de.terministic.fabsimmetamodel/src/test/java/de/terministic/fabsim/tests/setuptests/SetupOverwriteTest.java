@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -76,7 +77,7 @@ public class SetupOverwriteTest {
 		source2.setLotSize(1);
 		source2.setAllowSplit(false);
 
-		engine = new SimulationEngine();
+		engine = new FabSimulationEngine();
 	}
 
 	@Test

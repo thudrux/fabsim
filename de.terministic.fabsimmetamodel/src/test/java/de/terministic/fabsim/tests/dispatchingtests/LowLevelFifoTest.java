@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.AbstractFlowItem;
-import de.terministic.fabsim.core.FabModel;
-import de.terministic.fabsim.core.TimeStamps;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.TimeStamps;
 import de.terministic.fabsim.metamodel.components.BasicFlowItem;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;

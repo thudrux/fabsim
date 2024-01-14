@@ -5,7 +5,8 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
 import de.terministic.fabsim.metamodel.batchrules.BasicBatchRule;
@@ -62,7 +63,7 @@ public class SimTimeBasedMaintenanceTests {
 		SimTimeBasedMaintenance maint = model.getSimComponentFactory()
 				.createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3, obj7, toolGroup);
 		maint.setFirstOccuranceForTool(tool, 5L);
-		SimulationEngine engine = new SimulationEngine();
+		SimulationEngine engine = new FabSimulationEngine();
 
 		ToolStateChangeLog log = new ToolStateChangeLog();
 		engine.init(model);

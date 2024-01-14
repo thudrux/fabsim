@@ -7,7 +7,7 @@ package de.terministic.fabsim.tests.breakdown;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;

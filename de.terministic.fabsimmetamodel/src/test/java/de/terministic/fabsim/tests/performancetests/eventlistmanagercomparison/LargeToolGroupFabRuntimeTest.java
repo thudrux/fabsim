@@ -7,7 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.core.eventlist.ComponentGroupedEventListManager;
@@ -72,7 +73,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
@@ -87,7 +88,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}
@@ -102,7 +103,7 @@ public class LargeToolGroupFabRuntimeTest {
 		for (int i = 0; i < 10; i++) {
 			FabModel model = buildModel();
 			TreeSetEventListManager eventList = new TreeSetEventListManager();
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 			engine.init(model);
 			engine.runSimulation(YEAR);
 		}

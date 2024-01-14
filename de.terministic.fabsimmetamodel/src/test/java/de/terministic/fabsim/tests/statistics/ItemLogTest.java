@@ -3,7 +3,8 @@ package de.terministic.fabsim.tests.statistics;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -18,7 +19,7 @@ public class ItemLogTest {
 	public void itemLogBasicTest() {
 
 		FabModel model = new FabModel();
-		SimulationEngine engine = new SimulationEngine();
+		SimulationEngine engine = new FabSimulationEngine();
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");

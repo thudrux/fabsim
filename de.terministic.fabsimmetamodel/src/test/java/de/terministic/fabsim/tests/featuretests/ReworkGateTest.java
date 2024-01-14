@@ -3,9 +3,10 @@ package de.terministic.fabsim.tests.featuretests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.AbstractSink;
-import de.terministic.fabsim.core.AbstractSource;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.AbstractSink;
+import de.terministic.fabsim.metamodel.AbstractSource;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -42,7 +43,7 @@ public class ReworkGateTest {
 
 		AbstractSource source = model.getSimComponentFactory().createSource("Source", product, 4L);
 
-		SimulationEngine engine = new SimulationEngine();
+		SimulationEngine engine = new FabSimulationEngine();
 		engine.init(model);
 		SimulationResultAggregator sra = new SimulationResultAggregator();
 		engine.addListeners(sra.neededListeners());
@@ -76,7 +77,7 @@ public class ReworkGateTest {
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source", product, 35L);
 		source.setCreateFirstAtTimeZero(true);
 
-		SimulationEngine engine = new SimulationEngine();
+		SimulationEngine engine = new FabSimulationEngine();
 		engine.init(model);
 		SimulationResultAggregator sra = new SimulationResultAggregator();
 		engine.addListeners(sra.neededListeners());

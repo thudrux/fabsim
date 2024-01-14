@@ -3,8 +3,8 @@ package de.terministic.fabsim.tests.batchtests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.components.equipment.BatchDetails;
-import de.terministic.fabsim.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
+import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
 /*
  * Test, if you can set a bigger minBatch than maxBatch

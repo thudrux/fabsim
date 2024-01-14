@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.eventlist.ComponentGroupedEventListManager;
 import de.terministic.fabsim.core.eventlist.PriorityQueueEventListManager;
@@ -39,7 +40,7 @@ public class MiniFabRuntimeTest {
 
 			ComponentGroupedEventListManager eventList = new ComponentGroupedEventListManager();
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 
 			engine.init(model);
 			engine.runSimulation(10000000L);
@@ -58,7 +59,7 @@ public class MiniFabRuntimeTest {
 
 			PriorityQueueEventListManager eventList = new PriorityQueueEventListManager();
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 
 			engine.init(model);
 			engine.runSimulation(10000000L);
@@ -77,7 +78,7 @@ public class MiniFabRuntimeTest {
 
 			TreeSetEventListManager eventList = new TreeSetEventListManager();
 
-			SimulationEngine engine = new SimulationEngine(eventList);
+			SimulationEngine engine = new FabSimulationEngine(eventList);
 
 			engine.init(model);
 			engine.runSimulation(10000000L);

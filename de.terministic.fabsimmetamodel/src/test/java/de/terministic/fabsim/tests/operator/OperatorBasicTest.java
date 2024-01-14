@@ -11,9 +11,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.AbstractOperatorGroup;
-import de.terministic.fabsim.core.AbstractSink;
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
+import de.terministic.fabsim.metamodel.AbstractSink;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.IDuration;
 import de.terministic.fabsim.metamodel.components.LotSource;
@@ -42,7 +43,7 @@ public class OperatorBasicTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		this.model = new FabModel();
-		this.engine = new SimulationEngine();
+		this.engine = new FabSimulationEngine();
 
 	}
 

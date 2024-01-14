@@ -5,7 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -61,7 +62,7 @@ public class BatchOverflowTest {
 		this.source.setLotSize(6);
 		this.source.setAllowSplit(false);
 
-		this.engine = new SimulationEngine();
+		this.engine = new FabSimulationEngine();
 	}
 
 }

@@ -3,7 +3,7 @@ package de.terministic.fabsim.tests.batchtests;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import de.terministic.fabsim.core.FabModel;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.Product;
 
