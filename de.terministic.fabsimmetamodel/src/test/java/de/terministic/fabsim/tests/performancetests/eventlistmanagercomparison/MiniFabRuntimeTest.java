@@ -1,6 +1,7 @@
 package de.terministic.fabsim.tests.performancetests.eventlistmanagercomparison;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,7 @@ import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
+@Disabled("Disabled, includes only performance tests")
 public class MiniFabRuntimeTest {
 
 	private FabModel buildModel() {

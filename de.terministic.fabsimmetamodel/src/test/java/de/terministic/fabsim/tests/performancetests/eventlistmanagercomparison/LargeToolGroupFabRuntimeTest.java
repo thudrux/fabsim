@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,7 @@ import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 
+@Disabled("Disabled, includes only performance tests")
 public class LargeToolGroupFabRuntimeTest {
 
 	private final long SECOND = 1000L;
