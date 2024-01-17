@@ -1,6 +1,7 @@
 package de.terministic.fabsim.core;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,7 +13,8 @@ public class SimulationEngine {
 	protected final IEventListManager eventList;
 	protected long currentSimTime = 0L;
 	protected IModel model;
-	private final ArrayList<SimEventListener> listenerList = new ArrayList<>();
+	private ArrayList<SimEventListener> listenerList = new ArrayList<>();
+	private LinkedHashMap<Class, ArrayList<SimEventListener>> specificListenerMap = new LinkedHashMap<>();
 	protected ISimEventFactory eventFactory;
 	long eventCounter = 0L;
 	
@@ -30,6 +32,14 @@ public class SimulationEngine {
 
 	}
 
+	public void addListenerForSpecificEvents(SimEventListener listener, List<Class> eventTypes) {
+		for (Class c:eventTypes) {
+			if (!specificListenerMap.containsKey(c)) {
+				specificListenerMap.put(c, new ArrayList<SimEventListener>());
+			}
+			specificListenerMap.get(c).add(listener);
+		}
+	}
 	public void addListener(final SimEventListener listener) {
 		this.listenerList.add(listener);
 	}
@@ -75,6 +85,9 @@ public class SimulationEngine {
 	}
 
 	public void notifyListener(final ISimEvent event) {
+		for (final SimEventListener listener : specificListenerMap.get(event.getClass())) {
+			listener.notify(event);
+		}
 		for (final SimEventListener listener : this.listenerList) {
 			listener.notify(event);
 		}
@@ -110,7 +123,7 @@ public class SimulationEngine {
 		while (this.eventList.size() > 0 ) {
 			final ISimEvent event = this.eventList.getNextEvent();
 			if (event.getEventTime() < this.currentSimTime) {
-				throw new SimulatorEngineException(String.format("Event (%s) was scheduled at (%d) before current simulation time (%d)", event.getClass().getName(),event.getEventTime(), getTime()));
+				throw new SimulatorEngineException(String.format("Event (%s) was scheduled at (%d) before current simulation time (%d)", event.getClass().getName(),event.getEventTime(), this.currentSimTime));
 			}
 			if (simEndCondition.isConditionFulfilled(event)) {
 				break;
