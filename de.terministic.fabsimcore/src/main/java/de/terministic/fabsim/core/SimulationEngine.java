@@ -83,21 +83,12 @@ public class SimulationEngine {
 	public void runSimulation(final long endTime) {
 			eventList.scheduleEvent(new DummyEvent(model, Long.MAX_VALUE, null, null));
 			eventList.setSimulationEndTime(endTime);
-			boolean logStart = false;
-	//		logger.debug("Simulation run starting (Number of resolved events was: {} events left in event list: {})",
-	//				eventCounter, eventList.size());
-	//		System.out.println("Event list size is " + this.eventList.size());
+
 			while (this.eventList.size() > 0 && this.currentSimTime <= endTime) {
-	//			if (eventCounter > 17138) {
-	//			System.out.println(eventList.toString());
-	//			}
+
 				final ISimEvent event = this.eventList.getNextEvent();
 				eventCounter++;
-	//			System.out.println("[" + event.getEventTime() + "] Resolving event: " + event);
 				if (event.getEventTime() < this.currentSimTime) {
-					System.out.println("EventTime: " + event.getEventTime() + " EventCouter= " + eventCounter);
-					System.out.println("Event (" + event.getClass() + ") was scheduled before(" + event.getEventTime()
-							+ ") current simulation time(" + getTime() + ")");
 					throw new SimulatorEngineException("Event (" + event.getClass() + ") was scheduled before("
 							+ event.getEventTime() + ") current simulation time(" + getTime() + ")");
 				}
@@ -105,25 +96,32 @@ public class SimulationEngine {
 				if (this.currentSimTime > endTime) {
 					break;
 				} else {
-	//				if ((event.getComponent() != null)) {// &&
-	//														// (event.getComponent().getName().equals("ToolGroup_0")))
-	//														// {
-	//					this.logger.info("[{}] Resolving event: {}", getTime(), event);
-	//				}
+
 					event.resolveEvent();
 					notifyListener(event);
-					// if (eventCounter % 1000000 == 0) {
-					// logger.trace("At {} there are {} events left in the event
-					// list", event.getTime(), eventList.size());
-					// }
+
 				}
 			}
 			this.currentSimTime = endTime;
-	//		logger.debug("Simulation run completed(Number of resolved events was: {} events left in event list: {})",
-	//				eventCounter, eventList.size());
-			// eventList.logEventListState();
+
 		}
 
+	public void runSimulation(final AbstractSimEndCondition simEndCondition) {
+		while (this.eventList.size() > 0 ) {
+			final ISimEvent event = this.eventList.getNextEvent();
+			if (event.getEventTime() < this.currentSimTime) {
+				throw new SimulatorEngineException(String.format("Event (%s) was scheduled at (%d) before current simulation time (%d)", event.getClass().getName(),event.getEventTime(), getTime()));
+			}
+			if (simEndCondition.isConditionFulfilled(event)) {
+				break;
+			} else {
+				this.currentSimTime = event.getEventTime();
+				event.resolveEvent();
+				notifyListener(event);
+			}
+		}
+	}
+	
 	public void setEventFactory(final ISimEventFactory eventFactory) {
 		this.eventFactory = eventFactory;
 	}
