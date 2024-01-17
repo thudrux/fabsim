@@ -106,7 +106,7 @@ public class SimulationEngine {
 
 		}
 
-	public void runSimulation(final AbstractSimEndCondition simEndCondition) {
+	public void runSimulation(final ISimEndCondition simEndCondition) {
 		while (this.eventList.size() > 0 ) {
 			final ISimEvent event = this.eventList.getNextEvent();
 			if (event.getEventTime() < this.currentSimTime) {

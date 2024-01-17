@@ -1,6 +1,6 @@
 package de.terministic.fabsim.core;
 
-public class MinTimeSimulationEndCondition extends AbstractSimEndCondition {
+public class MinTimeSimulationEndCondition implements ISimEndCondition {
 
 	private final long minTime;
 
