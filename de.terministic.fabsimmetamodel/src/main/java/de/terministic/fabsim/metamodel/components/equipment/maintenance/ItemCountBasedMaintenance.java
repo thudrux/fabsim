@@ -7,14 +7,14 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.AbstractComponent;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 
 public class ItemCountBasedMaintenance extends AbstractMaintenance {
 	private final int count;
 	private final ItemCountBasedMaintenanceListener listener;
 	private final HashMap<AbstractResource, Integer> finishedCountMap;
 
-	public ItemCountBasedMaintenance(FabModel model, final String name, final IDuration duration,
+	public ItemCountBasedMaintenance(FabModel model, final String name, final IValue duration,
 			final int count) {
 		super(model, name, duration);
 		this.count = count;
@@ -38,7 +38,7 @@ public class ItemCountBasedMaintenance extends AbstractMaintenance {
 
 	@Override
 	public long getDuration() {
-		return this.duration.getDuration();
+		return this.duration.getValue();
 	}
 
 	@Override

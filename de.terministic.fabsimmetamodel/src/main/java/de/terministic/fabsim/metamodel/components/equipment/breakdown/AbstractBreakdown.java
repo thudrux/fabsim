@@ -6,18 +6,18 @@ import java.util.LinkedHashMap;
 import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
 
 public abstract class AbstractBreakdown extends AbstractModelElement implements IBreakdown {
 	protected String name;
-	protected IDuration duration;
+	protected IValue duration;
 	protected HashMap<AbstractResource, Long> nextOccuranceOnTool = new LinkedHashMap<>();
 	protected long defaultFirstOccurance = 0L;
 	protected FabModel model;
 
-	public AbstractBreakdown(FabModel model, final String name, final IDuration timeToRepair) {
+	public AbstractBreakdown(FabModel model, final String name, final IValue timeToRepair) {
 		super(model);
 		this.name = name;
 		this.duration = timeToRepair;
@@ -93,7 +93,7 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 		return event;
 	}
 
-	public void setDuration(final IDuration duration) {
+	public void setDuration(final IValue duration) {
 		this.duration = duration;
 	}
 

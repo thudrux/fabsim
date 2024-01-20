@@ -2,7 +2,7 @@ package de.terministic.fabsim.core.duration;
 
 import java.util.Random;
 
-public class ExponentialDuration implements IDuration {
+public class ExponentialDuration implements IValue {
 
 	long mean;
 	Random rand;
@@ -18,12 +18,12 @@ public class ExponentialDuration implements IDuration {
 	}
 
 	@Override
-	public long getDuration() {
+	public long getValue() {
 		return Math.round(Math.log(1.0 - this.rand.nextDouble()) * (-this.mean));
 	}
 
 	@Override
-	public long getAvgDuration() {
+	public long getAvgValue() {
 		return mean;
 	}
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.core.duration.ConstantDurationObject;
 
@@ -22,13 +22,13 @@ public class SimTimeBasedBreakdownTest {
 	 */
 	@Test
 	public void creationTest() {
-		IDuration mttr = new ConstantDurationObject(10L);
-		IDuration mtbf = new ConstantDurationObject(7L);
+		IValue mttr = new ConstantDurationObject(10L);
+		IValue mtbf = new ConstantDurationObject(7L);
 		FabModel model = new FabModel();
 		SimTimeBasedBreakdown breakdown = new SimTimeBasedBreakdown(model, "New Breakdown", mttr, mtbf);
 		Assertions.assertEquals("New Breakdown", breakdown.getName());
 		Assertions.assertEquals(10L, breakdown.getDuration());
-		Assertions.assertEquals(7L, breakdown.getTimeBetweenBreakdowns().getDuration());
+		Assertions.assertEquals(7L, breakdown.getTimeBetweenBreakdowns().getValue());
 	}
 
 }

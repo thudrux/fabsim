@@ -7,14 +7,14 @@ import de.terministic.fabsim.metamodel.AbstractSource;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.equipment.InvalidEventForResourceException;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
 public class Source extends AbstractSource {
 	private Recipe recipe;
 
-	protected IDuration interArrivalTime;
+	protected IValue interArrivalTime;
 	private boolean createFirstAtTimeZero = false;
 
 	private Product product;
@@ -51,14 +51,14 @@ public class Source extends AbstractSource {
 		final BasicFlowItem flowItem = new BasicFlowItem((FabModel) getSimulationEngine().getModel(), product);
 		this.outstandingEvents.remove(event);
 		if (this.outstandingEvents.size() == 0) {
-			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
+			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getValue();
 			createAndScheduleNextCreationEvent(product, nextCreationTime);
 		}
 		sendFlowItemToResource(flowItem, ((FabModel) getModel()).getRouting());
 		return flowItem;
 	}
 
-	public IDuration getInterArrivalTime() {
+	public IValue getInterArrivalTime() {
 		return this.interArrivalTime;
 	}
 
@@ -80,7 +80,7 @@ public class Source extends AbstractSource {
 		if (this.createFirstAtTimeZero) {
 			createAndScheduleNextCreationEvent(this.product, 0L);
 		} else {
-			createAndScheduleNextCreationEvent(this.product, this.interArrivalTime.getDuration());
+			createAndScheduleNextCreationEvent(this.product, this.interArrivalTime.getValue());
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Source extends AbstractSource {
 		this.createFirstAtTimeZero = createFirstAtTimeZero;
 	}
 
-	public void setInterArrivalTime(final IDuration interArrivalTime) {
+	public void setInterArrivalTime(final IValue interArrivalTime) {
 		this.interArrivalTime = interArrivalTime;
 
 	}
@@ -121,7 +121,7 @@ public class Source extends AbstractSource {
 
 	@Override
 	public long getAvgInterarrivalTime() {
-		return interArrivalTime.getAvgDuration();
+		return interArrivalTime.getAvgValue();
 	}
 
 	@Override

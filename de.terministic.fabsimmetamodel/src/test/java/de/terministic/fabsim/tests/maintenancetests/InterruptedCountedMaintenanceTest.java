@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -37,7 +37,7 @@ public class InterruptedCountedMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		IDuration obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
+		IValue obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
 		model.getSimComponentFactory().createItemBasedMaintenanceAndAddToToolGroup("Maintenance1", obj10, 10,
 				toolGroup);
 

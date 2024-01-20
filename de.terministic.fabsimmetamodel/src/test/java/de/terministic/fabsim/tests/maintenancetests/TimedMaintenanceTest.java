@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -36,8 +36,8 @@ public class TimedMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		IDuration obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
-		IDuration obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IValue obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
+		IValue obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3,
 				obj20, toolGroup);// name, duration, simtime, toolGroup

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -63,8 +63,8 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsIdleTest() {
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(23L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(23L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -86,8 +86,8 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsProductiveTest() {
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -115,12 +115,12 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownStateWhileToolIsInMaintenanceTest() {
-		IDuration obj7 = model.getDurationObjectFactory().createConstantDurationObject(7L);
-		IDuration obj19 = model.getDurationObjectFactory().createConstantDurationObject(19L);
+		IValue obj7 = model.getDurationObjectFactory().createConstantDurationObject(7L);
+		IValue obj19 = model.getDurationObjectFactory().createConstantDurationObject(19L);
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup("SmallMaintenance", obj7,
 				obj19, (ToolGroup) toolGroup);
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(20L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -149,8 +149,8 @@ public class BreakdownStateChangeTest {
 	@Test
 	public void breakdownStateWhileToolIsInSetupTest() {
 		toolGroup.setInitialSetup(s2);
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
 
@@ -181,13 +181,13 @@ public class BreakdownStateChangeTest {
 
 	@Test
 	public void breakdownDuringToolBreakdownWhileProductiveTest() {
-		IDuration mttr1 = model.getDurationObjectFactory().createConstantDurationObject(3L);
-		IDuration mtbf1 = model.getDurationObjectFactory().createConstantDurationObject(53L);
+		IValue mttr1 = model.getDurationObjectFactory().createConstantDurationObject(3L);
+		IValue mtbf1 = model.getDurationObjectFactory().createConstantDurationObject(53L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("FirstBreakdown", mttr1,
 				mtbf1, toolGroup);
 
-		IDuration mttr2 = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf2 = model.getDurationObjectFactory().createConstantDurationObject(55L);
+		IValue mttr2 = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf2 = model.getDurationObjectFactory().createConstantDurationObject(55L);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SecondBreakdown", mttr2,
 				mtbf2, toolGroup);
 

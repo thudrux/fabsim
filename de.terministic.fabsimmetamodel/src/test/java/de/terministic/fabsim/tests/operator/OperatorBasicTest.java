@@ -16,7 +16,7 @@ import de.terministic.fabsim.metamodel.AbstractSink;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -269,8 +269,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(100);
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
@@ -299,8 +299,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(10);
-		IDuration mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IDuration mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
+		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);

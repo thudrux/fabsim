@@ -13,7 +13,7 @@ import de.terministic.fabsim.metamodel.AbstractFixedModelElement;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.AbstractOperatorGroup;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 
@@ -40,13 +40,13 @@ public class ProcessStep extends AbstractFixedModelElement {
 	private List<Program> programs;
 
 	/** The load time. */
-	private final IDuration loadTime;
+	private final IValue loadTime;
 
 	/** The duration. */
-	private IDuration duration;
+	private IValue duration;
 
 	/** The unload time. */
-	private final IDuration unloadTime;
+	private final IValue unloadTime;
 
 	/** Process type has influence on duration calculation */
 	private final ProcessType processType;
@@ -91,8 +91,8 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 *            the setup details
 	 */
 	public ProcessStep(FabModel model, final String name, final AbstractComponent component,
-			final AbstractOperatorGroup opGroup, final IDuration loadTime,
-			final IDuration duration, final IDuration unloadTime,
+			final AbstractOperatorGroup opGroup, final IValue loadTime,
+			final IValue duration, final IValue unloadTime,
 			final BatchDetails batchDetails, final SetupState setupDetails, final ProcessType type) {
 		super(model, name);
 
@@ -142,9 +142,9 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 */
 	public long getDuration(AbstractFlowItem item) {
 		if (processType == ProcessType.WAFER) {
-			return item.getSize() * this.duration.getDuration();
+			return item.getSize() * this.duration.getValue();
 		}
-		return this.duration.getDuration();
+		return this.duration.getValue();
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 * @return the load time
 	 */
 	public long getLoadTime() {
-		return this.loadTime.getDuration();
+		return this.loadTime.getValue();
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 * @return the unload time
 	 */
 	public long getUnloadTime() {
-		return this.unloadTime.getDuration();
+		return this.unloadTime.getValue();
 	}
 
 	public void setBatchDetails(final BatchDetails batchDetails) {
@@ -202,7 +202,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 * @param duration
 	 *            the new duration
 	 */
-	public void setDuration(final IDuration duration) {
+	public void setDuration(final IValue duration) {
 		this.duration = duration;
 
 	}
@@ -217,10 +217,10 @@ public class ProcessStep extends AbstractFixedModelElement {
 
 	public long getAvgDuration() {
 		if (processType == ProcessType.WAFER) {
-			return this.avgContainerSize * this.duration.getDuration();
+			return this.avgContainerSize * this.duration.getValue();
 		}
 
-		return duration.getAvgDuration();
+		return duration.getAvgValue();
 	}
 
 	// @Override

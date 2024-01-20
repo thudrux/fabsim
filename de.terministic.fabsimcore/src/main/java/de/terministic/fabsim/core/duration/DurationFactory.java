@@ -7,17 +7,17 @@ import de.terministic.fabsim.core.IModel;
 
 public class DurationFactory {
 
-	private final TreeMap<Long, ConstantDuration> constMap = new TreeMap<>();
+	private final TreeMap<Long, ConstantValue> constMap = new TreeMap<>();
 	private final TreeMap<Long, ExponentialDuration> expMap = new TreeMap<>();
 
 	public DurationFactory(final IModel model) {
 	}
 
-	public ConstantDuration createConstantDurationObject(final long duration) {
+	public ConstantValue createConstantDurationObject(final long duration) {
 		if (this.constMap.containsKey(duration))
 			return this.constMap.get(duration);
 		else {
-			final ConstantDuration result = new ConstantDuration(duration);
+			final ConstantValue result = new ConstantValue(duration);
 			this.constMap.put(duration, result);
 			return result;
 		}

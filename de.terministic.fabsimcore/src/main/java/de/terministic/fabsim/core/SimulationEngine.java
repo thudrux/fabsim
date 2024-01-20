@@ -85,8 +85,10 @@ public class SimulationEngine {
 	}
 
 	public void notifyListener(final ISimEvent event) {
-		for (final SimEventListener listener : specificListenerMap.get(event.getClass())) {
-			listener.notify(event);
+		if (specificListenerMap.containsKey(event.getClass())) {
+			for (final SimEventListener listener : specificListenerMap.get(event.getClass())) {
+				listener.notify(event);
+			}
 		}
 		for (final SimEventListener listener : this.listenerList) {
 			listener.notify(event);

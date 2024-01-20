@@ -1,13 +1,13 @@
 package de.terministic.fabsim.tests.maintenancetests;
 
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.SimTimeBasedMaintenance;
 
 public class SimTimeBasedMaintenanceTestUmbrella extends SimTimeBasedMaintenance {
 	private long mockTime;
 	
-	public SimTimeBasedMaintenanceTestUmbrella(FabModel model,String name, IDuration duration, IDuration time) {
+	public SimTimeBasedMaintenanceTestUmbrella(FabModel model,String name, IValue duration, IValue time) {
 		super(model,name, duration, time);
 	}
 	

@@ -1,6 +1,6 @@
 package de.terministic.fabsim.core.duration;
 
-public class ConstantDurationObject implements IDuration {
+public class ConstantDurationObject implements IValue {
 
 	private final long duration;
 
@@ -9,12 +9,12 @@ public class ConstantDurationObject implements IDuration {
 	}
 
 	@Override
-	public long getDuration() {
+	public long getValue() {
 		return this.duration;
 	}
 
 	@Override
-	public long getAvgDuration() {
+	public long getAvgValue() {
 		return this.duration;
 	}
 

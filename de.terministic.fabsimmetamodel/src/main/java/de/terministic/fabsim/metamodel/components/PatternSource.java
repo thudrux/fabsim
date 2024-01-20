@@ -21,14 +21,14 @@ public class PatternSource extends Source {
 		long nextCreationTime;
 		if (this.outstandingEvents.size() == 0) {
 			if (this.generationLoop == 0) {
-				nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
+				nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getValue();
 				this.generationLoop++;
 			} else {
 				if (this.generationLoop < 3) {
 					nextCreationTime = getSimulationEngine().getTime();
 					this.generationLoop++;
 				} else {
-					nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
+					nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getValue();
 					this.generationLoop = 0;
 				}
 			}

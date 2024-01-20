@@ -18,7 +18,7 @@ public class LotSource extends Source {
 		flowItem.setCreationTime(getTime());
 		this.outstandingEvents.remove(event);
 		if (this.outstandingEvents.size() == 0) {
-			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getDuration();
+			final long nextCreationTime = getSimulationEngine().getTime() + this.interArrivalTime.getValue();
 			createAndScheduleNextCreationEvent(product, nextCreationTime);
 		}
 		sendFlowItemToResource(flowItem, ((FabModel) getModel()).getRouting());

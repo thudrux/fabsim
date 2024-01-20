@@ -9,10 +9,10 @@ import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggered
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.AbstractComponent;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.duration.IDuration;
+import de.terministic.fabsim.core.duration.IValue;
 
 public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements IMaintenance {
-	private final IDuration processTime;
+	private final IValue processTime;
 	private final HashMap<AbstractResource, Long> timeSinceLastMaintMap = new LinkedHashMap<>();
 	private final HashMap<AbstractResource, Long> lastStartMap = new LinkedHashMap<>();
 	private final HashMap<AbstractResource, Long> timeUntilNextMap = new LinkedHashMap<>();
@@ -20,8 +20,8 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 	private final ProcessTimeBasedMaintenanceListener listener;
 	private final HashMap<AbstractResource, Boolean> inInteruptionMap = new LinkedHashMap<>();
 
-	public ProcessTimeBasedMaintenance(FabModel model, final String name, final IDuration duration,
-			final IDuration processTime) {
+	public ProcessTimeBasedMaintenance(FabModel model, final String name, final IValue duration,
+			final IValue processTime) {
 		super(model, name, duration);
 		this.processTime = processTime;
 		this.listener = new ProcessTimeBasedMaintenanceListener(this);
@@ -30,7 +30,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 	@Override
 	public void addTool(final AbstractResource resource) {
 		this.timeSinceLastMaintMap.put(resource, 0L);
-		timeUntilNextMap.put(resource, processTime.getDuration());
+		timeUntilNextMap.put(resource, processTime.getValue());
 		inInteruptionMap.put(resource, false);
 	}
 
@@ -59,7 +59,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 	@Override
 	public void maintenanceFinished(final AbstractResource resource) {
 		this.timeSinceLastMaintMap.put(resource, 0L);
-		timeUntilNextMap.put(resource, processTime.getDuration());
+		timeUntilNextMap.put(resource, processTime.getValue());
 	}
 
 	public void notifyOfProcessFinishedAt(final AbstractComponent component) {
@@ -77,7 +77,7 @@ public class ProcessTimeBasedMaintenance extends AbstractMaintenance implements 
 			final long newTotal = this.timeSinceLastMaintMap.get(resource) + getTime()
 					- this.lastStartMap.remove(resource);
 			if (component.getName().equals("ToolGroup_5")) {
-				logger.trace("updating new total to {} of on avg. {}", newTotal, processTime.getAvgDuration());
+				logger.trace("updating new total to {} of on avg. {}", newTotal, processTime.getAvgValue());
 			}
 			this.timeSinceLastMaintMap.put(resource, newTotal);
 			if (maintForecastMap.get(resource).getEventTime() > getTime()) {

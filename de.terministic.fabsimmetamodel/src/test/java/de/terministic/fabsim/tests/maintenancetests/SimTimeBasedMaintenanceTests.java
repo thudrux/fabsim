@@ -33,7 +33,7 @@ public class SimTimeBasedMaintenanceTests {
 		SimTimeBasedMaintenance maint = new SimTimeBasedMaintenance(model, "maint", obj3, obj5);
 		Assertions.assertEquals("maint", maint.getName());
 		Assertions.assertEquals(3L, maint.getDuration());
-		Assertions.assertEquals(5L, maint.getTimeBetweenMaintenances().getDuration());
+		Assertions.assertEquals(5L, maint.getTimeBetweenMaintenances().getValue());
 	}
 
 	@Test
