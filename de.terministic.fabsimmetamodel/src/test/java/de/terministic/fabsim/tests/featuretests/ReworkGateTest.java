@@ -37,7 +37,7 @@ public class ReworkGateTest {
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("ProcessStep", tg1, 3L, ProcessType.LOT,
 				recipe1);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Test", gate, 0L, ProcessType.LOT, recipe1,
-				null, details);
+				ReworkGate.getProcessDetailsKey(), details);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("SinkStep", sink, 0L, ProcessType.LOT, recipe1);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe1);
 
