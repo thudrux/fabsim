@@ -9,6 +9,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 
 public class ReworkGate extends AbstractResource {
+	private static final String processDetailsKey= "REWORK_GATE_PROPABILITY";
 	private long reworkCounter = 0L;
 	private long testedItems = 0L;
 	private Random rand = new Random();
@@ -47,7 +48,7 @@ public class ReworkGate extends AbstractResource {
 	@Override
 	public void onFlowItemArrival(FlowItemArrivalEvent event) {
 		AbstractFlowItem item = (AbstractFlowItem) event.getFlowItem();
-		ReworkDetails details = (ReworkDetails) item.getCurrentStep().getDetails();
+		ReworkDetails details = (ReworkDetails) item.getCurrentStep().getDetails(processDetailsKey);
 		setTestedItems(getTestedItems() + 1);
 		if (rand.nextDouble() <= details.getReworkProbability()) {
 			item.setCurrentStepNumber(details.getReworkStepNumber());
@@ -72,6 +73,10 @@ public class ReworkGate extends AbstractResource {
 
 	public void setTestedItems(long testedItems) {
 		this.testedItems = testedItems;
+	}
+
+	public static String getProcessDetailsKey() {
+		return processDetailsKey;
 	}
 
 }

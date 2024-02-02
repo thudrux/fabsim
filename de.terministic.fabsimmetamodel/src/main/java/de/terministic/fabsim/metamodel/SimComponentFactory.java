@@ -221,10 +221,10 @@ public class SimComponentFactory {
 	}
 
 	public ProcessStep createProcessStepAndAddToRecipe(String name, AbstractResource component, long duration,
-			ProcessType type, Recipe recipe, ProcessDetails details) {
+			ProcessType type, Recipe recipe, String processDetailsKey, ProcessDetails details) {
 
 		ProcessStep step = createProcessStepAndAddToRecipe(name, component, duration, null, null, type, recipe);
-		step.setDetails(details);
+		step.addDetails(processDetailsKey,details);
 		return step;
 	}
 

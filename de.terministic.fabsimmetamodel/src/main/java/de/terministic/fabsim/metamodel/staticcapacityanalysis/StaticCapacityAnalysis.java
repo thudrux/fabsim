@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.ReworkDetails;
+import de.terministic.fabsim.metamodel.components.ReworkGate;
 import de.terministic.fabsim.metamodel.components.Source;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
@@ -149,7 +150,7 @@ public class StaticCapacityAnalysis {
 		for (int i = minStep; i <= maxStep; i++) {
 			ProcessStep step = recipe.get(i);
 			AbstractResource resource = (AbstractResource) step.getComponent();
-			if (step.getDetails() instanceof ReworkDetails) {
+			if (step.getDetails(ReworkGate.getProcessDetailsKey())!=null) {
 				// Removed this section only for Osram Project as they do not
 				// consider rework in their capa analysis
 				// ReworkDetails details = (ReworkDetails) step.getDetails();

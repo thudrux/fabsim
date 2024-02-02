@@ -19,6 +19,8 @@ import de.terministic.fabsim.metamodel.components.equipment.dedication.Dedicatio
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
 
 public abstract class AbstractTool extends AbstractResource {
+	private static final String processDetailsDedicationKey= "DEDICATION";
+	private static final String processDetailsKey= "REWORK_GATE_PROPABILITY";
 
 	protected SetupState currentSetupState;
 
@@ -234,8 +236,12 @@ public abstract class AbstractTool extends AbstractResource {
 
 	public Collection<AbstractFlowItem> dedicationFilter(Collection<AbstractFlowItem> possibleItems) {
 		possibleItems.removeIf(item -> !this.dedications
-				.contains(((DedicationDetails) item.getCurrentStep().getDetails()).getNecessaryQualification()));
+				.contains(((DedicationDetails) item.getCurrentStep().getDetails(processDetailsDedicationKey)).getNecessaryQualification()));
 		return possibleItems;
+	}
+
+	public static String getProcessDetailsDedicationkey() {
+		return processDetailsDedicationKey;
 	}
 
 }

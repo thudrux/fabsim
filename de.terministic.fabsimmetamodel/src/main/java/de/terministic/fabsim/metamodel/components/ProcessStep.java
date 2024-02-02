@@ -6,6 +6,7 @@
 package de.terministic.fabsim.metamodel.components;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import de.terministic.fabsim.metamodel.AbstractComponent;
@@ -68,7 +69,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 		return avgContainerSize;
 	}
 
-	private ProcessDetails details;
+	private LinkedHashMap<String,ProcessDetails> processDetails = new LinkedHashMap<String, ProcessDetails>();
 
 	/**
 	 * Instantiates a new process step.
@@ -131,8 +132,8 @@ public class ProcessStep extends AbstractFixedModelElement {
 		return this.component;
 	}
 
-	public ProcessDetails getDetails() {
-		return this.details;
+	public ProcessDetails getDetails(String key) {
+		return this.processDetails.get(key);
 	}
 
 	/**
@@ -192,8 +193,8 @@ public class ProcessStep extends AbstractFixedModelElement {
 
 	}
 
-	public void setDetails(final ProcessDetails details) {
-		this.details = details;
+	public void addDetails(String key, ProcessDetails details) {
+		this.processDetails.put(key, details);
 	}
 
 	/**

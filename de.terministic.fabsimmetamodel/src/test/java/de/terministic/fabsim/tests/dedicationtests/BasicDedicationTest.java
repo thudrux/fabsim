@@ -43,10 +43,10 @@ public class BasicDedicationTest {
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");
 		tgStep1 = model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 2L,
 				ProcessType.LOT, recipe);
-		tgStep1.setDetails(new DedicationDetails(dedication1));
+		tgStep1.addDetails(AbstractTool.getProcessDetailsDedicationkey(), new DedicationDetails(dedication1));
 		tgStep2 = model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", toolGroup, 3L,
 				ProcessType.LOT, recipe);
-		tgStep2.setDetails(new DedicationDetails(dedication2));
+		tgStep2.addDetails(AbstractTool.getProcessDetailsDedicationkey(),new DedicationDetails(dedication2));
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 
