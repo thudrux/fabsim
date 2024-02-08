@@ -15,11 +15,11 @@ public interface IBreakdown {
 
 	public String getName();
 
-	public long getTimeOfFirstOccurance(AbstractResource resource);
+	public long getTimeOfFirstOccurrence(AbstractResource resource);
 
-	public long getTimeOfNextOccurance(AbstractResource resource);
+	public long getTimeOfNextOccurrence(AbstractResource resource);
 
-	public long getTimeTillNextOccuranceOnTool(AbstractResource resource);
+	public long getTimeTillNextOccurrenceOnTool(AbstractResource resource);
 
 	public void initialize();
 

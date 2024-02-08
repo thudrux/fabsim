@@ -14,7 +14,7 @@ public class SimTimeBasedBreakdown extends AbstractBreakdown {
 	}
 
 	@Override
-	protected long calculateNextOccuranceOnTool(final AbstractResource resource) {
+	protected long calculateNextOccurrenceOnTool(final AbstractResource resource) {
 		return getTime() + this.timeBetweenFailures.getValue();
 
 	}
@@ -25,11 +25,11 @@ public class SimTimeBasedBreakdown extends AbstractBreakdown {
 	}
 
 	@Override
-	public long getFirstDefaultOccurance() {
+	public long getFirstDefaultOccurrence() {
 		if (this.defaultFirstOccurance == 0L)
 			return this.timeBetweenFailures.getValue();
 		else
-			return super.getFirstDefaultOccurance();
+			return super.getFirstDefaultOccurrence();
 	}
 
 	public IValue getTimeBetweenBreakdowns() {

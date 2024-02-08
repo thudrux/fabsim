@@ -25,20 +25,20 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 
 	@Override
 	public void addTool(final AbstractResource resource) {
-		this.nextOccuranceOnTool.put(resource, getFirstDefaultOccurance());
+		this.nextOccuranceOnTool.put(resource, getFirstDefaultOccurrence());
 	}
 
 	@Override
 	public void breakdownFinished(final AbstractResource tool) {
-		final long nextOccurance = calculateNextOccuranceOnTool(tool);
+		final long nextOccurance = calculateNextOccurrenceOnTool(tool);
 		this.logger.trace("Next occurance of {} at {} will be at {} ", this, tool, nextOccurance);
 		this.nextOccuranceOnTool.put(tool, nextOccurance);
 		scheduleNewBreakdownTriggeredEvent(tool);
 	}
 
-	protected abstract long calculateNextOccuranceOnTool(AbstractResource resource);
+	protected abstract long calculateNextOccurrenceOnTool(AbstractResource resource);
 
-	public long getFirstDefaultOccurance() {
+	public long getFirstDefaultOccurrence() {
 		return this.defaultFirstOccurance;
 	}
 
@@ -57,17 +57,17 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 	}
 
 	@Override
-	public long getTimeOfFirstOccurance(final AbstractResource abstractTool) {
+	public long getTimeOfFirstOccurrence(final AbstractResource abstractTool) {
 		return this.defaultFirstOccurance;
 	}
 
 	@Override
-	public long getTimeOfNextOccurance(final AbstractResource abstractTool) {
+	public long getTimeOfNextOccurrence(final AbstractResource abstractTool) {
 		return this.nextOccuranceOnTool.get(abstractTool);
 	}
 
 	@Override
-	public long getTimeTillNextOccuranceOnTool(final AbstractResource tool) {
+	public long getTimeTillNextOccurrenceOnTool(final AbstractResource tool) {
 		final long occurance = this.nextOccuranceOnTool.get(tool);
 		return occurance - getTime();
 	}
@@ -80,14 +80,14 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 	}
 
 	public BreakdownTriggeredEvent scheduleNewBreakdownTriggeredEvent(final AbstractResource resource) {
-		final BreakdownTriggeredEvent event = new BreakdownTriggeredEvent(getModel(), getTimeOfNextOccurance(resource),
+		final BreakdownTriggeredEvent event = new BreakdownTriggeredEvent(getModel(), getTimeOfNextOccurrence(resource),
 				resource, this);
 		getSimulationEngine().getEventList().scheduleEvent(event);
 		return event;
 	}
 
 	public BreakdownTriggeredEvent scheduleFirstBreakdownTriggeredEvent(final AbstractResource resource) {
-		final BreakdownTriggeredEvent event = new BreakdownTriggeredEvent(getModel(), getTimeOfNextOccurance(resource),
+		final BreakdownTriggeredEvent event = new BreakdownTriggeredEvent(getModel(), getTimeOfNextOccurrence(resource),
 				resource, this);
 		getSimulationEngine().getEventList().scheduleEvent(event);
 		return event;

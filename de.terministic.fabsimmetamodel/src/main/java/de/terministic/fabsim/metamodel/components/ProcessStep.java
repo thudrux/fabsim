@@ -63,7 +63,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 	 * The avg size of a lot or batch being processed, this value is used to
 	 * determine avg processing time for wafer based processing time
 	 */
-	private final long avgContainerSize = 24L;
+	private long avgContainerSize = 24L;
 
 	public long getAvgContainerSize() {
 		return avgContainerSize;
