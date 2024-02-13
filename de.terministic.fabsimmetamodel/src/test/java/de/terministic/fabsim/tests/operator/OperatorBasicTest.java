@@ -269,8 +269,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(100);
-		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IValue mttr = model.getValueObjectFactory().createConstantValueObject(5L);
+		IValue mtbf = model.getValueObjectFactory().createConstantValueObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);
@@ -299,8 +299,8 @@ public class OperatorBasicTest {
 		this.toolGroup = (AbstractHomogeneousResourceGroup) model.getSimComponentFactory().createToolGroup("ToolGroup",
 				1, ProcessingType.LOT);
 		this.toolGroup.setOpProcessingPercentage(10);
-		IValue mttr = model.getDurationObjectFactory().createConstantDurationObject(5L);
-		IValue mtbf = model.getDurationObjectFactory().createConstantDurationObject(47L);
+		IValue mttr = model.getValueObjectFactory().createConstantValueObject(5L);
+		IValue mtbf = model.getValueObjectFactory().createConstantValueObject(47L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf,
 				toolGroup);

@@ -188,7 +188,7 @@ public class FabModel implements IModel{
 		return this.dispatchController;
 	}
 
-	public DurationFactory getDurationObjectFactory() {
+	public DurationFactory getValueObjectFactory() {
 		return this.durationFactory;
 	}
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
@@ -39,10 +40,10 @@ public class DelayTest {
 				ProcessType.LOT, recipe);
 		tgStep2 = model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", toolGroup2, 3L,
 				ProcessType.LOT, recipe);
-		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
+		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step3", sink, 0L, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
-
-		source = (Source) model.getSimComponentFactory().createSource("Source1", product, 1L);
+		IValue interarrivalTime =model.getValueObjectFactory().createExponentialValueObject(2);
+		source = (Source) model.getSimComponentFactory().createSource("Source1", product, interarrivalTime);
 
 		engine = new FabSimulationEngine();
 	}
@@ -72,7 +73,7 @@ public class DelayTest {
 	@Test
 	public void cycleTimeTestOneJobWithTwoMachines() {
 		source.setCreateFirstAtTimeZero(true);
-		source.setInterArrivalTime(model.getDurationObjectFactory().createConstantDurationObject(10L));
+		source.setInterArrivalTime(model.getValueObjectFactory().createConstantValueObject(10L));
 		FirstCycleTimeTracker cycleTime = new FirstCycleTimeTracker();
 		engine.init(model);
 		engine.addListener(cycleTime);
@@ -87,8 +88,8 @@ public class DelayTest {
 		// set the delays of the machines
 		long durationStep1 = 7L;
 		long durationStep2 = 11L;
-		tgStep1.setDuration(model.getDurationObjectFactory().createConstantDurationObject(durationStep1));
-		tgStep2.setDuration(model.getDurationObjectFactory().createConstantDurationObject(durationStep2));
+		tgStep1.setDuration(model.getValueObjectFactory().createConstantValueObject(durationStep1));
+		tgStep2.setDuration(model.getValueObjectFactory().createConstantValueObject(durationStep2));
 		engine.init(model);
 		engine.addListener(cycleTime);
 		engine.runSimulation(200L); // run time of simulation should not matter

@@ -155,8 +155,8 @@ public class SimComponentFactory {
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component, final IValue durObj,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type) {
-		final ConstantValue loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantValue unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
+		final ConstantValue unloadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
 
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
@@ -165,9 +165,9 @@ public class SimComponentFactory {
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component, final long duration,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type) {
-		final ConstantValue loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantValue durObj = this.model.getDurationObjectFactory().createConstantDurationObject(duration);
-		final ConstantValue unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
+		final ConstantValue durObj = this.model.getValueObjectFactory().createConstantValueObject(duration);
+		final ConstantValue unloadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
 
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
@@ -176,10 +176,10 @@ public class SimComponentFactory {
 
 	public ProcessStep createProcessStep(final String name, final AbstractComponent component, final long loadTime,
 			final long duration, final long unloadTime, ProcessType type) {
-		final ConstantValue loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(loadTime);
-		final ConstantValue durObj = this.model.getDurationObjectFactory().createConstantDurationObject(duration);
-		final ConstantValue unloadObj = this.model.getDurationObjectFactory()
-				.createConstantDurationObject(unloadTime);
+		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(loadTime);
+		final ConstantValue durObj = this.model.getValueObjectFactory().createConstantValueObject(duration);
+		final ConstantValue unloadObj = this.model.getValueObjectFactory()
+				.createConstantValueObject(unloadTime);
 		return new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, null, null, type);
 	}
 
@@ -192,10 +192,10 @@ public class SimComponentFactory {
 			final AbstractOperatorGroup operatorGroup, final long loadTime, final long duration, final long unloadTime,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type, final Recipe recipe) {
 		this.logger.trace("OperatorGroup needed for step {} is {}", name, operatorGroup);
-		final ConstantValue loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(loadTime);
-		final ConstantValue durObj = this.model.getDurationObjectFactory().createConstantDurationObject(duration);
-		final ConstantValue unloadObj = this.model.getDurationObjectFactory()
-				.createConstantDurationObject(unloadTime);
+		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(loadTime);
+		final ConstantValue durObj = this.model.getValueObjectFactory().createConstantValueObject(duration);
+		final ConstantValue unloadObj = this.model.getValueObjectFactory()
+				.createConstantValueObject(unloadTime);
 
 		final ProcessStep step = new ProcessStep(model, name, component, operatorGroup, loadObj, durObj, unloadObj,
 				batchDetails, setupState, type);
@@ -211,9 +211,9 @@ public class SimComponentFactory {
 	public ProcessStep createProcessStepAndAddToRecipe(final String name, final AbstractComponent component,
 			final long duration, final BatchDetails batchDetails, final SetupState setupState, ProcessType type,
 			final Recipe recipe) {
-		final ConstantValue loadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
-		final ConstantValue durObj = this.model.getDurationObjectFactory().createConstantDurationObject(duration);
-		final ConstantValue unloadObj = this.model.getDurationObjectFactory().createConstantDurationObject(0L);
+		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
+		final ConstantValue durObj = this.model.getValueObjectFactory().createConstantValueObject(duration);
+		final ConstantValue unloadObj = this.model.getValueObjectFactory().createConstantValueObject(0L);
 		final ProcessStep step = new ProcessStep(model, name, component, null, loadObj, durObj, unloadObj, batchDetails,
 				setupState, type);
 		recipe.add(step);
@@ -322,8 +322,8 @@ public class SimComponentFactory {
 
 	public AbstractSource createSource(final String name, final Product product, final long interarrivalTime) {
 		final LotSource source = (LotSource) createSource(name);
-		final ConstantValue interarrivalTimeObj = this.model.getDurationObjectFactory()
-				.createConstantDurationObject(interarrivalTime);
+		final ConstantValue interarrivalTimeObj = this.model.getValueObjectFactory()
+				.createConstantValueObject(interarrivalTime);
 
 		source.setInterArrivalTime(interarrivalTimeObj);
 		source.setProduct(product);

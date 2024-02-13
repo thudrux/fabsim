@@ -36,8 +36,8 @@ public class WorkingWhileMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		IValue obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
-		IValue obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IValue obj3 = model.getValueObjectFactory().createConstantValueObject(3L);
+		IValue obj20 = model.getValueObjectFactory().createConstantValueObject(20L);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3,
 				obj20, toolGroup);// name, duration, simtime, toolGroup

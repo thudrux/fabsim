@@ -40,8 +40,8 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 		FabModel model = new FabModel();
 		Sink sink = (Sink) model.getSimComponentFactory().createSink();
 
-		IValue mttr = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 200, rand);
-		IValue mttf = model.getDurationObjectFactory().createExponentialDurationObject(MINUTE * 800, rand);
+		IValue mttr = model.getValueObjectFactory().createExponentialValueObject(MINUTE * 200, rand);
+		IValue mttf = model.getValueObjectFactory().createExponentialValueObject(MINUTE * 800, rand);
 		AbstractHomogeneousResourceGroup toolGroup = (ToolGroup) model.getSimComponentFactory()
 				.createToolGroup("Toolgroup", toolCount, ProcessingType.BATCH);
 		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("Breakdown", mttr, mttf,
@@ -54,8 +54,8 @@ public class FFLoggerLargeToolGroupRuntimeTest {
 				ProcessType.BATCH, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step2", sink, 0L, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
-		IValue interarrival = model.getDurationObjectFactory()
-				.createExponentialDurationObject(interarrivalTime * SECOND, rand);
+		IValue interarrival = model.getValueObjectFactory()
+				.createExponentialValueObject(interarrivalTime * SECOND, rand);
 
 		model.getSimComponentFactory().createSource("Source1", product, interarrival);
 

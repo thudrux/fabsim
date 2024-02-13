@@ -44,7 +44,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step1", toolGroup, 7L, ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink step", sink, 0L, ProcessType.LOT, recipe);
 
-		ConstantValue obj = model.getDurationObjectFactory().createConstantDurationObject(13L);
+		ConstantValue obj = model.getValueObjectFactory().createConstantValueObject(13L);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_1", product, obj);
 		source.setCreateFirstAtTimeZero(true);
@@ -97,7 +97,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink step", sink, 0L, ProcessType.LOT, recipe);
 
-		ConstantValue obj = model.getDurationObjectFactory().createConstantDurationObject(130L);
+		ConstantValue obj = model.getValueObjectFactory().createConstantValueObject(130L);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_1", product, obj);
 		source.setCreateFirstAtTimeZero(true);
@@ -145,7 +145,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink step", sink, 0L, ProcessType.LOT, recipe);
 
-		ConstantValue obj = model.getDurationObjectFactory().createConstantDurationObject(130L);
+		ConstantValue obj = model.getValueObjectFactory().createConstantValueObject(130L);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_1", product, obj);
 		source.setCreateFirstAtTimeZero(true);
@@ -194,7 +194,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink step", sink, 0L, ProcessType.LOT, recipe);
 
-		ConstantValue obj = model.getDurationObjectFactory().createConstantDurationObject(30L);
+		ConstantValue obj = model.getValueObjectFactory().createConstantValueObject(30L);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_1", product, obj);
 		source.setCreateFirstAtTimeZero(true);
@@ -243,7 +243,7 @@ public class ProductiveTimeBasedMaintenanceTest {
 				recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink step", sink, 0L, ProcessType.LOT, recipe);
 
-		ConstantValue obj = model.getDurationObjectFactory().createConstantDurationObject(30L);
+		ConstantValue obj = model.getValueObjectFactory().createConstantValueObject(30L);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 		LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_1", product, obj);
 		source.setCreateFirstAtTimeZero(true);

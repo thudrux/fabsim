@@ -36,7 +36,7 @@ public class CountedMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		IValue obj3 = model.getDurationObjectFactory().createConstantDurationObject(3L);
+		IValue obj3 = model.getValueObjectFactory().createConstantValueObject(3L);
 		model.getSimComponentFactory().createItemBasedMaintenanceAndAddToToolGroup("Maintenance1", obj3, 10, toolGroup);
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe1");

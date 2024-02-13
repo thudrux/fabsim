@@ -38,8 +38,8 @@ public class InterruptedTimedMaintenanceTest {
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
 
-		IValue obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
-		IValue obj20 = model.getDurationObjectFactory().createConstantDurationObject(20L);
+		IValue obj10 = model.getValueObjectFactory().createConstantValueObject(10L);
+		IValue obj20 = model.getValueObjectFactory().createConstantValueObject(20L);
 		model.getSimComponentFactory().createProcessTimeBasedMaintenanceAndAddToToolGroup("Maintenance1", obj10, obj20,
 				toolGroup);// name, duration, processtime, toolGroup
 

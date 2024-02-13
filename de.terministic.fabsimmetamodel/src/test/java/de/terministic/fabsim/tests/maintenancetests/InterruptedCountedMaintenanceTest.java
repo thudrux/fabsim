@@ -37,7 +37,7 @@ public class InterruptedCountedMaintenanceTest {
 		model = new FabModel();
 		sink = (Sink) model.getSimComponentFactory().createSink();
 		toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup("Toolgroup", 1, ProcessingType.LOT);
-		IValue obj10 = model.getDurationObjectFactory().createConstantDurationObject(10L);
+		IValue obj10 = model.getValueObjectFactory().createConstantValueObject(10L);
 		model.getSimComponentFactory().createItemBasedMaintenanceAndAddToToolGroup("Maintenance1", obj10, 10,
 				toolGroup);
 

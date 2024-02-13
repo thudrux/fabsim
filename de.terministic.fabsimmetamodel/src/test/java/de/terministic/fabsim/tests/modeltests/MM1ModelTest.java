@@ -54,7 +54,7 @@ public class MM1ModelTest {
 	public void cycleTimeTestWithZeroProcessingTime() {
 		FirstCycleTimeTracker tracker = new FirstCycleTimeTracker();
 		long duration = 0L;
-		tgStep.setDuration(model.getDurationObjectFactory().createConstantDurationObject(duration));
+		tgStep.setDuration(model.getValueObjectFactory().createConstantValueObject(duration));
 		engine.init(model);
 		engine.addListener(tracker);
 //		engine.addListener(new SimulationLog());
@@ -66,7 +66,7 @@ public class MM1ModelTest {
 	public void cycleTimeTestWithNonZeroProcessingTime() {
 		FirstCycleTimeTracker tracker = new FirstCycleTimeTracker();
 		long duration = 5L;
-		tgStep.setDuration(model.getDurationObjectFactory().createConstantDurationObject(duration));
+		tgStep.setDuration(model.getValueObjectFactory().createConstantValueObject(duration));
 		engine.init(model);
 		engine.addListener(tracker);
 		engine.runSimulation(100L);
