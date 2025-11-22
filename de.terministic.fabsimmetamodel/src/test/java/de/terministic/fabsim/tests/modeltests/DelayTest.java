@@ -42,7 +42,7 @@ public class DelayTest {
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step3", sink, 0L, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
-		IValue interarrivalTime =model.getValueObjectFactory().createExponentialValueObject(2);
+		IValue interarrivalTime =model.getValueObjectFactory().createConstantValueObject(1L);
 		source = (Source) model.getSimComponentFactory().createSource("Source1", product, interarrivalTime);
 
 		engine = new FabSimulationEngine();
