@@ -16,6 +16,7 @@ import de.terministic.fabsim.metamodel.components.equipment.MaintenanceFinishedE
 import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.OperatorFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.ProcessFinishedEvent;
+import de.terministic.fabsim.metamodel.components.equipment.ProcessStartEvent;
 import de.terministic.fabsim.metamodel.components.equipment.SetupFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.UnloadingFinishedEvent;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
@@ -91,6 +92,13 @@ public class FabSimEventFactory implements ISimEventFactory {
 	public ProcessFinishedEvent scheduleNewProcessFinishedEvent(final long waitTime, final AbstractResource resource,
 			final AbstractFlowItem item) {
 		final ProcessFinishedEvent event = new ProcessFinishedEvent(model, getSimulationEngine().getTime() + waitTime,
+				resource, resource.getParent(), item);
+		getSimulationEngine().getEventList().scheduleEvent(event);
+		return event;
+	}
+	public ProcessStartEvent scheduleNewProcessStartEvent(final long waitTime, final AbstractResource resource,
+			final AbstractFlowItem item) {
+		final ProcessStartEvent event = new ProcessStartEvent(model, getSimulationEngine().getTime(),
 				resource, resource.getParent(), item);
 		getSimulationEngine().getEventList().scheduleEvent(event);
 		return event;

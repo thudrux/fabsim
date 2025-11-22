@@ -7,9 +7,9 @@ import de.terministic.fabsim.metamodel.FabModel;
 public class ProcessStartEvent extends AbstractSimEvent {
 
 	private final AbstractFlowItem flowItem;
-	private final Tool tool;
+	private final AbstractResource tool;
 
-	public ProcessStartEvent(FabModel model, final long time, final Tool tool, final AbstractToolGroup toolgroup,
+	public ProcessStartEvent(FabModel model, final long time, final AbstractResource tool, final AbstractResourceGroup toolgroup,
 			final AbstractFlowItem flowItem) {
 		super(model, time, tool, flowItem);
 		this.tool = tool;
@@ -24,7 +24,6 @@ public class ProcessStartEvent extends AbstractSimEvent {
 	@Override
 	public void resolveEvent() {
 		super.resolveEvent();
-		this.tool.finishProcessingOfFlowItem(this.flowItem);
 	}
 
 }
