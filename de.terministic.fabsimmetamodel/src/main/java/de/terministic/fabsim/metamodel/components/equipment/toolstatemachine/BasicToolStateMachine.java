@@ -67,6 +67,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		setup.setProcessingToolState(pr);
 		setup.setMaintenanceToolState(maint);
 		setup.setBreakdownToolState(ud);
+		setup.setLoadingToolState(load);
 
 		maint.setStandbyToolState(sb);
 		maint.setBreakdownToolState(ud);
