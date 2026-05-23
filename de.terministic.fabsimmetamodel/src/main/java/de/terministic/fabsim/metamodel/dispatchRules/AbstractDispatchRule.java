@@ -31,6 +31,9 @@ public abstract class AbstractDispatchRule {
 	}
 
 	public abstract ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items);
+	public ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items, AbstractToolGroup tg, AbstractTool tool){
+		return this.sortWithDispatchRule(items);
+	}
 
 	public abstract ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items);
 
