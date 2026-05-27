@@ -49,6 +49,7 @@ private static long DAY = 24 * HOUR;
         model.addComponent(station2);
         ToolGroup station3 = (ToolGroup)model.getComponentFactory().createToolGroup("Station3", 1, ProcessingType.LOT);
         // add setup time of XXX
+        
         // add maintenance 30 minutes every 12 hours for the machine
         ExponentialDuration timeToMaintenace3 = model.getValueObjectFactory().createExponentialValueObject(12*HOUR);
         ConstantValue timeOfMaintenace3 = model.getValueObjectFactory().createConstantValueObject(30*MINUTE);
