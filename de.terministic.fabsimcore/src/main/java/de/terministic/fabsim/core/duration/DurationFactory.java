@@ -31,4 +31,12 @@ public class DurationFactory {
 		return result;
 	}
 
+	public UniformDuration createUniformValueObject(final long min, final long max) {
+		return new UniformDuration(min, max, new Random());
+	}
+
+	public UniformDuration createUniformValueObject(final long min, final long max, Random rand) {
+		final UniformDuration result = new UniformDuration(min, max, rand);
+		return result;
+	}
 }
