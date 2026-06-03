@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package de.terministic.fabsim.externaldispatch.grpc;
+
+option java_multiple_files = true;
+option java_package = "de.terministic.fabsim.externaldispatch.grpc";
+option java_outer_classname = "ExternalDispatchProto";
+
+service DispatchDecisionService {
+  rpc SelectDispatchCandidate(DispatchDecisionRequest) returns (DispatchDecisionResponse);
+}
+
+message DispatchDecisionRequest {
+  FabStateSnapshot fab_state = 1;
+  repeated FlowItemQueuedWithIDSnapshot candidates = 2;
+}
+
+message DispatchDecisionResponse {
+  int64 selected_flow_item_id = 1;
+}
+
+message FabStateSnapshot {
+  int64 simulation_time = 1;
+  repeated ToolGroupSnapshot tool_groups = 2;
+}
+
+message ToolGroupSnapshot {
+  string name = 1;
+  bool waiting_for_dispatch = 2;
+  repeated ToolSnapshot tools = 3;
+  repeated FlowItemQueuedSnapshot queued_items = 4;
+  repeated FlowItemInProcessSnapshot in_process_items = 5;
+}
+
+message ToolSnapshot {
+  int64 id = 1;
+  string current_tool_state = 2;
+}
+
+message FlowItemQueuedSnapshot {
+  string product_name = 1;
+  int32 current_step_number = 2;
+  int64 time_since_arrival = 3;
+  int32 priority = 4;
+  int64 lateness = 5;
+}
+
+message FlowItemInProcessSnapshot {
+  string product_name = 1;
+  int32 current_step_number = 2;
+  int64 processing_time_left = 3;
+  int32 priority = 4;
+  int64 lateness = 5;
+}
+
+message FlowItemQueuedWithIDSnapshot {
+  int64 id = 1;
+  string product_name = 2;
+  int32 current_step_number = 3;
+  int64 time_since_arrival = 4;
+  int32 priority = 5;
+  int64 lateness = 6;
+}

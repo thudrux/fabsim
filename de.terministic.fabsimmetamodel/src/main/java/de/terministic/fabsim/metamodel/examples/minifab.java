@@ -11,6 +11,8 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
+import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
 
 
 /**
@@ -58,6 +60,14 @@ public class MiniFab {
 	private static final long STATION2_REPAIR_MIN = 6L * HOUR;
 	private static final long STATION2_REPAIR_MAX = 8L * HOUR;
 
+	private static final int PA_PRIORITY = 1;
+	private static final int PB_PRIORITY = 2;
+	private static final int TW_PRIORITY = 3;
+
+	private static final long PA_DUE_DATE_LEAD_TIME = 2L * DAY;
+	private static final long PB_DUE_DATE_LEAD_TIME = 4L * DAY;
+	private static final long TW_DUE_DATE_LEAD_TIME = 6L * DAY;
+
 	private ToolGroup station1;
 	private ToolGroup station2;
 	private ToolGroup station3;
@@ -72,12 +82,17 @@ public class MiniFab {
 
 	public FabModel createMiniFabModel() {
 		FabModel model = new FabModel();
+		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
+				ExternalDispatchConfiguration.localDefault());
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink("Sink");
 
 		this.station1 = createStation1(model);
 		this.station2 = createStation2(model);
 		this.station3 = createStation3(model);
+		this.station1.setDispatchRule(externalDispatchRule);
+		this.station2.setDispatchRule(externalDispatchRule);
+		this.station3.setDispatchRule(externalDispatchRule);
 		configureStation3Setups(model);
 		createRecipesAndSources(model, sink);
 
@@ -197,12 +212,13 @@ public class MiniFab {
 	}
 
 	private void createRecipesAndSources(FabModel model, Sink sink) {
-		createProductLine(model, sink, "Pa", "PaRecipe", 51L);
-		createProductLine(model, sink, "Pb", "PbRecipe", 30L);
-		createProductLine(model, sink, "TW", "TWRecipe", 3L);
+		createProductLine(model, sink, "Pa", "PaRecipe", 51L, PA_PRIORITY, PA_DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pb", "PbRecipe", 30L, PB_PRIORITY, PB_DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "TW", "TWRecipe", 3L, TW_PRIORITY, TW_DUE_DATE_LEAD_TIME);
 	}
 
-	private void createProductLine(FabModel model, Sink sink, String productName, String recipeName, long weeklyLots) {
+	private void createProductLine(FabModel model, Sink sink, String productName, String recipeName, long weeklyLots,
+			int priority, long dueDateLeadTime) {
 		Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
@@ -233,6 +249,8 @@ public class MiniFab {
 			"Source_" + productName, product, interarrivalTime
 		);
 		source.setLotSize(LOT_SIZE);
+		source.setDefaultPriority(priority);
+		source.setDueDateLeadTime(dueDateLeadTime);
 		source.setAllowSplit(false);
 	}
 }

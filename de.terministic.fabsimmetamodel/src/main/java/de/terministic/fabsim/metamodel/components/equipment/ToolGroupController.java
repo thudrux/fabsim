@@ -193,7 +193,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 		possibleItems = (ArrayList<AbstractFlowItem>) tg.getSetupStrategy().filterValidItems(tool, possibleItems);
 //		this.logger.debug("setup filter done {}", possibleItems);
 		if (possibleItems.size() > 0) {
-			final AbstractFlowItem item = drule.getBestItem(possibleItems);
+			final AbstractFlowItem item = drule.getBestItem(possibleItems, tg, tool);
 //			this.logger.debug("selected item: {}", possibleItems);
 			removeItemFromItemMap(item, tg);
 			result = new ToolAndItem(tool, item);

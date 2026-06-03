@@ -22,6 +22,11 @@ public class AbstractToolStateMachine {
 		throw new NotYetImplementedException();
 	}
 
+	public long getRemainingProcessTime(final AbstractTool abstractTool) {
+		// TODO Auto-generated method stub
+		throw new NotYetImplementedException();
+	}
+
 	public void handleFlowItemArrival(final AbstractTool tool, final AbstractFlowItem flowItem) {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();

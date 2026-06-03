@@ -22,7 +22,7 @@ public class Lot extends AbstractFlowItem {
 
 	public Lot(final FabModel model, final Product product, final int originalLotSize, final int prio,
 			final long dueDate) {
-		this(model, product, originalLotSize, prio, Long.MAX_VALUE, originalLotSize, null);
+		this(model, product, originalLotSize, prio, dueDate, originalLotSize, null);
 	}
 
 	protected Lot(final FabModel model, final Product product, final int originalLotSize, final int prio,

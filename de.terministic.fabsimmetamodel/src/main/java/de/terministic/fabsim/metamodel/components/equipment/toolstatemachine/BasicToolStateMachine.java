@@ -117,6 +117,22 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		return this.currentStateMap.get(tool).getStateDetails();
 	}
 
+	@Override
+	public long getRemainingProcessTime(final AbstractTool abstractTool) {
+		final AbstractToolState currentState = this.currentStateMap.get(abstractTool);
+		if (currentState == null) {
+			return -1L;
+		}
+		final ProcessStateDetails details = currentState.getStateDetails().get(abstractTool);
+		if (details == null) {
+			return -1L;
+		}
+		if (details.getEndEvent() != null) {
+			return Math.max(0L, details.getEndEvent().getEventTime() - abstractTool.getTime());
+		}
+		return Math.max(0L, details.getRemainingProcessTime());
+	}
+
 	public Set<AbstractToolState> getStates() {
 		return this.states;
 	}

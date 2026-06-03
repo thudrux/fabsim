@@ -108,6 +108,10 @@ public abstract class AbstractTool extends AbstractResource {
 		return this.tgController;
 	}
 
+	public AbstractToolStateMachine getToolStateMachine() {
+		return this.toolStateMachine;
+	}
+
 	@Override
 	public void initialize() {
 		// TODO Auto-generated method stub
