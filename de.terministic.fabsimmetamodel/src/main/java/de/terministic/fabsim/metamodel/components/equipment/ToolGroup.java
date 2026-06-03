@@ -308,6 +308,25 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	}
 
 	@Override
+	public void onRejectedFlowItemTransfer(final FlowItemArrivalEvent event) {
+		final AbstractFlowItem flowItem = (AbstractFlowItem) event.getFlowItem();
+		if (flowItem == null) {
+			return;
+		}
+		this.logger.warn("Flow item {} was rejected by {}; re-queueing it", flowItem, event.getComponent());
+		if (!this.queue.contains(flowItem)) {
+			this.queue.add(flowItem);
+		}
+		this.tgController.addNewItem(flowItem, this);
+		for (final AbstractResource tool : getToolList()) {
+			if (this.standbyTools.contains(tool)) {
+				final ToolAndItem toolAndItem = this.tgController.selectToolAndItem(this, (Tool) tool);
+				startFlowItemOnTool(toolAndItem);
+			}
+		}
+	}
+
+	@Override
 	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing tool group has no capa limit
 	}
