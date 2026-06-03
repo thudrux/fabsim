@@ -44,6 +44,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 */
 	public AbstractToolGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
 		super(model, name);
+		this.fabModel = model;
 		this.tgController = tgController;
 	}
 
