@@ -1,6 +1,9 @@
 package de.terministic.fabsim.metamodel.examples;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.metamodel.FabModel;
@@ -68,10 +71,14 @@ public class MiniFab {
 	private static final int PA_PRIORITY = 1;
 	private static final int PB_PRIORITY = 2;
 	private static final int TW_PRIORITY = 3;
+	private static final int PA_PRIORITY_WEIGHT = 10;
+	private static final int PB_PRIORITY_WEIGHT = 5;
+	private static final int TW_PRIORITY_WEIGHT = 1;
+	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
 
-	private static final long PA_DUE_DATE_LEAD_TIME = 36L * HOUR;
-	private static final long PB_DUE_DATE_LEAD_TIME = 42L * HOUR;
-	private static final long TW_DUE_DATE_LEAD_TIME = 48L * HOUR;
+	private static final long PA_DUE_DATE_LEAD_TIME = 24L * HOUR;
+	private static final long PB_DUE_DATE_LEAD_TIME = 28L * HOUR;
+	private static final long TW_DUE_DATE_LEAD_TIME = 32L * HOUR;
 
 	private ToolGroup station1;
 	private ToolGroup station2;
@@ -128,6 +135,10 @@ public class MiniFab {
 			effectiveRule = dispatchRule;
 		}
 		return createMiniFabModel(model, effectiveRule, localLogWriter);
+	}
+
+	public static Map<Integer, Integer> getPriorityWeights() {
+		return PRIORITY_WEIGHTS;
 	}
 
 	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {
@@ -263,6 +274,14 @@ public class MiniFab {
 		createProductLine(model, sink, "Pa", "PaRecipe", 51L, PA_PRIORITY, PA_DUE_DATE_LEAD_TIME);
 		createProductLine(model, sink, "Pb", "PbRecipe", 30L, PB_PRIORITY, PB_DUE_DATE_LEAD_TIME);
 		createProductLine(model, sink, "TW", "TWRecipe", 3L, TW_PRIORITY, TW_DUE_DATE_LEAD_TIME);
+	}
+
+	private static Map<Integer, Integer> createPriorityWeights() {
+		final Map<Integer, Integer> weights = new LinkedHashMap<>();
+		weights.put(Integer.valueOf(PA_PRIORITY), Integer.valueOf(PA_PRIORITY_WEIGHT));
+		weights.put(Integer.valueOf(PB_PRIORITY), Integer.valueOf(PB_PRIORITY_WEIGHT));
+		weights.put(Integer.valueOf(TW_PRIORITY), Integer.valueOf(TW_PRIORITY_WEIGHT));
+		return Collections.unmodifiableMap(weights);
 	}
 
 	private void createProductLine(FabModel model, Sink sink, String productName, String recipeName, long weeklyLots,

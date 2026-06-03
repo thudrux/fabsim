@@ -58,6 +58,8 @@ docker run --rm \
   --log-file /logs/minifab.json
 ```
 
+The terminal summary is printed after every run and does not depend on `--log-file`.
+
 ### CLI reference
 
 Required arguments:
@@ -78,5 +80,7 @@ Local mode arguments:
 Optional in either mode:
 
 - `--log-file <path>`
+
+After the simulation finishes, the launcher prints throughput and priority-weighted tardiness to the terminal.
 
 The container exits non-zero if required arguments are missing or if an unsupported mode or dispatch rule is provided.

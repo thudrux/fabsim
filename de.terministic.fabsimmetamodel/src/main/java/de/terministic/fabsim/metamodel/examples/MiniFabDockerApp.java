@@ -13,13 +13,14 @@ import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
+import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 public final class MiniFabDockerApp {
 
 	private static final long HOUR_IN_MILLISECONDS = 60L * 60L * 1000L;
 	private static final long DEFAULT_EXTERNAL_DISPATCH_TIMEOUT_MS =
 			ExternalDispatchConfiguration.localDefault().getTimeoutMillis();
-	private static final int PROGRESS_BAR_WIDTH = 30;
+	private static final int PROGRESS_BAR_WIDTH = 50;
 
 	private enum Mode {
 		EXTERNAL,
@@ -66,7 +67,10 @@ public final class MiniFabDockerApp {
 		engine.init(model);
 		final long simulationTimeMillis = toSimulationTimeMillis(config.simulationTimeHours);
 		final SimulationProgressListener progressListener = new SimulationProgressListener(simulationTimeMillis);
+		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(
+				MiniFab.getPriorityWeights());
 		engine.addListener(progressListener);
+		engine.addListener(finishedLotStatisticsCollector);
 		try {
 			progressListener.printProgress(0L);
 			engine.runSimulation(simulationTimeMillis);
@@ -76,6 +80,8 @@ public final class MiniFabDockerApp {
 
 		System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
 				+ " h (" + simulationTimeMillis + " ms)");
+		System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedLots() + " finished lots");
+		System.out.println("Weighted tardiness: " + finishedLotStatisticsCollector.getWeightedTardiness() + " ms");
 		if (config.logFile != null) {
 			System.out.println("Dispatch log written to " + config.logFile);
 		}
