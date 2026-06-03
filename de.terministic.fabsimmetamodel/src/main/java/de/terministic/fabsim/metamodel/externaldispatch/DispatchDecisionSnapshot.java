@@ -185,8 +185,7 @@ public final class DispatchDecisionSnapshot {
 		}
 
 		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
-			final Product product = item.getProduct();
-			return new FlowItemQueuedSnapshotDto(product == null ? "" : product.getName(),
+			return new FlowItemQueuedSnapshotDto(resolveProductName(item),
 					item.getCurrentStepNumber(), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime));
 		}
@@ -217,9 +216,8 @@ public final class DispatchDecisionSnapshot {
 
 		public static FlowItemInProcessSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
-			final Product product = item.getProduct();
 			final long remainingProcessTime = tool.getToolStateMachine().getRemainingProcessTime(tool);
-			return new FlowItemInProcessSnapshotDto(product == null ? "" : product.getName(),
+			return new FlowItemInProcessSnapshotDto(resolveProductName(item),
 					item.getCurrentStepNumber(), Math.max(0L, remainingProcessTime), calculatePriority(item),
 					calculateLateness(item, currentTime));
 		}
@@ -245,8 +243,7 @@ public final class DispatchDecisionSnapshot {
 		}
 
 		public static FlowItemQueuedWithIDSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
-			final Product product = item.getProduct();
-			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), product == null ? "" : product.getName(),
+			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), resolveProductName(item),
 					item.getCurrentStepNumber(), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime));
 		}
@@ -312,5 +309,25 @@ public final class DispatchDecisionSnapshot {
 			return Math.round(totalLateness / (double) batch.getItems().size());
 		}
 		return Long.MIN_VALUE;
+	}
+
+	private static String resolveProductName(final AbstractFlowItem item) {
+		if (item == null) {
+			return "";
+		}
+		final Product product = item.getProduct();
+		if (product != null) {
+			return product.getName();
+		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			if (!batch.getItems().isEmpty()) {
+				final AbstractFlowItem firstChild = batch.getItems().get(0);
+				if (firstChild != null && firstChild.getProduct() != null) {
+					return firstChild.getProduct().getName();
+				}
+			}
+		}
+		return "";
 	}
 }

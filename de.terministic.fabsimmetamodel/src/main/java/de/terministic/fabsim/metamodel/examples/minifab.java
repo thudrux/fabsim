@@ -69,15 +69,13 @@ public class MiniFab {
 	private static final int PB_PRIORITY = 2;
 	private static final int TW_PRIORITY = 3;
 
-	private static final long PA_DUE_DATE_LEAD_TIME = 2L * DAY;
-	private static final long PB_DUE_DATE_LEAD_TIME = 4L * DAY;
-	private static final long TW_DUE_DATE_LEAD_TIME = 6L * DAY;
+	private static final long PA_DUE_DATE_LEAD_TIME = 36L * HOUR;
+	private static final long PB_DUE_DATE_LEAD_TIME = 42L * HOUR;
+	private static final long TW_DUE_DATE_LEAD_TIME = 48L * HOUR;
 
 	private ToolGroup station1;
 	private ToolGroup station2;
 	private ToolGroup station3;
-	private BatchDetails station1Step1Batch;
-	private BatchDetails station1Step5Batch;
 	private SetupState paS3Setup;
 	private SetupState paS6Setup;
 	private SetupState pbS3Setup;
@@ -90,17 +88,29 @@ public class MiniFab {
 	}
 
 	public FabModel createMiniFabModelWithExternalDispatch() {
-		FabModel model = new FabModel();
+		return createMiniFabModelWithExternalDispatch(ExternalDispatchConfiguration.localDefault(), null);
+	}
+
+	public FabModel createMiniFabModelWithExternalDispatch(final ExternalDispatchConfiguration configuration) {
+		return createMiniFabModelWithExternalDispatch(configuration, null);
+	}
+
+	public FabModel createMiniFabModelWithExternalDispatch(final ExternalDispatchConfiguration configuration,
+			final Path logFile) {
 		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
-				ExternalDispatchConfiguration.localDefault());
-		return createMiniFabModel(model, externalDispatchRule);
+				configuration == null ? ExternalDispatchConfiguration.localDefault() : configuration);
+		return createMiniFabModelWithDispatchRule(externalDispatchRule, logFile);
 	}
 
 	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule) {
-		return createMiniFabModelWithLocalDispatch(dispatchRule, null);
+		return createMiniFabModelWithDispatchRule(dispatchRule, null);
 	}
 
 	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule, final Path logFile) {
+		return createMiniFabModelWithDispatchRule(dispatchRule, logFile);
+	}
+
+	public FabModel createMiniFabModelWithDispatchRule(final AbstractDispatchRule dispatchRule, final Path logFile) {
 		if (dispatchRule == null) {
 			throw new IllegalArgumentException("dispatchRule must not be null");
 		}
@@ -154,13 +164,6 @@ public class MiniFab {
 			model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_DURATION),
 			model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_INTERVAL),
 			station
-		);
-		
-		this.station1Step1Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-			"Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, station
-		);
-		this.station1Step5Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-			"Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, station
 		);
 			
 		return station;
@@ -267,9 +270,15 @@ public class MiniFab {
 		Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
+		final BatchDetails s1Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
+			productName + "_Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1
+		);
+		final BatchDetails s5Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
+			productName + "_Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1
+		);
 
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S1", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S1, STATION1_UNLOAD, this.station1Step1Batch, null, ProcessType.LOT, recipe
+			"S1", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S1, STATION1_UNLOAD, s1Batch, null, ProcessType.LOT, recipe
 		);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
 			"S2", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S2, STATION2_UNLOAD, null, null, ProcessType.LOT, recipe
@@ -281,7 +290,7 @@ public class MiniFab {
 			"S4", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S4, STATION2_UNLOAD, null, null, ProcessType.LOT, recipe
 		);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S5", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S5, STATION1_UNLOAD, this.station1Step5Batch, null, ProcessType.LOT, recipe
+			"S5", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S5, STATION1_UNLOAD, s5Batch, null, ProcessType.LOT, recipe
 		);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
 			"S6", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S6, STATION3_UNLOAD, null, s6Setup, ProcessType.LOT, recipe
