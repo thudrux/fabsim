@@ -1,5 +1,7 @@
 package de.terministic.fabsim.metamodel.examples;
 
+import java.nio.file.Path;
+
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.LotSource;
@@ -11,8 +13,11 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
+import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
+import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
 
 
 /**
@@ -81,18 +86,58 @@ public class MiniFab {
 	private SetupState twS6Setup;
 
 	public FabModel createMiniFabModel() {
+		return createMiniFabModelWithExternalDispatch();
+	}
+
+	public FabModel createMiniFabModelWithExternalDispatch() {
 		FabModel model = new FabModel();
 		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
 				ExternalDispatchConfiguration.localDefault());
+		return createMiniFabModel(model, externalDispatchRule);
+	}
+
+	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule) {
+		return createMiniFabModelWithLocalDispatch(dispatchRule, null);
+	}
+
+	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule, final Path logFile) {
+		if (dispatchRule == null) {
+			throw new IllegalArgumentException("dispatchRule must not be null");
+		}
+		FabModel model = new FabModel();
+		final LocalLogWriter localLogWriter;
+		final AbstractDispatchRule effectiveRule;
+		if (dispatchRule instanceof LoggingDispatchRule) {
+			effectiveRule = dispatchRule;
+			localLogWriter = ((LoggingDispatchRule) dispatchRule).getLogWriter();
+		} else if (logFile != null) {
+			localLogWriter = new LocalLogWriter(logFile);
+			effectiveRule = new LoggingDispatchRule(dispatchRule, localLogWriter);
+		} else {
+			localLogWriter = null;
+			effectiveRule = dispatchRule;
+		}
+		return createMiniFabModel(model, effectiveRule, localLogWriter);
+	}
+
+	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {
+		return createMiniFabModel(model, dispatchRule, null);
+	}
+
+	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule,
+			final LocalLogWriter localLogWriter) {
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink("Sink");
+		if (localLogWriter != null) {
+			sink.setLocalLogWriter(localLogWriter);
+		}
 
 		this.station1 = createStation1(model);
 		this.station2 = createStation2(model);
 		this.station3 = createStation3(model);
-		this.station1.setDispatchRule(externalDispatchRule);
-		this.station2.setDispatchRule(externalDispatchRule);
-		this.station3.setDispatchRule(externalDispatchRule);
+		this.station1.setDispatchRule(dispatchRule);
+		this.station2.setDispatchRule(dispatchRule);
+		this.station3.setDispatchRule(dispatchRule);
 		configureStation3Setups(model);
 		createRecipesAndSources(model, sink);
 

@@ -19,6 +19,27 @@ message DispatchDecisionResponse {
   int64 selected_flow_item_id = 1;
 }
 
+message LocalDispatchLog {
+  repeated DispatchDecisionLogEntry dispatch_decisions = 1;
+  repeated SinkArrivalSnapshot sink_arrivals = 2;
+}
+
+message DispatchDecisionLogEntry {
+  FabStateSnapshot fab_state = 1;
+  DispatchDecisionSnapshot dispatch_decision = 2;
+}
+
+message DispatchDecisionSnapshot {
+  FlowItemQueuedSnapshot chosen_flow_item = 1;
+}
+
+message SinkArrivalSnapshot {
+  int64 sink_arrival_time = 1;
+  string product_name = 2;
+  int32 priority = 3;
+  int64 due_date = 4;
+}
+
 message FabStateSnapshot {
   int64 simulation_time = 1;
   repeated ToolGroupSnapshot tool_groups = 2;

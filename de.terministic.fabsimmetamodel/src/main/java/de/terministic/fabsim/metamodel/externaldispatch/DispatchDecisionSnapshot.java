@@ -34,6 +34,10 @@ public final class DispatchDecisionSnapshot {
 		this.candidates = candidates;
 	}
 
+	public long getSimulationTime() {
+		return this.simulationTime;
+	}
+
 	public static DispatchDecisionSnapshot capture(final FabModel model, final AbstractToolGroup toolGroup,
 			final AbstractTool tool, final Collection<AbstractFlowItem> candidates, final String dispatchRuleName) {
 		final long simulationTime = model.getSimulationEngine() == null ? 0L : model.getSimulationEngine().getTime();
@@ -58,7 +62,7 @@ public final class DispatchDecisionSnapshot {
 		return builder.build();
 	}
 
-	private FabStateSnapshot toFabStateSnapshot() {
+	public FabStateSnapshot toFabStateSnapshot() {
 		final FabStateSnapshot.Builder builder = FabStateSnapshot.newBuilder().setSimulationTime(this.simulationTime);
 		for (final ToolGroupSnapshotDto toolGroup : this.toolGroups) {
 			builder.addToolGroups(toolGroup.toProto());

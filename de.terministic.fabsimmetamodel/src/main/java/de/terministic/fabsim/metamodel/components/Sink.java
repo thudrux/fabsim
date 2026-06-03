@@ -5,8 +5,11 @@ import de.terministic.fabsim.metamodel.AbstractSink;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
+import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
 public class Sink extends AbstractSink {
+	private LocalLogWriter localLogWriter;
+
 	public Sink(FabModel model, final String name) {
 		super(model, name);
 		// TODO Auto-generated constructor stub
@@ -32,6 +35,9 @@ public class Sink extends AbstractSink {
 	@Override
 	public void onFlowItemArrival(FlowItemArrivalEvent event) {
 		event.getSender().onAcceptedFlowItemTransfer(event);
+		if (this.localLogWriter != null && event.getFlowItem() instanceof Lot) {
+			this.localLogWriter.appendSinkArrival(event.getEventTime(), (Lot) event.getFlowItem());
+		}
 		getSimulationEngine().getEventList().scheduleEvent(
 				new FlowItemDestructionEvent((FabModel)getModel(), getSimulationEngine().getTime(), this, (AbstractFlowItem) event.getFlowItem()));
 	}
@@ -39,6 +45,10 @@ public class Sink extends AbstractSink {
 	@Override
 	public void announceFlowItemArrival(AbstractFlowItem item) {
 		// Do nothing as this resource has no capa limit
+	}
+
+	public void setLocalLogWriter(final LocalLogWriter localLogWriter) {
+		this.localLogWriter = localLogWriter;
 	}
 
 }
