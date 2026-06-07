@@ -14,14 +14,12 @@ import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.ToolGroupSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.ToolSnapshot;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionSnapshot;
 
 public final class LocalLogWriter {
 
 	private final Path logFile;
 	private final List<DispatchDecisionLogEntry> dispatchDecisions = new ArrayList<>();
-	private final List<SinkArrivalLogEntry> sinkArrivals = new ArrayList<>();
 
 	public LocalLogWriter(final Path logFile) {
 		this.logFile = logFile;
@@ -34,15 +32,6 @@ public final class LocalLogWriter {
 		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionSnapshot.FlowItemQueuedSnapshotDto
 				.capture(selectedFlowItem, snapshot.getSimulationTime()).toProto();
 		this.dispatchDecisions.add(new DispatchDecisionLogEntry(snapshot.toFabStateSnapshot(), chosenFlowItem));
-		writeLogFile();
-	}
-
-	public synchronized void appendSinkArrival(final long sinkArrivalTime, final Lot lot) {
-		if (lot == null) {
-			return;
-		}
-		this.sinkArrivals.add(new SinkArrivalLogEntry(sinkArrivalTime,
-				lot.getProduct() == null ? "" : lot.getProduct().getName(), lot.getPrio(), lot.getDueDate()));
 		writeLogFile();
 	}
 
@@ -67,9 +56,6 @@ public final class LocalLogWriter {
 		builder.append('{');
 		builder.append("\"dispatch_decisions\":");
 		appendDispatchDecisions(builder, this.dispatchDecisions);
-		builder.append(',');
-		builder.append("\"sink_arrivals\":");
-		appendSinkArrivals(builder, this.sinkArrivals);
 		builder.append('}');
 		return builder.toString();
 	}
@@ -81,17 +67,6 @@ public final class LocalLogWriter {
 				builder.append(',');
 			}
 			appendDispatchDecisionEntry(builder, entries.get(i));
-		}
-		builder.append(']');
-	}
-
-	private void appendSinkArrivals(final StringBuilder builder, final List<SinkArrivalLogEntry> entries) {
-		builder.append('[');
-		for (int i = 0; i < entries.size(); i++) {
-			if (i > 0) {
-				builder.append(',');
-			}
-			appendSinkArrival(builder, entries.get(i));
 		}
 		builder.append(']');
 	}
@@ -110,15 +85,6 @@ public final class LocalLogWriter {
 		builder.append('{');
 		builder.append("\"chosen_flow_item\":");
 		appendFlowItemQueued(builder, chosenFlowItem);
-		builder.append('}');
-	}
-
-	private void appendSinkArrival(final StringBuilder builder, final SinkArrivalLogEntry entry) {
-		builder.append('{');
-		builder.append("\"sink_arrival_time\":").append(entry.getSinkArrivalTime()).append(',');
-		builder.append("\"product_name\":").append(quote(entry.getProductName())).append(',');
-		builder.append("\"priority\":").append(entry.getPriority()).append(',');
-		builder.append("\"due_date\":").append(entry.getDueDate());
 		builder.append('}');
 	}
 
@@ -265,37 +231,6 @@ public final class LocalLogWriter {
 
 		private FlowItemQueuedSnapshot getDispatchDecision() {
 			return this.dispatchDecision;
-		}
-	}
-
-	private static final class SinkArrivalLogEntry {
-		private final long sinkArrivalTime;
-		private final String productName;
-		private final int priority;
-		private final long dueDate;
-
-		private SinkArrivalLogEntry(final long sinkArrivalTime, final String productName, final int priority,
-				final long dueDate) {
-			this.sinkArrivalTime = sinkArrivalTime;
-			this.productName = productName;
-			this.priority = priority;
-			this.dueDate = dueDate;
-		}
-
-		private long getSinkArrivalTime() {
-			return this.sinkArrivalTime;
-		}
-
-		private String getProductName() {
-			return this.productName;
-		}
-
-		private int getPriority() {
-			return this.priority;
-		}
-
-		private long getDueDate() {
-			return this.dueDate;
 		}
 	}
 }

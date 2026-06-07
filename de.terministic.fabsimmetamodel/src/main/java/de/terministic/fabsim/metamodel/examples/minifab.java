@@ -130,32 +130,25 @@ public class MiniFab {
 			throw new IllegalArgumentException("dispatchRule must not be null");
 		}
 		FabModel model = new FabModel();
-		final LocalLogWriter localLogWriter;
 		final AbstractDispatchRule effectiveRule;
 		if (dispatchRule instanceof LoggingDispatchRule) {
 			effectiveRule = dispatchRule;
-			localLogWriter = ((LoggingDispatchRule) dispatchRule).getLogWriter();
 		} else if (logFile != null) {
-			localLogWriter = new LocalLogWriter(logFile);
+			final LocalLogWriter localLogWriter = new LocalLogWriter(logFile);
 			effectiveRule = new LoggingDispatchRule(dispatchRule, localLogWriter);
 		} else {
-			localLogWriter = null;
 			effectiveRule = dispatchRule;
 		}
-		return createMiniFabModel(model, effectiveRule, localLogWriter);
+		return createMiniFabModel(model, effectiveRule);
 	}
 
 	public static Map<Integer, Integer> getPriorityWeights() {
 		return PRIORITY_WEIGHTS;
 	}
 
-	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule,
-			final LocalLogWriter localLogWriter) {
+	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {
 
 		Sink sink = (Sink) model.getSimComponentFactory().createSink("Sink");
-		if (localLogWriter != null) {
-			sink.setLocalLogWriter(localLogWriter);
-		}
 
 		this.station1 = createStation1(model);
 		this.station2 = createStation2(model);

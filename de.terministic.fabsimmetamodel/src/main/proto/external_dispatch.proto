@@ -21,7 +21,6 @@ message DispatchDecisionResponse {
 
 message LocalDispatchLog {
   repeated DispatchDecisionLogEntry dispatch_decisions = 1;
-  repeated SinkArrivalSnapshot sink_arrivals = 2;
 }
 
 message DispatchDecisionLogEntry {
@@ -31,13 +30,6 @@ message DispatchDecisionLogEntry {
 
 message DispatchDecisionSnapshot {
   FlowItemQueuedSnapshot chosen_flow_item = 1;
-}
-
-message SinkArrivalSnapshot {
-  int64 sink_arrival_time = 1;
-  string product_name = 2;
-  int32 priority = 3;
-  int64 due_date = 4;
 }
 
 message FabStateSnapshot {
