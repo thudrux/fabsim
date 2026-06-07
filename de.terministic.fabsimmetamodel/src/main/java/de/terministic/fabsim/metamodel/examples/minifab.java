@@ -76,7 +76,7 @@ public class MiniFab {
 	private static final int TW_PRIORITY_WEIGHT = 1;
 	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
 
-	private static final double FLOW_FACTOR = 3.5;
+	public static final double FLOW_FACTOR = 3.5;
 	private static final long DUE_DATE_LEAD_TIME = Math.round(
 		(
 			STATION1_PROCESS_S1 

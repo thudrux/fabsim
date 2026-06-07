@@ -187,8 +187,7 @@ public final class LocalLogWriter {
 			}
 			final FlowItemInProcessSnapshot item = items.get(i);
 			builder.append('{');
-			builder.append("\"product_name\":").append(quote(item.getProductName())).append(',');
-			builder.append("\"current_step_number\":").append(item.getCurrentStepNumber()).append(',');
+			builder.append("\"remaining_cycle_time\":").append(item.getRemainingCycleTime()).append(',');
 			builder.append("\"processing_time_left\":").append(item.getProcessingTimeLeft()).append(',');
 			builder.append("\"priority\":").append(item.getPriority()).append(',');
 			builder.append("\"lateness\":").append(item.getLateness());
@@ -199,8 +198,9 @@ public final class LocalLogWriter {
 
 	private void appendFlowItemQueued(final StringBuilder builder, final FlowItemQueuedSnapshot item) {
 		builder.append('{');
-		builder.append("\"product_name\":").append(quote(item.getProductName())).append(',');
-		builder.append("\"current_step_number\":").append(item.getCurrentStepNumber()).append(',');
+		builder.append("\"remaining_cycle_time\":").append(item.getRemainingCycleTime()).append(',');
+		builder.append("\"processing_time\":").append(item.getProcessingTime()).append(',');
+		builder.append("\"expected_setup_time\":").append(item.getExpectedSetupTime()).append(',');
 		builder.append("\"time_since_arrival\":").append(item.getTimeSinceArrival()).append(',');
 		builder.append("\"priority\":").append(item.getPriority()).append(',');
 		builder.append("\"lateness\":").append(item.getLateness());

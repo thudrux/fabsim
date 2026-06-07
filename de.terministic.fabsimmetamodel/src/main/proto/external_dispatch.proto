@@ -59,26 +59,27 @@ message ToolSnapshot {
 }
 
 message FlowItemQueuedSnapshot {
-  string product_name = 1;
-  int32 current_step_number = 2;
-  int64 time_since_arrival = 3;
-  int32 priority = 4;
-  int64 lateness = 5;
+  int64 remaining_cycle_time = 1;
+  int64 processing_time = 2;
+  int64 expected_setup_time = 3;
+  int64 time_since_arrival = 4;
+  int32 priority = 5;
+  int64 lateness = 6;
 }
 
 message FlowItemInProcessSnapshot {
-  string product_name = 1;
-  int32 current_step_number = 2;
-  int64 processing_time_left = 3;
-  int32 priority = 4;
-  int64 lateness = 5;
+  int64 remaining_cycle_time = 1;
+  int64 processing_time_left = 2;
+  int32 priority = 3;
+  int64 lateness = 4;
 }
 
 message FlowItemQueuedWithIDSnapshot {
   int64 id = 1;
-  string product_name = 2;
-  int32 current_step_number = 3;
-  int64 time_since_arrival = 4;
-  int32 priority = 5;
-  int64 lateness = 6;
+  int64 remaining_cycle_time = 2;
+  int64 processing_time = 3;
+  int64 expected_setup_time = 4;
+  int64 time_since_arrival = 5;
+  int32 priority = 6;
+  int64 lateness = 7;
 }

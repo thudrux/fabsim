@@ -16,9 +16,10 @@ import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
-import de.terministic.fabsim.metamodel.components.Product;
+import de.terministic.fabsim.metamodel.examples.MiniFab;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
+import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
 public final class DispatchDecisionSnapshot {
@@ -48,7 +49,7 @@ public final class DispatchDecisionSnapshot {
 		}
 		final List<FlowItemQueuedWithIDSnapshotDto> candidateSnapshots = new ArrayList<>();
 		for (final AbstractFlowItem item : candidates) {
-			candidateSnapshots.add(FlowItemQueuedWithIDSnapshotDto.capture(item, simulationTime));
+			candidateSnapshots.add(FlowItemQueuedWithIDSnapshotDto.capture(item, tool, simulationTime));
 		}
 		return new DispatchDecisionSnapshot(simulationTime, toolGroups, candidateSnapshots);
 	}
@@ -96,7 +97,7 @@ public final class DispatchDecisionSnapshot {
 			}
 			final List<FlowItemQueuedSnapshotDto> queuedItems = new ArrayList<>();
 			for (final AbstractFlowItem item : toolGroup.getQueue()) {
-				queuedItems.add(FlowItemQueuedSnapshotDto.capture(item, currentTime));
+				queuedItems.add(FlowItemQueuedSnapshotDto.capture(item, toolGroup, currentTime));
 			}
 			final List<FlowItemInProcessSnapshotDto> inProcessItems = new ArrayList<>();
 			for (final Map.Entry<AbstractFlowItem, AbstractTool> entry : toolGroup.getInProcessMap().entrySet()) {
@@ -145,25 +146,12 @@ public final class DispatchDecisionSnapshot {
 	}
 
 	private abstract static class FlowItemSnapshotBaseDto {
-		private final String productName;
-		private final int currentStepNumber;
 		private final int priority;
 		private final long lateness;
 
-		private FlowItemSnapshotBaseDto(final String productName, final int currentStepNumber, final int priority,
-				final long lateness) {
-			this.productName = productName;
-			this.currentStepNumber = currentStepNumber;
+		private FlowItemSnapshotBaseDto(final int priority, final long lateness) {
 			this.priority = priority;
 			this.lateness = lateness;
-		}
-
-		protected String getProductName() {
-			return this.productName;
-		}
-
-		protected int getCurrentStepNumber() {
-			return this.currentStepNumber;
 		}
 
 		protected int getPriority() {
@@ -176,28 +164,62 @@ public final class DispatchDecisionSnapshot {
 	}
 
 	public static class FlowItemQueuedSnapshotDto extends FlowItemSnapshotBaseDto {
+		private final long remainingCycleTime;
+		private final long processingTime;
+		private final long expectedSetupTime;
 		private final long timeSinceArrival;
 
-		private FlowItemQueuedSnapshotDto(final String productName, final int currentStepNumber,
-				final long timeSinceArrival, final int priority, final long lateness) {
-			super(productName, currentStepNumber, priority, lateness);
+		private FlowItemQueuedSnapshotDto(final long remainingCycleTime, final long processingTime,
+				final long expectedSetupTime, final long timeSinceArrival, final int priority,
+				final long lateness) {
+			super(priority, lateness);
+			this.remainingCycleTime = remainingCycleTime;
+			this.processingTime = processingTime;
+			this.expectedSetupTime = expectedSetupTime;
 			this.timeSinceArrival = timeSinceArrival;
 		}
 
+		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final ToolGroup toolGroup,
+				final long currentTime) {
+			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+					calculateExpectedSetupTime(toolGroup, item), calculateTimeSinceArrival(item, currentTime),
+					calculatePriority(item), calculateLateness(item, currentTime));
+		}
+
 		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
-			return new FlowItemQueuedSnapshotDto(resolveProductName(item),
-					item.getCurrentStepNumber(), calculateTimeSinceArrival(item, currentTime),
+			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item), 0L,
+					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
+					calculateLateness(item, currentTime));
+		}
+
+		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
+				final long currentTime) {
+			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+					calculateExpectedSetupTime(tool, item), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime));
 		}
 
 		public FlowItemQueuedSnapshot toProto() {
 			return FlowItemQueuedSnapshot.newBuilder()
-					.setProductName(getProductName())
-					.setCurrentStepNumber(getCurrentStepNumber())
+					.setRemainingCycleTime(this.remainingCycleTime)
+					.setProcessingTime(this.processingTime)
+					.setExpectedSetupTime(this.expectedSetupTime)
 					.setTimeSinceArrival(getTimeSinceArrival())
 					.setPriority(getPriority())
 					.setLateness(getLateness())
 					.build();
+		}
+
+		protected long getRemainingCycleTime() {
+			return this.remainingCycleTime;
+		}
+
+		protected long getProcessingTime() {
+			return this.processingTime;
+		}
+
+		protected long getExpectedSetupTime() {
+			return this.expectedSetupTime;
 		}
 
 		protected long getTimeSinceArrival() {
@@ -206,26 +228,30 @@ public final class DispatchDecisionSnapshot {
 	}
 
 	public static final class FlowItemInProcessSnapshotDto extends FlowItemSnapshotBaseDto {
+		private final long remainingCycleTime;
 		private final long processingTimeLeft;
 
-		private FlowItemInProcessSnapshotDto(final String productName, final int currentStepNumber,
-				final long processingTimeLeft, final int priority, final long lateness) {
-			super(productName, currentStepNumber, priority, lateness);
+		private FlowItemInProcessSnapshotDto(final long remainingCycleTime, final long processingTimeLeft,
+				final int priority, final long lateness) {
+			super(priority, lateness);
+			this.remainingCycleTime = remainingCycleTime;
 			this.processingTimeLeft = processingTimeLeft;
 		}
 
 		public static FlowItemInProcessSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
 			final long remainingProcessTime = tool.getToolStateMachine().getRemainingProcessTime(tool);
-			return new FlowItemInProcessSnapshotDto(resolveProductName(item),
-					item.getCurrentStepNumber(), Math.max(0L, remainingProcessTime), calculatePriority(item),
+			final long processingTimeLeft = Math.max(0L, remainingProcessTime);
+			return new FlowItemInProcessSnapshotDto(
+					calculateRemainingCycleTime(item, processingTimeLeft),
+					processingTimeLeft,
+					calculatePriority(item),
 					calculateLateness(item, currentTime));
 		}
 
 		public FlowItemInProcessSnapshot toProto() {
 			return FlowItemInProcessSnapshot.newBuilder()
-					.setProductName(getProductName())
-					.setCurrentStepNumber(getCurrentStepNumber())
+					.setRemainingCycleTime(this.remainingCycleTime)
 					.setProcessingTimeLeft(this.processingTimeLeft)
 					.setPriority(getPriority())
 					.setLateness(getLateness())
@@ -236,28 +262,114 @@ public final class DispatchDecisionSnapshot {
 	public static final class FlowItemQueuedWithIDSnapshotDto extends FlowItemQueuedSnapshotDto {
 		private final long id;
 
-		private FlowItemQueuedWithIDSnapshotDto(final long id, final String productName, final int currentStepNumber,
-				final long timeSinceArrival, final int priority, final long lateness) {
-			super(productName, currentStepNumber, timeSinceArrival, priority, lateness);
+		private FlowItemQueuedWithIDSnapshotDto(final long id, final long remainingCycleTime,
+				final long processingTime, final long expectedSetupTime, final long timeSinceArrival,
+				final int priority, final long lateness) {
+			super(remainingCycleTime, processingTime, expectedSetupTime, timeSinceArrival, priority, lateness);
 			this.id = id;
 		}
 
-		public static FlowItemQueuedWithIDSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
-			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), resolveProductName(item),
-					item.getCurrentStepNumber(), calculateTimeSinceArrival(item, currentTime),
-					calculatePriority(item), calculateLateness(item, currentTime));
+		public static FlowItemQueuedWithIDSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
+				final long currentTime) {
+			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), calculateRemainingCycleTime(item),
+					calculateProcessingTime(item), calculateExpectedSetupTime(tool, item),
+					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
+					calculateLateness(item, currentTime));
 		}
 
 		public FlowItemQueuedWithIDSnapshot toWithIdProto() {
 			return FlowItemQueuedWithIDSnapshot.newBuilder()
 					.setId(this.id)
-					.setProductName(getProductName())
-					.setCurrentStepNumber(getCurrentStepNumber())
+					.setRemainingCycleTime(getRemainingCycleTime())
+					.setProcessingTime(getProcessingTime())
+					.setExpectedSetupTime(getExpectedSetupTime())
 					.setTimeSinceArrival(getTimeSinceArrival())
 					.setPriority(getPriority())
 					.setLateness(getLateness())
 					.build();
 		}
+	}
+
+	private static long calculateProcessingTime(final AbstractFlowItem item) {
+		if (item == null || item.getRecipe() == null) {
+			return 0L;
+		}
+		final int currentStepNumber = item.getCurrentStepNumber();
+		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
+			return 0L;
+		}
+		return Math.max(0L, item.getRecipe().get(currentStepNumber).getDuration(item));
+	}
+
+	private static long calculateRemainingCycleTime(final AbstractFlowItem item) {
+		if (item == null || item.getRecipe() == null) {
+			return 0L;
+		}
+		final int currentStepNumber = item.getCurrentStepNumber();
+		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
+			return 0L;
+		}
+		long remainingProcessTime = 0L;
+		for (int i = currentStepNumber; i < item.getRecipe().size(); i++) {
+			remainingProcessTime += Math.max(0L, item.getRecipe().get(i).getDuration(item));
+		}
+		return Math.round(remainingProcessTime * MiniFab.FLOW_FACTOR);
+	}
+
+	private static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft) {
+		if (item == null || item.getRecipe() == null) {
+			return Math.max(0L, processingTimeLeft);
+		}
+		final int currentStepNumber = item.getCurrentStepNumber();
+		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
+			return Math.max(0L, processingTimeLeft);
+		}
+		long futureProcessTime = 0L;
+		for (int i = currentStepNumber + 1; i < item.getRecipe().size(); i++) {
+			futureProcessTime += Math.max(0L, item.getRecipe().get(i).getDuration(item));
+		}
+		return Math.round((processingTimeLeft + futureProcessTime) * MiniFab.FLOW_FACTOR);
+	}
+
+	private static long calculateExpectedSetupTime(final AbstractTool tool, final AbstractFlowItem item) {
+		if (tool == null || item == null || item.getRecipe() == null) {
+			return 0L;
+		}
+		final int currentStepNumber = item.getCurrentStepNumber();
+		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
+			return 0L;
+		}
+		final SetupState desiredState = item.getRecipe().get(currentStepNumber).getSetupDetails();
+		if (desiredState == null) {
+			return 0L;
+		}
+		final SetupState currentState = tool.getCurrentSetupState();
+		if (currentState == null || currentState.equals(desiredState)) {
+			return 0L;
+		}
+		final Map<SetupState, Long> transitions = tool.getSetupTransitions().get(currentState);
+		if (transitions == null) {
+			return 0L;
+		}
+		final Long transitionTime = transitions.get(desiredState);
+		return transitionTime == null ? 0L : Math.max(0L, transitionTime);
+	}
+
+	private static long calculateExpectedSetupTime(final ToolGroup toolGroup, final AbstractFlowItem item) {
+		if (toolGroup == null) {
+			return 0L;
+		}
+		final List<AbstractTool> candidateTools = new ArrayList<>();
+		if (toolGroup.getStandbyTools() != null && !toolGroup.getStandbyTools().isEmpty()) {
+			candidateTools.addAll(toolGroup.getStandbyTools());
+		} else {
+			candidateTools.addAll(toolGroup.getTools().values());
+		}
+		long bestSetupTime = Long.MAX_VALUE;
+		for (final AbstractTool tool : candidateTools) {
+			bestSetupTime = Math.min(bestSetupTime, calculateExpectedSetupTime(tool, item));
+		}
+		return bestSetupTime == Long.MAX_VALUE ? 0L : bestSetupTime;
 	}
 
 	private static long calculateTimeSinceArrival(final AbstractFlowItem item, final long currentTime) {
@@ -311,23 +423,4 @@ public final class DispatchDecisionSnapshot {
 		return Long.MIN_VALUE;
 	}
 
-	private static String resolveProductName(final AbstractFlowItem item) {
-		if (item == null) {
-			return "";
-		}
-		final Product product = item.getProduct();
-		if (product != null) {
-			return product.getName();
-		}
-		if (item instanceof Batch) {
-			final Batch batch = (Batch) item;
-			if (!batch.getItems().isEmpty()) {
-				final AbstractFlowItem firstChild = batch.getItems().get(0);
-				if (firstChild != null && firstChild.getProduct() != null) {
-					return firstChild.getProduct().getName();
-				}
-			}
-		}
-		return "";
-	}
 }
