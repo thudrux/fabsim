@@ -76,9 +76,17 @@ public class MiniFab {
 	private static final int TW_PRIORITY_WEIGHT = 1;
 	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
 
-	private static final long PA_DUE_DATE_LEAD_TIME = 24L * HOUR;
-	private static final long PB_DUE_DATE_LEAD_TIME = 28L * HOUR;
-	private static final long TW_DUE_DATE_LEAD_TIME = 32L * HOUR;
+	private static final double FLOW_FACTOR = 3.5;
+	private static final long DUE_DATE_LEAD_TIME = Math.round(
+		(
+			STATION1_PROCESS_S1 
+			+ STATION2_PROCESS_S2 
+			+ STATION3_PROCESS_S3 
+			+ STATION2_PROCESS_S4
+			+ STATION1_PROCESS_S5 
+			+ STATION3_PROCESS_S6
+		) * FLOW_FACTOR
+	);
 
 	private ToolGroup station1;
 	private ToolGroup station2;
@@ -139,10 +147,6 @@ public class MiniFab {
 
 	public static Map<Integer, Integer> getPriorityWeights() {
 		return PRIORITY_WEIGHTS;
-	}
-
-	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {
-		return createMiniFabModel(model, dispatchRule, null);
 	}
 
 	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule,
@@ -271,16 +275,16 @@ public class MiniFab {
 	}
 
 	private void createRecipesAndSources(FabModel model, Sink sink) {
-		createProductLine(model, sink, "Pa", "PaRecipe", 51L, PA_PRIORITY, PA_DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "Pb", "PbRecipe", 30L, PB_PRIORITY, PB_DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "TW", "TWRecipe", 3L, TW_PRIORITY, TW_DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pa", "PaRecipe", 51L, PA_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pb", "PbRecipe", 30L, PB_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "TW", "TWRecipe", 3L, TW_PRIORITY, DUE_DATE_LEAD_TIME);
 	}
 
 	private static Map<Integer, Integer> createPriorityWeights() {
 		final Map<Integer, Integer> weights = new LinkedHashMap<>();
-		weights.put(Integer.valueOf(PA_PRIORITY), Integer.valueOf(PA_PRIORITY_WEIGHT));
-		weights.put(Integer.valueOf(PB_PRIORITY), Integer.valueOf(PB_PRIORITY_WEIGHT));
-		weights.put(Integer.valueOf(TW_PRIORITY), Integer.valueOf(TW_PRIORITY_WEIGHT));
+		weights.put(PA_PRIORITY, PA_PRIORITY_WEIGHT);
+		weights.put(PB_PRIORITY, PB_PRIORITY_WEIGHT);
+		weights.put(TW_PRIORITY, TW_PRIORITY_WEIGHT);
 		return Collections.unmodifiableMap(weights);
 	}
 
