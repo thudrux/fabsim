@@ -55,7 +55,7 @@ message ToolGroupSnapshot {
 
 message ToolSnapshot {
   int64 id = 1;
-  string current_tool_state = 2;
+  int32 current_tool_state = 2;
 }
 
 message FlowItemQueuedSnapshot {

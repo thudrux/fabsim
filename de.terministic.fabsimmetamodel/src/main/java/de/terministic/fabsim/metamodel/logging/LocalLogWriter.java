@@ -162,7 +162,7 @@ public final class LocalLogWriter {
 			final ToolSnapshot tool = tools.get(i);
 			builder.append('{');
 			builder.append("\"id\":").append(tool.getId()).append(',');
-			builder.append("\"current_tool_state\":").append(quote(tool.getCurrentToolState()));
+			builder.append("\"current_tool_state\":").append(tool.getCurrentToolState());
 			builder.append('}');
 		}
 		builder.append(']');
