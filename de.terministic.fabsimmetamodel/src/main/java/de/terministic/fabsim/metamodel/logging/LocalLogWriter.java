@@ -1,11 +1,11 @@
 package de.terministic.fabsim.metamodel.logging;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.terministic.fabsim.externaldispatch.grpc.FabStateSnapshot;
@@ -16,69 +16,71 @@ import de.terministic.fabsim.externaldispatch.grpc.ToolSnapshot;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionSnapshot;
 
-public final class LocalLogWriter {
+public final class LocalLogWriter implements AutoCloseable {
 
 	private final Path logFile;
-	private final List<DispatchDecisionLogEntry> dispatchDecisions = new ArrayList<>();
+	private final BufferedWriter writer;
+	private boolean closed;
 
 	public LocalLogWriter(final Path logFile) {
 		this.logFile = logFile;
-	}
-
-	public synchronized void append(final DispatchDecisionSnapshot snapshot, final AbstractFlowItem selectedFlowItem) {
-		if (snapshot == null || selectedFlowItem == null) {
-			return;
-		}
-		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionSnapshot.FlowItemQueuedSnapshotDto
-				.capture(selectedFlowItem, snapshot.getSimulationTime()).toProto();
-		this.dispatchDecisions.add(new DispatchDecisionLogEntry(snapshot.toFabStateSnapshot(), chosenFlowItem));
-		writeLogFile();
-	}
-
-	private void writeLogFile() {
-		if (this.logFile == null) {
+		if (logFile == null) {
+			this.writer = null;
 			return;
 		}
 		try {
-			final Path parent = this.logFile.getParent();
+			final Path parent = logFile.getParent();
 			if (parent != null) {
 				Files.createDirectories(parent);
 			}
-			Files.write(this.logFile, toJson().getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE,
+			this.writer = Files.newBufferedWriter(logFile, StandardCharsets.UTF_8, StandardOpenOption.CREATE,
 					StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+		} catch (final IOException ex) {
+			throw new IllegalStateException("Failed to open dispatch decision log at " + logFile, ex);
+		}
+	}
+
+	public synchronized void append(final DispatchDecisionSnapshot snapshot, final AbstractFlowItem selectedFlowItem) {
+		if (snapshot == null || selectedFlowItem == null || this.writer == null) {
+			return;
+		}
+		if (this.closed) {
+			throw new IllegalStateException("Dispatch decision log writer has already been closed for " + this.logFile);
+		}
+		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionSnapshot.FlowItemQueuedSnapshotDto
+				.capture(selectedFlowItem, snapshot.getSimulationTime()).toProto();
+		try {
+			this.writer.write(toJson(snapshot.toFabStateSnapshot(), chosenFlowItem));
+			this.writer.write('\n');
 		} catch (final IOException ex) {
 			throw new IllegalStateException("Failed to write dispatch decision log to " + this.logFile, ex);
 		}
 	}
 
-	private String toJson() {
+	@Override
+	public synchronized void close() {
+		if (this.writer == null || this.closed) {
+			return;
+		}
+		this.closed = true;
+		try {
+			this.writer.flush();
+			this.writer.close();
+		} catch (final IOException ex) {
+			throw new IllegalStateException("Failed to close dispatch decision log at " + this.logFile, ex);
+		}
+	}
+
+	private String toJson(final FabStateSnapshot fabState, final FlowItemQueuedSnapshot chosenFlowItem) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append('{');
-		builder.append("\"dispatch_decisions\":");
-		appendDispatchDecisions(builder, this.dispatchDecisions);
-		builder.append('}');
-		return builder.toString();
-	}
-
-	private void appendDispatchDecisions(final StringBuilder builder, final List<DispatchDecisionLogEntry> entries) {
-		builder.append('[');
-		for (int i = 0; i < entries.size(); i++) {
-			if (i > 0) {
-				builder.append(',');
-			}
-			appendDispatchDecisionEntry(builder, entries.get(i));
-		}
-		builder.append(']');
-	}
-
-	private void appendDispatchDecisionEntry(final StringBuilder builder, final DispatchDecisionLogEntry entry) {
-		builder.append('{');
 		builder.append("\"fab_state\":");
-		appendFabState(builder, entry.getFabState());
+		appendFabState(builder, fabState);
 		builder.append(',');
 		builder.append("\"dispatch_decision\":");
-		appendDispatchDecision(builder, entry.getDispatchDecision());
+		appendDispatchDecision(builder, chosenFlowItem);
 		builder.append('}');
+		return builder.toString();
 	}
 
 	private void appendDispatchDecision(final StringBuilder builder, final FlowItemQueuedSnapshot chosenFlowItem) {
@@ -216,21 +218,4 @@ public final class LocalLogWriter {
 		return escaped.toString();
 	}
 
-	private static final class DispatchDecisionLogEntry {
-		private final FabStateSnapshot fabState;
-		private final FlowItemQueuedSnapshot dispatchDecision;
-
-		private DispatchDecisionLogEntry(final FabStateSnapshot fabState, final FlowItemQueuedSnapshot dispatchDecision) {
-			this.fabState = fabState;
-			this.dispatchDecision = dispatchDecision;
-		}
-
-		private FabStateSnapshot getFabState() {
-			return this.fabState;
-		}
-
-		private FlowItemQueuedSnapshot getDispatchDecision() {
-			return this.dispatchDecision;
-		}
-	}
 }

@@ -55,7 +55,7 @@ docker run --rm \
   --mode local \
   --simulation-time 168 \
   --dispatch-rule fifo \
-  --log-file /logs/minifab.json
+  --log-file /logs/minifab.jsonl
 ```
 
 The terminal summary is printed after every run and does not depend on `--log-file`.

@@ -13,6 +13,7 @@ import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
+import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 public final class MiniFabDockerApp {
@@ -62,43 +63,50 @@ public final class MiniFabDockerApp {
 		}
 
 		final MiniFab miniFab = new MiniFab();
-		final FabModel model = buildModel(miniFab, config);
-		final SimulationEngine engine = new FabSimulationEngine();
-		engine.init(model);
-		final long simulationTimeMillis = toSimulationTimeMillis(config.simulationTimeHours);
-		final SimulationProgressListener progressListener = new SimulationProgressListener(simulationTimeMillis);
-		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(
-				MiniFab.getPriorityWeights());
-		engine.addListener(progressListener);
-		engine.addListener(finishedLotStatisticsCollector);
+		final LocalLogWriter logWriter = config.logFile == null ? null : new LocalLogWriter(config.logFile);
 		try {
-			progressListener.printProgress(0L);
-			engine.runSimulation(simulationTimeMillis);
-		} finally {
-			progressListener.finish();
-		}
+			final FabModel model = buildModel(miniFab, config, logWriter);
+			final SimulationEngine engine = new FabSimulationEngine();
+			engine.init(model);
+			final long simulationTimeMillis = toSimulationTimeMillis(config.simulationTimeHours);
+			final SimulationProgressListener progressListener = new SimulationProgressListener(simulationTimeMillis);
+			final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(
+					MiniFab.getPriorityWeights());
+			engine.addListener(progressListener);
+			engine.addListener(finishedLotStatisticsCollector);
+			try {
+				progressListener.printProgress(0L);
+				engine.runSimulation(simulationTimeMillis);
+			} finally {
+				progressListener.finish();
+			}
 
-		System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
-				+ " h (" + simulationTimeMillis + " ms)");
-		System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedLots() + " finished lots");
-		System.out.println("Weighted tardiness: " + finishedLotStatisticsCollector.getWeightedTardiness() + " ms");
-		if (config.logFile != null) {
-			System.out.println("Dispatch log written to " + config.logFile);
+			System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
+					+ " h (" + simulationTimeMillis + " ms)");
+			System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedLots() + " finished lots");
+			System.out.println("Weighted tardiness: " + finishedLotStatisticsCollector.getWeightedTardiness() + " ms");
+			if (config.logFile != null) {
+				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
+			}
+			return 0;
+		} finally {
+			if (logWriter != null) {
+				logWriter.close();
+			}
 		}
-		return 0;
 	}
 
-	private FabModel buildModel(final MiniFab miniFab, final CliConfig config) {
+	private FabModel buildModel(final MiniFab miniFab, final CliConfig config, final LocalLogWriter logWriter) {
 		if (config.mode == Mode.EXTERNAL) {
 			final ExternalDispatchConfiguration dispatchConfiguration = new ExternalDispatchConfiguration(
-					config.dispatchHost, config.dispatchPort.intValue(),
+					config.dispatchHost, config.dispatchPort,
 					config.dispatchTimeoutMillis == null ? DEFAULT_EXTERNAL_DISPATCH_TIMEOUT_MS
 							: config.dispatchTimeoutMillis.longValue());
-			return miniFab.createMiniFabModelWithExternalDispatch(dispatchConfiguration, config.logFile);
+			return miniFab.createMiniFabModelWithExternalDispatch(dispatchConfiguration, logWriter);
 		}
 		if (config.mode == Mode.LOCAL) {
 			final AbstractDispatchRule dispatchRule = createLocalDispatchRule(config.dispatchRuleName);
-			return miniFab.createMiniFabModelWithDispatchRule(dispatchRule, config.logFile);
+			return miniFab.createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
 		}
 		throw new IllegalArgumentException("mode must be set");
 	}
@@ -142,11 +150,11 @@ public final class MiniFabDockerApp {
 				continue;
 			}
 			if ("--dispatch-port".equals(arg)) {
-				config.dispatchPort = Integer.valueOf(parseRequiredInt(arg, nextValue(args, ++i, arg)));
+				config.dispatchPort = parseRequiredInt(arg, nextValue(args, ++i, arg));
 				continue;
 			}
 			if ("--dispatch-timeout-ms".equals(arg)) {
-				config.dispatchTimeoutMillis = Long.valueOf(parseRequiredLong(arg, nextValue(args, ++i, arg)));
+				config.dispatchTimeoutMillis = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
 			if ("--log-file".equals(arg)) {
@@ -178,7 +186,7 @@ public final class MiniFabDockerApp {
 			if (config.dispatchPort == null) {
 				throw new IllegalArgumentException("external mode requires --dispatch-port");
 			}
-			if (config.dispatchPort.intValue() <= 0) {
+			if (config.dispatchPort <= 0) {
 				throw new IllegalArgumentException("--dispatch-port must be positive");
 			}
 			break;

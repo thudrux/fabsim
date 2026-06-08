@@ -1,6 +1,5 @@
 package de.terministic.fabsim.metamodel.examples;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -111,21 +110,23 @@ public class MiniFab {
 	}
 
 	public FabModel createMiniFabModelWithExternalDispatch(final ExternalDispatchConfiguration configuration,
-			final Path logFile) {
+			final LocalLogWriter logWriter) {
 		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
 				configuration == null ? ExternalDispatchConfiguration.localDefault() : configuration);
-		return createMiniFabModelWithDispatchRule(externalDispatchRule, logFile);
+		return createMiniFabModelWithDispatchRule(externalDispatchRule, logWriter);
 	}
 
 	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule) {
 		return createMiniFabModelWithDispatchRule(dispatchRule, null);
 	}
 
-	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule, final Path logFile) {
-		return createMiniFabModelWithDispatchRule(dispatchRule, logFile);
+	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final LocalLogWriter logWriter) {
+		return createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
 	}
 
-	public FabModel createMiniFabModelWithDispatchRule(final AbstractDispatchRule dispatchRule, final Path logFile) {
+	public FabModel createMiniFabModelWithDispatchRule(final AbstractDispatchRule dispatchRule,
+			final LocalLogWriter logWriter) {
 		if (dispatchRule == null) {
 			throw new IllegalArgumentException("dispatchRule must not be null");
 		}
@@ -133,9 +134,8 @@ public class MiniFab {
 		final AbstractDispatchRule effectiveRule;
 		if (dispatchRule instanceof LoggingDispatchRule) {
 			effectiveRule = dispatchRule;
-		} else if (logFile != null) {
-			final LocalLogWriter localLogWriter = new LocalLogWriter(logFile);
-			effectiveRule = new LoggingDispatchRule(dispatchRule, localLogWriter);
+		} else if (logWriter != null) {
+			effectiveRule = new LoggingDispatchRule(dispatchRule, logWriter);
 		} else {
 			effectiveRule = dispatchRule;
 		}
