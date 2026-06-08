@@ -23,6 +23,7 @@ import de.terministic.fabsim.metamodel.components.BasicRouting;
 import de.terministic.fabsim.metamodel.components.Controller;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
+import de.terministic.fabsim.metamodel.components.Source;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroupController;
@@ -251,6 +252,21 @@ public class FabModel implements IModel{
 		return this.sources;
 	}
 
+	public int getLotSize() {
+		if (this.sources.isEmpty()) {
+			return 1;
+		}
+
+		final int lotSize = getLotSize(this.sources.get(0));
+		for (final AbstractSource source : this.sources) {
+			final int sourceLotSize = getLotSize(source);
+			if (sourceLotSize != lotSize) {
+				throw new IllegalStateException("FabModel contains sources with different lot sizes");
+			}
+		}
+		return lotSize;
+	}
+
 	public AbstractToolGroupController getToolGroupController() {
 		return this.tgController;
 	}
@@ -309,6 +325,13 @@ public class FabModel implements IModel{
 
 	public void setToolGroups(final LinkedHashMap<Long, AbstractToolGroup> toolGroups) {
 		this.toolGroups = toolGroups;
+	}
+
+	private int getLotSize(final AbstractSource source) {
+		if (source instanceof Source) {
+			return ((Source) source).getLotSize();
+		}
+		throw new IllegalStateException("FabModel source does not expose a lot size: " + source.getClass().getName());
 	}
 
 	public void setupForSimulation(final SimulationEngine engine) {

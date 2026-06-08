@@ -64,6 +64,10 @@ public class Source extends AbstractSource {
 		return this.interArrivalTime;
 	}
 
+	public int getLotSize() {
+		return this.lotSize;
+	}
+
 	public String getProductName() {
 		return this.product.getName();
 	}

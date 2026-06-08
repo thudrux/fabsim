@@ -71,11 +71,10 @@ public final class MiniFabDockerApp {
 			final long simulationTimeMillis = toSimulationTimeMillis(config.simulationTimeHours);
 			final SimulationProgressListener progressListener = new SimulationProgressListener(simulationTimeMillis);
 			final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(
-					MiniFab.getPriorityWeights());
+					model, MiniFab.getPriorityWeights());
 			engine.addListener(progressListener);
 			engine.addListener(finishedLotStatisticsCollector);
 			try {
-				progressListener.printProgress(0L);
 				engine.runSimulation(simulationTimeMillis);
 			} finally {
 				progressListener.finish();
@@ -83,8 +82,9 @@ public final class MiniFabDockerApp {
 
 			System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
 					+ " h (" + simulationTimeMillis + " ms)");
-			System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedLots() + " finished lots");
-			System.out.println("Weighted tardiness: " + finishedLotStatisticsCollector.getWeightedTardiness() + " ms");
+			System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedWafers() + " finished wafers");
+			final long totalWeightedTardiness = finishedLotStatisticsCollector.getTotalWeightedTardiness();
+			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(totalWeightedTardiness));
 			if (config.logFile != null) {
 				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
 			}
@@ -249,6 +249,10 @@ public final class MiniFabDockerApp {
 		}
 	}
 
+	private static String formatScientificMillis(final long durationMillis) {
+		return String.format(Locale.ROOT, "%.3e ms", Double.valueOf(durationMillis));
+	}
+
 	private String nextValue(final String[] args, final int index, final String optionName) {
 		if (index >= args.length) {
 			throw new IllegalArgumentException(optionName + " requires a value");
@@ -292,8 +296,8 @@ public final class MiniFabDockerApp {
 			}
 			this.lastPrintedPercent = percent;
 			final String bar = buildBar(percent);
-			System.err.print("\r" + bar + " " + percent + "%");
-			System.err.flush();
+			System.out.print("\r" + bar + " " + percent + "%");
+			System.out.flush();
 		}
 
 		private String buildBar(final int percent) {
@@ -309,8 +313,8 @@ public final class MiniFabDockerApp {
 
 		private void finish() {
 			printProgress(this.endTimeMillis);
-			System.err.println();
-			System.err.flush();
+			System.out.println();
+			System.out.flush();
 		}
 	}
 }
