@@ -19,7 +19,6 @@ import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.examples.MiniFab;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
-import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
@@ -126,15 +125,16 @@ public final class DispatchDecisionSnapshot {
 
 	public static final class ToolSnapshotDto {
 		private final long id;
-		private final int currentToolState;
+		private final String currentToolState;
 
-		private ToolSnapshotDto(final long id, final int currentToolState) {
+		private ToolSnapshotDto(final long id, final String currentToolState) {
 			this.id = id;
 			this.currentToolState = currentToolState;
 		}
 
 		public static ToolSnapshotDto capture(final AbstractTool tool) {
-			return new ToolSnapshotDto(tool.getId(), encodeToolState(tool.getCurrentToolState()));
+			return new ToolSnapshotDto(tool.getId(), tool.getCurrentToolState() == null ? ""
+					: tool.getCurrentToolState().name());
 		}
 
 		public ToolSnapshot toProto() {
@@ -142,32 +142,6 @@ public final class DispatchDecisionSnapshot {
 					.setId(this.id)
 					.setCurrentToolState(this.currentToolState)
 					.build();
-		}
-
-		private static int encodeToolState(final SemiE10EquipmentState toolState) {
-			if (toolState == null) {
-				return 0;
-			}
-			switch (toolState) {
-			case SB_NO_MATERIAL:
-				return 1;
-			case PR:
-				return 2;
-			case SD_SETUP:
-				return 3;
-			case SD_MAINT:
-				return 4;
-			case UD:
-				return 5;
-			case SB_NO_OPERATOR:
-				return 6;
-			case NS:
-				return 7;
-			case EN:
-				return 8;
-			default:
-				throw new IllegalArgumentException("Unsupported tool state: " + toolState);
-			}
 		}
 	}
 
