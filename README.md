@@ -16,7 +16,7 @@ The build uses a multi-stage Dockerfile. It installs the `core` module first, th
 
 ### Run MiniFab in external dispatch mode
 
-External mode requires the dispatch service host and port. Simulation time is required and is entered in hours on the CLI; the launcher converts it to the millisecond time base used by the model.
+External mode requires the [gRPC](https://grpc.io)-based dispatch service host and port.
 
 ```bash
 docker run --rm \
@@ -29,6 +29,8 @@ docker run --rm \
 ```
 
 If the dispatch service is reachable from the host machine rather than the Docker network, use the appropriate hostname for your environment, such as `host.docker.internal` on Docker Desktop.
+
+> **NOTE**: The protocol buffer that needs to be implemented by an external dispatch service can be found in [external_dispatch.proto](de.terministic.fabsimmetamodel/src/main/proto/external_dispatch.proto).
 
 ### Run MiniFab in local dispatch mode
 
@@ -82,5 +84,3 @@ Optional in either mode:
 - `--log-file <path>`
 
 After the simulation finishes, the launcher prints throughput and priority-weighted tardiness to the terminal.
-
-The container exits non-zero if required arguments are missing or if an unsupported mode or dispatch rule is provided.
