@@ -171,7 +171,8 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append("\"expected_setup_time\":").append(item.getExpectedSetupTime()).append(',');
 		builder.append("\"time_since_arrival\":").append(item.getTimeSinceArrival()).append(',');
 		builder.append("\"priority\":").append(item.getPriority()).append(',');
-		builder.append("\"lateness\":").append(item.getLateness());
+		builder.append("\"lateness\":").append(item.getLateness()).append(',');
+		builder.append("\"recipe\":").append(quote(item.getRecipe()));
 		builder.append('}');
 	}
 

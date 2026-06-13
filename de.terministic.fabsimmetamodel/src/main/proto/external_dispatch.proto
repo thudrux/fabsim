@@ -57,6 +57,7 @@ message FlowItemQueuedSnapshot {
   int64 time_since_arrival = 4;
   int32 priority = 5;
   int64 lateness = 6;
+  string recipe = 7;
 }
 
 message FlowItemInProcessSnapshot {
@@ -74,4 +75,5 @@ message FlowItemQueuedWithIDSnapshot {
   int64 time_since_arrival = 5;
   int32 priority = 6;
   int64 lateness = 7;
+  string recipe = 8;
 }

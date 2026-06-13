@@ -148,10 +148,12 @@ public final class DispatchDecisionSnapshot {
 	private abstract static class FlowItemSnapshotBaseDto {
 		private final int priority;
 		private final long lateness;
+		private final String recipe;
 
-		private FlowItemSnapshotBaseDto(final int priority, final long lateness) {
+		private FlowItemSnapshotBaseDto(final int priority, final long lateness, final String recipe) {
 			this.priority = priority;
 			this.lateness = lateness;
+			this.recipe = recipe;
 		}
 
 		protected int getPriority() {
@@ -160,6 +162,10 @@ public final class DispatchDecisionSnapshot {
 
 		protected long getLateness() {
 			return this.lateness;
+		}
+
+		protected String getRecipe() {
+			return this.recipe;
 		}
 	}
 
@@ -171,8 +177,8 @@ public final class DispatchDecisionSnapshot {
 
 		private FlowItemQueuedSnapshotDto(final long remainingCycleTime, final long processingTime,
 				final long expectedSetupTime, final long timeSinceArrival, final int priority,
-				final long lateness) {
-			super(priority, lateness);
+				final long lateness, final String recipe) {
+			super(priority, lateness, recipe);
 			this.remainingCycleTime = remainingCycleTime;
 			this.processingTime = processingTime;
 			this.expectedSetupTime = expectedSetupTime;
@@ -183,20 +189,20 @@ public final class DispatchDecisionSnapshot {
 				final long currentTime) {
 			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
 					calculateExpectedSetupTime(toolGroup, item), calculateTimeSinceArrival(item, currentTime),
-					calculatePriority(item), calculateLateness(item, currentTime));
+					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
 		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
 			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item), 0L,
 					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
-					calculateLateness(item, currentTime));
+					calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
 		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
 			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
 					calculateExpectedSetupTime(tool, item), calculateTimeSinceArrival(item, currentTime),
-					calculatePriority(item), calculateLateness(item, currentTime));
+					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
 		public FlowItemQueuedSnapshot toProto() {
@@ -207,6 +213,7 @@ public final class DispatchDecisionSnapshot {
 					.setTimeSinceArrival(getTimeSinceArrival())
 					.setPriority(getPriority())
 					.setLateness(getLateness())
+					.setRecipe(getRecipe())
 					.build();
 		}
 
@@ -233,7 +240,7 @@ public final class DispatchDecisionSnapshot {
 
 		private FlowItemInProcessSnapshotDto(final long remainingCycleTime, final long processingTimeLeft,
 				final int priority, final long lateness) {
-			super(priority, lateness);
+			super(priority, lateness, "");
 			this.remainingCycleTime = remainingCycleTime;
 			this.processingTimeLeft = processingTimeLeft;
 		}
@@ -264,8 +271,9 @@ public final class DispatchDecisionSnapshot {
 
 		private FlowItemQueuedWithIDSnapshotDto(final long id, final long remainingCycleTime,
 				final long processingTime, final long expectedSetupTime, final long timeSinceArrival,
-				final int priority, final long lateness) {
-			super(remainingCycleTime, processingTime, expectedSetupTime, timeSinceArrival, priority, lateness);
+				final int priority, final long lateness, final String recipe) {
+			super(remainingCycleTime, processingTime, expectedSetupTime, timeSinceArrival, priority, lateness,
+					recipe);
 			this.id = id;
 		}
 
@@ -274,7 +282,7 @@ public final class DispatchDecisionSnapshot {
 			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), calculateRemainingCycleTime(item),
 					calculateProcessingTime(item), calculateExpectedSetupTime(tool, item),
 					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
-					calculateLateness(item, currentTime));
+					calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
 		public FlowItemQueuedWithIDSnapshot toWithIdProto() {
@@ -286,6 +294,7 @@ public final class DispatchDecisionSnapshot {
 					.setTimeSinceArrival(getTimeSinceArrival())
 					.setPriority(getPriority())
 					.setLateness(getLateness())
+					.setRecipe(getRecipe())
 					.build();
 		}
 	}
@@ -370,6 +379,13 @@ public final class DispatchDecisionSnapshot {
 			bestSetupTime = Math.min(bestSetupTime, calculateExpectedSetupTime(tool, item));
 		}
 		return bestSetupTime == Long.MAX_VALUE ? 0L : bestSetupTime;
+	}
+
+	private static String calculateRecipe(final AbstractFlowItem item) {
+		if (item == null || item.getRecipe() == null || item.getRecipe().getName() == null) {
+			return "";
+		}
+		return item.getRecipe().getName();
 	}
 
 	private static long calculateTimeSinceArrival(final AbstractFlowItem item, final long currentTime) {
