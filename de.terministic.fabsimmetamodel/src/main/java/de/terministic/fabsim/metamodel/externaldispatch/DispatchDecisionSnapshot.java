@@ -2,6 +2,7 @@ package de.terministic.fabsim.metamodel.externaldispatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -100,8 +101,18 @@ public final class DispatchDecisionSnapshot {
 				queuedItems.add(FlowItemQueuedSnapshotDto.capture(item, toolGroup, currentTime));
 			}
 			final List<FlowItemInProcessSnapshotDto> inProcessItems = new ArrayList<>();
+			final Map<AbstractTool, AbstractFlowItem> itemByTool = new LinkedHashMap<>();
 			for (final Map.Entry<AbstractFlowItem, AbstractTool> entry : toolGroup.getInProcessMap().entrySet()) {
-				inProcessItems.add(FlowItemInProcessSnapshotDto.capture(entry.getKey(), entry.getValue(), currentTime));
+				itemByTool.putIfAbsent(entry.getValue(), entry.getKey());
+			}
+			// A tool group cannot process more items in parallel than it has tools.
+			// Building the snapshot by tool keeps the log aligned with the physical capacity
+			// and ignores any stale duplicate bookkeeping entries.
+			for (final AbstractTool tool : toolGroup.getTools().values()) {
+				final AbstractFlowItem item = itemByTool.get(tool);
+				if (item != null) {
+					inProcessItems.add(FlowItemInProcessSnapshotDto.capture(item, tool, currentTime));
+				}
 			}
 			return new ToolGroupSnapshotDto(toolGroup.getName(), waitingForDispatch, tools, queuedItems, inProcessItems);
 		}
