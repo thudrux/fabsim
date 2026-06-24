@@ -17,6 +17,7 @@ import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
+import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.examples.MiniFab;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
@@ -331,7 +332,7 @@ public final class DispatchDecisionSnapshot {
 		}
 		long remainingProcessTime = 0L;
 		for (int i = currentStepNumber; i < item.getRecipe().size(); i++) {
-			remainingProcessTime += Math.max(0L, item.getRecipe().get(i).getDuration(item));
+			remainingProcessTime += calculateStepCycleTime(item, item.getRecipe().get(i));
 		}
 		return Math.round(remainingProcessTime * MiniFab.FLOW_FACTOR);
 	}
@@ -346,9 +347,14 @@ public final class DispatchDecisionSnapshot {
 		}
 		long futureProcessTime = 0L;
 		for (int i = currentStepNumber + 1; i < item.getRecipe().size(); i++) {
-			futureProcessTime += Math.max(0L, item.getRecipe().get(i).getDuration(item));
+			futureProcessTime += calculateStepCycleTime(item, item.getRecipe().get(i));
 		}
 		return Math.round((processingTimeLeft + futureProcessTime) * MiniFab.FLOW_FACTOR);
+	}
+
+	private static long calculateStepCycleTime(final AbstractFlowItem item, final ProcessStep step) {
+		return Math.max(0L, step.getLoadTime()) + Math.max(0L, step.getDuration(item))
+				+ Math.max(0L, step.getUnloadTime());
 	}
 
 	private static long calculateExpectedSetupTime(final AbstractTool tool, final AbstractFlowItem item) {
