@@ -9,6 +9,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import de.terministic.fabsim.externaldispatch.grpc.FabStateSnapshot;
+import de.terministic.fabsim.externaldispatch.grpc.CostSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.FlowItemInProcessSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.ToolGroupSnapshot;
@@ -103,6 +104,16 @@ public final class LocalLogWriter implements AutoCloseable {
 			appendToolGroup(builder, toolGroups.get(i));
 		}
 		builder.append(']');
+		builder.append(',');
+		builder.append("\"cost_snapshot\":");
+		appendCostSnapshot(builder, fabState.getCostSnapshot());
+		builder.append('}');
+	}
+
+	private void appendCostSnapshot(final StringBuilder builder, final CostSnapshot costSnapshot) {
+		builder.append('{');
+		builder.append("\"total_projected_tardiness\":").append(costSnapshot.getTotalProjectedTardiness()).append(',');
+		builder.append("\"work_in_progress\":").append(costSnapshot.getWorkInProgress());
 		builder.append('}');
 	}
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.terministic.fabsim.externaldispatch.grpc.DispatchDecisionRequest;
 import de.terministic.fabsim.externaldispatch.grpc.FabStateSnapshot;
+import de.terministic.fabsim.externaldispatch.grpc.CostSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.FlowItemInProcessSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedSnapshot;
 import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedWithIDSnapshot;
@@ -66,10 +67,18 @@ public final class DispatchDecisionSnapshot {
 	}
 
 	public FabStateSnapshot toFabStateSnapshot() {
+		long totalProjectedTardiness = 0L;
+		long workInProgress = 0L;
 		final FabStateSnapshot.Builder builder = FabStateSnapshot.newBuilder().setSimulationTime(this.simulationTime);
 		for (final ToolGroupSnapshotDto toolGroup : this.toolGroups) {
 			builder.addToolGroups(toolGroup.toProto());
+			totalProjectedTardiness += toolGroup.getTotalProjectedTardiness();
+			workInProgress += toolGroup.getWorkInProgress();
 		}
+		builder.setCostSnapshot(CostSnapshot.newBuilder()
+				.setTotalProjectedTardiness(totalProjectedTardiness)
+				.setWorkInProgress(workInProgress)
+				.build());
 		return builder.build();
 	}
 
@@ -79,15 +88,20 @@ public final class DispatchDecisionSnapshot {
 		private final List<ToolSnapshotDto> tools;
 		private final List<FlowItemQueuedSnapshotDto> queuedItems;
 		private final List<FlowItemInProcessSnapshotDto> inProcessItems;
+		private final long totalProjectedTardiness;
+		private final long workInProgress;
 
 		private ToolGroupSnapshotDto(final String name, final boolean waitingForDispatch,
 				final List<ToolSnapshotDto> tools, final List<FlowItemQueuedSnapshotDto> queuedItems,
-				final List<FlowItemInProcessSnapshotDto> inProcessItems) {
+				final List<FlowItemInProcessSnapshotDto> inProcessItems, final long totalProjectedTardiness,
+				final long workInProgress) {
 			this.name = name;
 			this.waitingForDispatch = waitingForDispatch;
 			this.tools = tools;
 			this.queuedItems = queuedItems;
 			this.inProcessItems = inProcessItems;
+			this.totalProjectedTardiness = totalProjectedTardiness;
+			this.workInProgress = workInProgress;
 		}
 
 		public static ToolGroupSnapshotDto capture(final AbstractToolGroup toolGroupBase,
@@ -115,7 +129,22 @@ public final class DispatchDecisionSnapshot {
 					inProcessItems.add(FlowItemInProcessSnapshotDto.capture(item, tool, currentTime));
 				}
 			}
-			return new ToolGroupSnapshotDto(toolGroup.getName(), waitingForDispatch, tools, queuedItems, inProcessItems);
+			long totalProjectedTardiness = 0L;
+			for (final AbstractFlowItem item : toolGroup.getQueue()) {
+				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime);
+			}
+			for (final AbstractFlowItem item : itemByTool.values()) {
+				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime);
+			}
+			long workInProgress = 0L;
+			for (final AbstractFlowItem item : toolGroup.getQueue()) {
+				workInProgress += calculateWaferLevelWorkInProgress(item);
+			}
+			for (final AbstractFlowItem item : itemByTool.values()) {
+				workInProgress += calculateWaferLevelWorkInProgress(item);
+			}
+			return new ToolGroupSnapshotDto(toolGroup.getName(), waitingForDispatch, tools, queuedItems, inProcessItems,
+					totalProjectedTardiness, workInProgress);
 		}
 
 		public ToolGroupSnapshot toProto() {
@@ -132,6 +161,14 @@ public final class DispatchDecisionSnapshot {
 				builder.addInProcessItems(item.toProto());
 			}
 			return builder.build();
+		}
+
+		protected long getTotalProjectedTardiness() {
+			return this.totalProjectedTardiness;
+		}
+
+		protected long getWorkInProgress() {
+			return this.workInProgress;
 		}
 	}
 
@@ -276,6 +313,10 @@ public final class DispatchDecisionSnapshot {
 					.setLateness(getLateness())
 					.build();
 		}
+
+		protected long getRemainingCycleTime() {
+			return this.remainingCycleTime;
+		}
 	}
 
 	public static final class FlowItemQueuedWithIDSnapshotDto extends FlowItemQueuedSnapshotDto {
@@ -350,6 +391,42 @@ public final class DispatchDecisionSnapshot {
 			futureProcessTime += calculateStepCycleTime(item, item.getRecipe().get(i));
 		}
 		return Math.round((processingTimeLeft + futureProcessTime) * MiniFab.FLOW_FACTOR);
+	}
+
+	private static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime) {
+		if (item == null) {
+			return 0L;
+		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			if (batch.getItems().isEmpty()) {
+				return 0L;
+			}
+			long total = 0L;
+			for (final AbstractFlowItem lot : batch.getItems()) {
+				total += calculateWaferLevelProjectedTardiness(lot, currentTime);
+			}
+			return total;
+		}
+		return item.getSize() * (calculateLateness(item, currentTime) + calculateRemainingCycleTime(item));
+	}
+
+	private static long calculateWaferLevelWorkInProgress(final AbstractFlowItem item) {
+		if (item == null) {
+			return 0L;
+		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			if (batch.getItems().isEmpty()) {
+				return 0L;
+			}
+			long total = 0L;
+			for (final AbstractFlowItem lot : batch.getItems()) {
+				total += calculateWaferLevelWorkInProgress(lot);
+			}
+			return total;
+		}
+		return Math.max(0L, item.getSize());
 	}
 
 	private static long calculateStepCycleTime(final AbstractFlowItem item, final ProcessStep step) {

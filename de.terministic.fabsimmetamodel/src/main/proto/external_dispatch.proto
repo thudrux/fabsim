@@ -35,6 +35,12 @@ message DispatchDecisionSnapshot {
 message FabStateSnapshot {
   int64 simulation_time = 1;
   repeated ToolGroupSnapshot tool_groups = 2;
+  CostSnapshot cost_snapshot = 3;
+}
+
+message CostSnapshot {
+  int64 total_projected_tardiness = 1;
+  int64 work_in_progress = 2;
 }
 
 message ToolGroupSnapshot {
