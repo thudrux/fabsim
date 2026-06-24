@@ -84,6 +84,7 @@ public final class MiniFabDockerApp {
 			System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
 					+ " h (" + simulationTimeMillis + " ms)");
 			System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedWafers() + " finished wafers");
+			System.out.println("Tardy: " + finishedLotStatisticsCollector.getTardyWafers() + " finished wafers");
 			final long totalWeightedTardiness = finishedLotStatisticsCollector.getTotalWeightedTardiness();
 			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(totalWeightedTardiness));
 			if (config.logFile != null) {

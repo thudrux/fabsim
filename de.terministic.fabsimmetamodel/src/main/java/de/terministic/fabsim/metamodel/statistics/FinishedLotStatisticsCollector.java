@@ -14,6 +14,7 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 	private final FabModel fabModel;
 	private final Map<Integer, Integer> priorityWeights;
 	private long finishedLots;
+	private long tardyLots;
 	private long weightedTardiness;
 
 	public FinishedLotStatisticsCollector(final FabModel fabModel, final Map<Integer, Integer> priorityWeights) {
@@ -40,6 +41,9 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 		final long tardiness = Math.max(0L, event.getEventTime() - lot.getDueDate());
 		final int weight = getPriorityWeight(lot.getPrio());
 		this.finishedLots++;
+		if (tardiness > 0L) {
+			this.tardyLots++;
+		}
 		this.weightedTardiness += tardiness * weight;
 	}
 
@@ -49,6 +53,10 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 
 	public long getTotalWeightedTardiness() {
 		return this.weightedTardiness;
+	}
+
+	public long getTardyWafers() {
+		return this.tardyLots * (long) this.fabModel.getLotSize();
 	}
 
 	private int getPriorityWeight(final int priority) {
