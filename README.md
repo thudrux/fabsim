@@ -34,14 +34,14 @@ If the dispatch service is reachable from the host machine rather than the Docke
 
 ### Run MiniFab in local dispatch mode
 
-Local mode currently supports `fifo` only.
+Local mode currently supports `fifo` and `srpt`.
 
 ```bash
 docker run --rm \
   minifab \
   --mode local \
   --simulation-time 168 \
-  --dispatch-rule fifo
+  --dispatch-rule srpt
 ```
 
 ### Write logs to a mounted host path
@@ -77,7 +77,7 @@ External mode arguments:
 
 Local mode arguments:
 
-- `--dispatch-rule fifo`
+- `--dispatch-rule fifo|srpt`
 
 Optional in either mode:
 

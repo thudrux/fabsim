@@ -12,6 +12,7 @@ import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
 import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
@@ -113,10 +114,14 @@ public final class MiniFabDockerApp {
 
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
 		if (dispatchRuleName == null || dispatchRuleName.trim().isEmpty()) {
-			throw new IllegalArgumentException("local mode requires --dispatch-rule fifo");
+			throw new IllegalArgumentException("local mode requires --dispatch-rule fifo|srpt");
 		}
-		if ("fifo".equals(dispatchRuleName.trim().toLowerCase(Locale.ROOT))) {
+		final String normalizedDispatchRuleName = dispatchRuleName.trim().toLowerCase(Locale.ROOT);
+		if ("fifo".equals(normalizedDispatchRuleName)) {
 			return new FIFO();
+		}
+		if ("srpt".equals(normalizedDispatchRuleName)) {
+			return new SRPT();
 		}
 		throw new IllegalArgumentException("Unsupported local dispatch rule: " + dispatchRuleName);
 	}
@@ -195,7 +200,7 @@ public final class MiniFabDockerApp {
 				throw new IllegalArgumentException("host, port, and timeout are only valid for external mode");
 			}
 			if (config.dispatchRuleName == null) {
-				throw new IllegalArgumentException("local mode requires --dispatch-rule fifo");
+				throw new IllegalArgumentException("local mode requires --dispatch-rule fifo|srpt");
 			}
 			break;
 		default:
@@ -269,7 +274,7 @@ public final class MiniFabDockerApp {
 		System.out.println(
 				"  java -jar minifab.jar --mode external --simulation-time <hours> --dispatch-host <host> --dispatch-port <port> [--dispatch-timeout-ms <ms>] [--log-file <path>]");
 		System.out.println(
-				"  java -jar minifab.jar --mode local --simulation-time <hours> --dispatch-rule fifo [--log-file <path>]");
+				"  java -jar minifab.jar --mode local --simulation-time <hours> --dispatch-rule fifo|srpt [--log-file <path>]");
 	}
 
 	private static final class SimulationProgressListener extends SimEventListener {
