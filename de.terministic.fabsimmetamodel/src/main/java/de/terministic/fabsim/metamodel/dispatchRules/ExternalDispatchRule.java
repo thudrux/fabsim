@@ -9,28 +9,26 @@ import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoBatchFlowItemQueue;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoFlowItemQueue;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionClient;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
 import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchException;
-import de.terministic.fabsim.metamodel.externaldispatch.GrpcDispatchDecisionClient;
 
 public class ExternalDispatchRule extends AbstractDispatchRule {
 
 	private final FIFO fallbackRule = new FIFO();
-	private final DispatchDecisionClient client;
+	private final DispatchProvider provider;
 
-	public ExternalDispatchRule(final String name) {
-		this(name, ExternalDispatchConfiguration.localDefault());
-	}
-
-	public ExternalDispatchRule(final String name, final ExternalDispatchConfiguration configuration) {
-		this(name, new GrpcDispatchDecisionClient(configuration));
-	}
-
-	public ExternalDispatchRule(final String name, final DispatchDecisionClient client) {
+	public ExternalDispatchRule(final String name, final DispatchProvider provider) {
 		super(name == null ? "ExternalDispatchRule" : name);
-		this.client = client;
+		if (provider == null) {
+			throw new IllegalArgumentException("provider must not be null");
+		}
+		this.provider = provider;
+	}
+
+	public ExternalDispatchRule(final DispatchProvider provider) {
+		this("ExternalDispatchRule", provider);
 	}
 
 	@Override
@@ -41,12 +39,16 @@ public class ExternalDispatchRule extends AbstractDispatchRule {
 	@Override
 	public AbstractFlowItem getBestItem(final ArrayList<AbstractFlowItem> items, final AbstractToolGroup tg,
 			final AbstractTool tool) {
-		if (tg == null || tool == null) {
+		if (items == null || items.isEmpty() || tg == null || tool == null) {
 			return this.fallbackRule.getBestItem(items);
 		}
-		final DispatchDecisionSnapshot snapshot = DispatchDecisionSnapshot.capture(tg.getFabModel(), tg,
-				tool, items, getName());
-		final long selectedId = this.client.selectFlowItem(snapshot);
+		final DispatchDecisionRequest request = DispatchDecisionRequest.capture(tg.getFabModel(), tg, tool, items);
+		final DispatchDecisionResponse response = this.provider.selectDispatchCandidate(request);
+		if (response == null) {
+			throw new ExternalDispatchException("External dispatch provider returned no decision for tool group "
+					+ tg.getName());
+		}
+		final long selectedId = response.getSelectedFlowItemId();
 		for (final AbstractFlowItem item : items) {
 			if (item.getId() == selectedId) {
 				return item;

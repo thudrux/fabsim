@@ -8,7 +8,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
 
 public class LoggingDispatchRule extends AbstractDispatchRule {
 
@@ -42,11 +42,11 @@ public class LoggingDispatchRule extends AbstractDispatchRule {
 		if (items == null || items.isEmpty()) {
 			return this.delegate.getBestItem(items, tg, tool);
 		}
-		final DispatchDecisionSnapshot snapshot = tg == null || tool == null ? null
-				: DispatchDecisionSnapshot.capture(tg.getFabModel(), tg, tool, new ArrayList<>(items), getName());
+		final DispatchDecisionRequest request = tg == null || tool == null ? null
+				: DispatchDecisionRequest.capture(tg.getFabModel(), tg, tool, new ArrayList<>(items));
 		final AbstractFlowItem selectedItem = this.delegate.getBestItem(items, tg, tool);
-		if (snapshot != null && selectedItem != null) {
-			this.logWriter.append(snapshot, selectedItem);
+		if (request != null && selectedItem != null) {
+			this.logWriter.append(request, selectedItem);
 		}
 		return selectedItem;
 	}

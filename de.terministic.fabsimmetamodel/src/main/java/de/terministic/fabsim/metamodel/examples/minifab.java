@@ -6,6 +6,8 @@ import java.util.Map;
 
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -17,9 +19,11 @@ import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
-import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
+import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
+import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 
 /**
@@ -98,21 +102,17 @@ public class MiniFab {
 	private SetupState twS6Setup;
 
 	public FabModel createMiniFabModel() {
-		return createMiniFabModelWithExternalDispatch();
+		return createMiniFabModelWithLocalDispatch(new FIFO());
 	}
 
-	public FabModel createMiniFabModelWithExternalDispatch() {
-		return createMiniFabModelWithExternalDispatch(ExternalDispatchConfiguration.localDefault(), null);
+	public FabModel createMiniFabModelWithExternalDispatch(final DispatchProvider provider) {
+		return createMiniFabModelWithExternalDispatch(provider, null);
 	}
 
-	public FabModel createMiniFabModelWithExternalDispatch(final ExternalDispatchConfiguration configuration) {
-		return createMiniFabModelWithExternalDispatch(configuration, null);
-	}
-
-	public FabModel createMiniFabModelWithExternalDispatch(final ExternalDispatchConfiguration configuration,
+	public FabModel createMiniFabModelWithExternalDispatch(final DispatchProvider provider,
 			final LocalLogWriter logWriter) {
 		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
-				configuration == null ? ExternalDispatchConfiguration.localDefault() : configuration);
+				provider);
 		return createMiniFabModelWithDispatchRule(externalDispatchRule, logWriter);
 	}
 
@@ -142,8 +142,44 @@ public class MiniFab {
 		return createMiniFabModel(model, effectiveRule);
 	}
 
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours) {
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final LocalLogWriter logWriter) {
+		final FabModel model = createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
+		return runSimulation(model, simulationTimeHours);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final LocalLogWriter logWriter) {
+		final FabModel model = createMiniFabModelWithExternalDispatch(provider, logWriter);
+		return runSimulation(model, simulationTimeHours);
+	}
+
 	public static Map<Integer, Integer> getPriorityWeights() {
 		return PRIORITY_WEIGHTS;
+	}
+
+	private MiniFabRunResult runSimulation(final FabModel model, final long simulationTimeHours) {
+		final SimulationEngine engine = new FabSimulationEngine();
+		engine.init(model);
+		final long simulationTimeMillis = Math.multiplyExact(simulationTimeHours, HOUR);
+		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
+				MiniFab.getPriorityWeights());
+		engine.addListener(finishedLotStatisticsCollector);
+		engine.runSimulation(simulationTimeMillis);
+		return new MiniFabRunResult(simulationTimeHours, simulationTimeMillis,
+				finishedLotStatisticsCollector.getFinishedWafers(),
+				finishedLotStatisticsCollector.getTardyWafers(),
+				finishedLotStatisticsCollector.getTotalWeightedTardiness());
 	}
 
 	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {

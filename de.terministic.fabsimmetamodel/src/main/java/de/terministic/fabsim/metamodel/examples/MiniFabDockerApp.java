@@ -5,38 +5,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-import de.terministic.fabsim.core.ISimEvent;
-import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.core.SimulationEngine;
-import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
-import de.terministic.fabsim.metamodel.externaldispatch.ExternalDispatchConfiguration;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
-import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 public final class MiniFabDockerApp {
 
-	private static final long HOUR_IN_MILLISECONDS = 60L * 60L * 1000L;
-	private static final long DEFAULT_EXTERNAL_DISPATCH_TIMEOUT_MS =
-			ExternalDispatchConfiguration.localDefault().getTimeoutMillis();
-	private static final int PROGRESS_BAR_WIDTH = 50;
-
-	private enum Mode {
-		EXTERNAL,
-		LOCAL
-	}
-
 	private static final class CliConfig {
 		private long simulationTimeHours = -1L;
-		private Mode mode;
 		private String dispatchRuleName;
-		private String dispatchHost;
-		private Integer dispatchPort;
-		private Long dispatchTimeoutMillis;
 		private Path logFile;
 		private boolean help;
 	}
@@ -67,27 +46,13 @@ public final class MiniFabDockerApp {
 		final MiniFab miniFab = new MiniFab();
 		final LocalLogWriter logWriter = config.logFile == null ? null : new LocalLogWriter(config.logFile);
 		try {
-			final FabModel model = buildModel(miniFab, config, logWriter);
-			final SimulationEngine engine = new FabSimulationEngine();
-			engine.init(model);
-			final long simulationTimeMillis = toSimulationTimeMillis(config.simulationTimeHours);
-			final SimulationProgressListener progressListener = new SimulationProgressListener(simulationTimeMillis);
-			final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(
-					model, MiniFab.getPriorityWeights());
-			engine.addListener(progressListener);
-			engine.addListener(finishedLotStatisticsCollector);
-			try {
-				engine.runSimulation(simulationTimeMillis);
-			} finally {
-				progressListener.finish();
-			}
-
-			System.out.println("MiniFab completed at simulation time " + config.simulationTimeHours
-					+ " h (" + simulationTimeMillis + " ms)");
-			System.out.println("Throughput: " + finishedLotStatisticsCollector.getFinishedWafers() + " finished wafers");
-			System.out.println("Tardy: " + finishedLotStatisticsCollector.getTardyWafers() + " finished wafers");
-			final long totalWeightedTardiness = finishedLotStatisticsCollector.getTotalWeightedTardiness();
-			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(totalWeightedTardiness));
+			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
+					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, logWriter);
+			System.out.println("MiniFab completed at simulation time " + result.getSimulationTimeHours()
+					+ " h (" + result.getSimulationTimeMillis() + " ms)");
+			System.out.println("Throughput: " + result.getThroughput() + " finished wafers");
+			System.out.println("Tardy: " + result.getTardyWafers() + " finished wafers");
+			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(result.getTotalWeightedTardiness()));
 			if (config.logFile != null) {
 				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
 			}
@@ -99,24 +64,9 @@ public final class MiniFabDockerApp {
 		}
 	}
 
-	private FabModel buildModel(final MiniFab miniFab, final CliConfig config, final LocalLogWriter logWriter) {
-		if (config.mode == Mode.EXTERNAL) {
-			final ExternalDispatchConfiguration dispatchConfiguration = new ExternalDispatchConfiguration(
-					config.dispatchHost, config.dispatchPort,
-					config.dispatchTimeoutMillis == null ? DEFAULT_EXTERNAL_DISPATCH_TIMEOUT_MS
-							: config.dispatchTimeoutMillis.longValue());
-			return miniFab.createMiniFabModelWithExternalDispatch(dispatchConfiguration, logWriter);
-		}
-		if (config.mode == Mode.LOCAL) {
-			final AbstractDispatchRule dispatchRule = createLocalDispatchRule(config.dispatchRuleName);
-			return miniFab.createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
-		}
-		throw new IllegalArgumentException("mode must be set");
-	}
-
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
 		if (dispatchRuleName == null || dispatchRuleName.trim().isEmpty()) {
-			throw new IllegalArgumentException("local mode requires --dispatch-rule fifo|edd|srpt");
+			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt is required");
 		}
 		final String normalizedDispatchRuleName = dispatchRuleName.trim().toLowerCase(Locale.ROOT);
 		if ("fifo".equals(normalizedDispatchRuleName)) {
@@ -146,25 +96,8 @@ public final class MiniFabDockerApp {
 				config.simulationTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
-			if ("--mode".equals(arg)) {
-				final String modeValue = nextValue(args, ++i, arg);
-				config.mode = parseMode(modeValue);
-				continue;
-			}
 			if ("--dispatch-rule".equals(arg)) {
 				config.dispatchRuleName = nextValue(args, ++i, arg);
-				continue;
-			}
-			if ("--dispatch-host".equals(arg)) {
-				config.dispatchHost = nextValue(args, ++i, arg);
-				continue;
-			}
-			if ("--dispatch-port".equals(arg)) {
-				config.dispatchPort = parseRequiredInt(arg, nextValue(args, ++i, arg));
-				continue;
-			}
-			if ("--dispatch-timeout-ms".equals(arg)) {
-				config.dispatchTimeoutMillis = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
 			if ("--log-file".equals(arg)) {
@@ -182,49 +115,9 @@ public final class MiniFabDockerApp {
 		if (config.simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("--simulation-time must be a positive number of hours");
 		}
-		if (config.mode == null) {
-			throw new IllegalArgumentException("--mode must be provided");
+		if (config.dispatchRuleName == null) {
+			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt is required");
 		}
-		switch (config.mode) {
-		case EXTERNAL:
-			if (config.dispatchRuleName != null) {
-				throw new IllegalArgumentException("--dispatch-rule is only valid for local mode");
-			}
-			if (config.dispatchHost == null || config.dispatchHost.trim().isEmpty()) {
-				throw new IllegalArgumentException("external mode requires --dispatch-host");
-			}
-			if (config.dispatchPort == null) {
-				throw new IllegalArgumentException("external mode requires --dispatch-port");
-			}
-			if (config.dispatchPort <= 0) {
-				throw new IllegalArgumentException("--dispatch-port must be positive");
-			}
-			break;
-		case LOCAL:
-			if (config.dispatchHost != null || config.dispatchPort != null || config.dispatchTimeoutMillis != null) {
-				throw new IllegalArgumentException("host, port, and timeout are only valid for external mode");
-			}
-			if (config.dispatchRuleName == null) {
-				throw new IllegalArgumentException("local mode requires --dispatch-rule fifo|edd|srpt");
-			}
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported mode: " + config.mode);
-		}
-	}
-
-	private Mode parseMode(final String modeValue) {
-		if (modeValue == null) {
-			throw new IllegalArgumentException("--mode requires a value");
-		}
-		final String normalized = modeValue.trim().toLowerCase(Locale.ROOT);
-		if ("external".equals(normalized)) {
-			return Mode.EXTERNAL;
-		}
-		if ("local".equals(normalized)) {
-			return Mode.LOCAL;
-		}
-		throw new IllegalArgumentException("Unsupported mode: " + modeValue);
 	}
 
 	private long parseRequiredLong(final String optionName, final String value) {
@@ -235,27 +128,11 @@ public final class MiniFabDockerApp {
 		}
 	}
 
-	private int parseRequiredInt(final String optionName, final String value) {
-		try {
-			return Integer.parseInt(value);
-		} catch (final NumberFormatException ex) {
-			throw new IllegalArgumentException(optionName + " requires a numeric value");
-		}
-	}
-
 	private Path parsePath(final String value) {
 		try {
 			return Paths.get(value);
 		} catch (final InvalidPathException ex) {
 			throw new IllegalArgumentException("--log-file contains an invalid path: " + value, ex);
-		}
-	}
-
-	private long toSimulationTimeMillis(final long simulationTimeHours) {
-		try {
-			return Math.multiplyExact(simulationTimeHours, HOUR_IN_MILLISECONDS);
-		} catch (final ArithmeticException ex) {
-			throw new IllegalArgumentException("--simulation-time is too large to convert to milliseconds", ex);
 		}
 	}
 
@@ -277,54 +154,6 @@ public final class MiniFabDockerApp {
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar minifab.jar --mode external --simulation-time <hours> --dispatch-host <host> --dispatch-port <port> [--dispatch-timeout-ms <ms>] [--log-file <path>]");
-		System.out.println(
-				"  java -jar minifab.jar --mode local --simulation-time <hours> --dispatch-rule fifo|edd|srpt [--log-file <path>]");
-	}
-
-	private static final class SimulationProgressListener extends SimEventListener {
-
-		private final long endTimeMillis;
-		private int lastPrintedPercent = -1;
-
-		private SimulationProgressListener(final long endTimeMillis) {
-			this.endTimeMillis = endTimeMillis;
-		}
-
-		@Override
-		public void processEvent(final ISimEvent event) {
-			printProgress(event.getEventTime());
-		}
-
-		private void printProgress(final long simulationTimeMillis) {
-			if (this.endTimeMillis <= 0L) {
-				return;
-			}
-			final int percent = (int) Math.min(100L, (simulationTimeMillis * 100L) / this.endTimeMillis);
-			if (percent <= this.lastPrintedPercent) {
-				return;
-			}
-			this.lastPrintedPercent = percent;
-			final String bar = buildBar(percent);
-			System.out.print("\r" + bar + " " + percent + "%");
-			System.out.flush();
-		}
-
-		private String buildBar(final int percent) {
-			final int filled = Math.min(PROGRESS_BAR_WIDTH, (percent * PROGRESS_BAR_WIDTH) / 100);
-			final StringBuilder bar = new StringBuilder(PROGRESS_BAR_WIDTH + 2);
-			bar.append('[');
-			for (int i = 0; i < PROGRESS_BAR_WIDTH; i++) {
-				bar.append(i < filled ? '#' : '-');
-			}
-			bar.append(']');
-			return bar.toString();
-		}
-
-		private void finish() {
-			printProgress(this.endTimeMillis);
-			System.out.println();
-			System.out.flush();
-		}
+				"  java -jar minifab.jar --simulation-time <hours> --dispatch-rule fifo|edd|srpt [--log-file <path>]");
 	}
 }

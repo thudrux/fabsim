@@ -8,14 +8,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-import de.terministic.fabsim.externaldispatch.grpc.FabStateSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.CostSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.FlowItemInProcessSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.ToolGroupSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.ToolSnapshot;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.CostSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FabStateSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FlowItemInProcessSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FlowItemQueuedSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.ToolGroupSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.ToolSnapshot;
 
 public final class LocalLogWriter implements AutoCloseable {
 
@@ -41,17 +41,17 @@ public final class LocalLogWriter implements AutoCloseable {
 		}
 	}
 
-	public synchronized void append(final DispatchDecisionSnapshot snapshot, final AbstractFlowItem selectedFlowItem) {
-		if (snapshot == null || selectedFlowItem == null || this.writer == null) {
+	public synchronized void append(final DispatchDecisionRequest request, final AbstractFlowItem selectedFlowItem) {
+		if (request == null || selectedFlowItem == null || this.writer == null) {
 			return;
 		}
 		if (this.closed) {
 			throw new IllegalStateException("Dispatch decision log writer has already been closed for " + this.logFile);
 		}
-		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionSnapshot.FlowItemQueuedSnapshotDto
-				.capture(selectedFlowItem, snapshot.getSimulationTime()).toProto();
+		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionRequest.FlowItemQueuedSnapshot
+				.capture(selectedFlowItem, request.getSimulationTime());
 		try {
-			this.writer.write(toJson(snapshot.toFabStateSnapshot(), chosenFlowItem));
+			this.writer.write(toJson(request.getFabState(), chosenFlowItem));
 			this.writer.write('\n');
 		} catch (final IOException ex) {
 			throw new IllegalStateException("Failed to write dispatch decision log to " + this.logFile, ex);
@@ -96,7 +96,7 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append("\"simulation_time\":").append(fabState.getSimulationTime()).append(',');
 		builder.append("\"tool_groups\":");
 		builder.append('[');
-		final List<ToolGroupSnapshot> toolGroups = fabState.getToolGroupsList();
+		final List<ToolGroupSnapshot> toolGroups = fabState.getToolGroups();
 		for (int i = 0; i < toolGroups.size(); i++) {
 			if (i > 0) {
 				builder.append(',');
@@ -122,13 +122,13 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append("\"name\":").append(quote(toolGroup.getName())).append(',');
 		builder.append("\"waiting_for_dispatch\":").append(toolGroup.getWaitingForDispatch()).append(',');
 		builder.append("\"tools\":");
-		appendTools(builder, toolGroup.getToolsList());
+		appendTools(builder, toolGroup.getTools());
 		builder.append(',');
 		builder.append("\"queued_items\":");
-		appendQueuedItems(builder, toolGroup.getQueuedItemsList());
+		appendQueuedItems(builder, toolGroup.getQueuedItems());
 		builder.append(',');
 		builder.append("\"in_process_items\":");
-		appendInProcessItems(builder, toolGroup.getInProcessItemsList());
+		appendInProcessItems(builder, toolGroup.getInProcessItems());
 		builder.append('}');
 	}
 

@@ -2,98 +2,134 @@ package de.terministic.fabsim.metamodel.externaldispatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import de.terministic.fabsim.externaldispatch.grpc.DispatchDecisionRequest;
-import de.terministic.fabsim.externaldispatch.grpc.FabStateSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.CostSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.FlowItemInProcessSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.FlowItemQueuedWithIDSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.ToolGroupSnapshot;
-import de.terministic.fabsim.externaldispatch.grpc.ToolSnapshot;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
-import de.terministic.fabsim.metamodel.examples.MiniFab;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.examples.MiniFab;
 
-public final class DispatchDecisionSnapshot {
+public final class DispatchDecisionRequest {
 
-	private final long simulationTime;
-	private final List<ToolGroupSnapshotDto> toolGroups;
-	private final List<FlowItemQueuedWithIDSnapshotDto> candidates;
+	private final FabStateSnapshot fabState;
+	private final List<FlowItemQueuedWithIDSnapshot> candidates;
 
-	private DispatchDecisionSnapshot(final long simulationTime, final List<ToolGroupSnapshotDto> toolGroups,
-			final List<FlowItemQueuedWithIDSnapshotDto> candidates) {
-		this.simulationTime = simulationTime;
-		this.toolGroups = toolGroups;
+	private DispatchDecisionRequest(final FabStateSnapshot fabState,
+			final List<FlowItemQueuedWithIDSnapshot> candidates) {
+		this.fabState = fabState;
 		this.candidates = candidates;
 	}
 
+	public static DispatchDecisionRequest capture(final FabModel model, final AbstractToolGroup toolGroup,
+			final AbstractTool tool, final Collection<AbstractFlowItem> candidates) {
+		final long simulationTime = model == null || model.getSimulationEngine() == null ? 0L
+				: model.getSimulationEngine().getTime();
+		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime);
+		final List<FlowItemQueuedWithIDSnapshot> candidateSnapshots = new ArrayList<>();
+		if (candidates != null) {
+			for (final AbstractFlowItem item : candidates) {
+				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime));
+			}
+		}
+		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots));
+	}
+
+	public FabStateSnapshot getFabState() {
+		return this.fabState;
+	}
+
+	public List<FlowItemQueuedWithIDSnapshot> getCandidates() {
+		return this.candidates;
+	}
+
 	public long getSimulationTime() {
-		return this.simulationTime;
+		return this.fabState == null ? 0L : this.fabState.getSimulationTime();
 	}
 
-	public static DispatchDecisionSnapshot capture(final FabModel model, final AbstractToolGroup toolGroup,
-			final AbstractTool tool, final Collection<AbstractFlowItem> candidates, final String dispatchRuleName) {
-		final long simulationTime = model.getSimulationEngine() == null ? 0L : model.getSimulationEngine().getTime();
-		final List<ToolGroupSnapshotDto> toolGroups = new ArrayList<>();
-		for (final AbstractToolGroup groupBase : model.getToolGroups().values()) {
-			toolGroups.add(ToolGroupSnapshotDto.capture(groupBase, groupBase.getId() == toolGroup.getId(),
-					simulationTime));
+	public static final class FabStateSnapshot {
+		private final long simulationTime;
+		private final List<ToolGroupSnapshot> toolGroups;
+		private final CostSnapshot costSnapshot;
+
+		private FabStateSnapshot(final long simulationTime, final List<ToolGroupSnapshot> toolGroups,
+				final CostSnapshot costSnapshot) {
+			this.simulationTime = simulationTime;
+			this.toolGroups = toolGroups;
+			this.costSnapshot = costSnapshot;
 		}
-		final List<FlowItemQueuedWithIDSnapshotDto> candidateSnapshots = new ArrayList<>();
-		for (final AbstractFlowItem item : candidates) {
-			candidateSnapshots.add(FlowItemQueuedWithIDSnapshotDto.capture(item, tool, simulationTime));
+
+		public static FabStateSnapshot capture(final FabModel model, final AbstractToolGroup selectedToolGroup,
+				final long currentTime) {
+			final List<ToolGroupSnapshot> toolGroups = new ArrayList<>();
+			long totalProjectedTardiness = 0L;
+			long workInProgress = 0L;
+			if (model != null) {
+				for (final AbstractToolGroup groupBase : model.getToolGroups().values()) {
+					final boolean waitingForDispatch = selectedToolGroup != null
+							&& groupBase.getId() == selectedToolGroup.getId();
+					final ToolGroupSnapshot toolGroup = ToolGroupSnapshot.capture(groupBase, waitingForDispatch,
+							currentTime);
+					toolGroups.add(toolGroup);
+					totalProjectedTardiness += toolGroup.totalProjectedTardiness;
+					workInProgress += toolGroup.workInProgress;
+				}
+			}
+			return new FabStateSnapshot(currentTime, Collections.unmodifiableList(toolGroups),
+					new CostSnapshot(totalProjectedTardiness, workInProgress));
 		}
-		return new DispatchDecisionSnapshot(simulationTime, toolGroups, candidateSnapshots);
+
+		public long getSimulationTime() {
+			return this.simulationTime;
+		}
+
+		public List<ToolGroupSnapshot> getToolGroups() {
+			return this.toolGroups;
+		}
+
+		public CostSnapshot getCostSnapshot() {
+			return this.costSnapshot;
+		}
 	}
 
-	public DispatchDecisionRequest toProto() {
-		final DispatchDecisionRequest.Builder builder = DispatchDecisionRequest.newBuilder()
-				.setFabState(toFabStateSnapshot());
-		for (final FlowItemQueuedWithIDSnapshotDto candidate : this.candidates) {
-			builder.addCandidates(candidate.toWithIdProto());
-		}
-		return builder.build();
-	}
-
-	public FabStateSnapshot toFabStateSnapshot() {
-		long totalProjectedTardiness = 0L;
-		long workInProgress = 0L;
-		final FabStateSnapshot.Builder builder = FabStateSnapshot.newBuilder().setSimulationTime(this.simulationTime);
-		for (final ToolGroupSnapshotDto toolGroup : this.toolGroups) {
-			builder.addToolGroups(toolGroup.toProto());
-			totalProjectedTardiness += toolGroup.getTotalProjectedTardiness();
-			workInProgress += toolGroup.getWorkInProgress();
-		}
-		builder.setCostSnapshot(CostSnapshot.newBuilder()
-				.setTotalProjectedTardiness(totalProjectedTardiness)
-				.setWorkInProgress(workInProgress)
-				.build());
-		return builder.build();
-	}
-
-	public static final class ToolGroupSnapshotDto {
-		private final String name;
-		private final boolean waitingForDispatch;
-		private final List<ToolSnapshotDto> tools;
-		private final List<FlowItemQueuedSnapshotDto> queuedItems;
-		private final List<FlowItemInProcessSnapshotDto> inProcessItems;
+	public static final class CostSnapshot {
 		private final long totalProjectedTardiness;
 		private final long workInProgress;
 
-		private ToolGroupSnapshotDto(final String name, final boolean waitingForDispatch,
-				final List<ToolSnapshotDto> tools, final List<FlowItemQueuedSnapshotDto> queuedItems,
-				final List<FlowItemInProcessSnapshotDto> inProcessItems, final long totalProjectedTardiness,
+		private CostSnapshot(final long totalProjectedTardiness, final long workInProgress) {
+			this.totalProjectedTardiness = totalProjectedTardiness;
+			this.workInProgress = workInProgress;
+		}
+
+		public long getTotalProjectedTardiness() {
+			return this.totalProjectedTardiness;
+		}
+
+		public long getWorkInProgress() {
+			return this.workInProgress;
+		}
+	}
+
+	public static final class ToolGroupSnapshot {
+		private final String name;
+		private final boolean waitingForDispatch;
+		private final List<ToolSnapshot> tools;
+		private final List<FlowItemQueuedSnapshot> queuedItems;
+		private final List<FlowItemInProcessSnapshot> inProcessItems;
+		private final long totalProjectedTardiness;
+		private final long workInProgress;
+
+		private ToolGroupSnapshot(final String name, final boolean waitingForDispatch, final List<ToolSnapshot> tools,
+				final List<FlowItemQueuedSnapshot> queuedItems,
+				final List<FlowItemInProcessSnapshot> inProcessItems, final long totalProjectedTardiness,
 				final long workInProgress) {
 			this.name = name;
 			this.waitingForDispatch = waitingForDispatch;
@@ -104,29 +140,26 @@ public final class DispatchDecisionSnapshot {
 			this.workInProgress = workInProgress;
 		}
 
-		public static ToolGroupSnapshotDto capture(final AbstractToolGroup toolGroupBase,
+		public static ToolGroupSnapshot capture(final AbstractToolGroup toolGroupBase,
 				final boolean waitingForDispatch, final long currentTime) {
 			final ToolGroup toolGroup = (ToolGroup) toolGroupBase;
-			final List<ToolSnapshotDto> tools = new ArrayList<>();
+			final List<ToolSnapshot> tools = new ArrayList<>();
 			for (final AbstractTool tool : toolGroup.getTools().values()) {
-				tools.add(ToolSnapshotDto.capture(tool));
+				tools.add(ToolSnapshot.capture(tool));
 			}
-			final List<FlowItemQueuedSnapshotDto> queuedItems = new ArrayList<>();
+			final List<FlowItemQueuedSnapshot> queuedItems = new ArrayList<>();
 			for (final AbstractFlowItem item : toolGroup.getQueue()) {
-				queuedItems.add(FlowItemQueuedSnapshotDto.capture(item, toolGroup, currentTime));
+				queuedItems.add(FlowItemQueuedSnapshot.capture(item, toolGroup, currentTime));
 			}
-			final List<FlowItemInProcessSnapshotDto> inProcessItems = new ArrayList<>();
+			final List<FlowItemInProcessSnapshot> inProcessItems = new ArrayList<>();
 			final Map<AbstractTool, AbstractFlowItem> itemByTool = new LinkedHashMap<>();
 			for (final Map.Entry<AbstractFlowItem, AbstractTool> entry : toolGroup.getInProcessMap().entrySet()) {
 				itemByTool.putIfAbsent(entry.getValue(), entry.getKey());
 			}
-			// A tool group cannot process more items in parallel than it has tools.
-			// Building the snapshot by tool keeps the log aligned with the physical capacity
-			// and ignores any stale duplicate bookkeeping entries.
 			for (final AbstractTool tool : toolGroup.getTools().values()) {
 				final AbstractFlowItem item = itemByTool.get(tool);
 				if (item != null) {
-					inProcessItems.add(FlowItemInProcessSnapshotDto.capture(item, tool, currentTime));
+					inProcessItems.add(FlowItemInProcessSnapshot.capture(item, tool, currentTime));
 				}
 			}
 			long totalProjectedTardiness = 0L;
@@ -143,88 +176,86 @@ public final class DispatchDecisionSnapshot {
 			for (final AbstractFlowItem item : itemByTool.values()) {
 				workInProgress += calculateWaferLevelWorkInProgress(item);
 			}
-			return new ToolGroupSnapshotDto(toolGroup.getName(), waitingForDispatch, tools, queuedItems, inProcessItems,
-					totalProjectedTardiness, workInProgress);
+			return new ToolGroupSnapshot(toolGroup.getName(), waitingForDispatch,
+					Collections.unmodifiableList(tools), Collections.unmodifiableList(queuedItems),
+					Collections.unmodifiableList(inProcessItems), totalProjectedTardiness, workInProgress);
 		}
 
-		public ToolGroupSnapshot toProto() {
-			final ToolGroupSnapshot.Builder builder = ToolGroupSnapshot.newBuilder()
-					.setName(this.name)
-					.setWaitingForDispatch(this.waitingForDispatch);
-			for (final ToolSnapshotDto tool : this.tools) {
-				builder.addTools(tool.toProto());
-			}
-			for (final FlowItemQueuedSnapshotDto item : this.queuedItems) {
-				builder.addQueuedItems(item.toProto());
-			}
-			for (final FlowItemInProcessSnapshotDto item : this.inProcessItems) {
-				builder.addInProcessItems(item.toProto());
-			}
-			return builder.build();
+		public String getName() {
+			return this.name;
 		}
 
-		protected long getTotalProjectedTardiness() {
-			return this.totalProjectedTardiness;
+		public boolean getWaitingForDispatch() {
+			return this.waitingForDispatch;
 		}
 
-		protected long getWorkInProgress() {
-			return this.workInProgress;
+		public List<ToolSnapshot> getTools() {
+			return this.tools;
+		}
+
+		public List<FlowItemQueuedSnapshot> getQueuedItems() {
+			return this.queuedItems;
+		}
+
+		public List<FlowItemInProcessSnapshot> getInProcessItems() {
+			return this.inProcessItems;
 		}
 	}
 
-	public static final class ToolSnapshotDto {
+	public static final class ToolSnapshot {
 		private final long id;
 		private final String currentToolState;
 
-		private ToolSnapshotDto(final long id, final String currentToolState) {
+		private ToolSnapshot(final long id, final String currentToolState) {
 			this.id = id;
 			this.currentToolState = currentToolState;
 		}
 
-		public static ToolSnapshotDto capture(final AbstractTool tool) {
-			return new ToolSnapshotDto(tool.getId(), tool.getCurrentToolState() == null ? ""
+		public static ToolSnapshot capture(final AbstractTool tool) {
+			return new ToolSnapshot(tool.getId(), tool.getCurrentToolState() == null ? ""
 					: tool.getCurrentToolState().name());
 		}
 
-		public ToolSnapshot toProto() {
-			return ToolSnapshot.newBuilder()
-					.setId(this.id)
-					.setCurrentToolState(this.currentToolState)
-					.build();
+		public long getId() {
+			return this.id;
+		}
+
+		public String getCurrentToolState() {
+			return this.currentToolState;
 		}
 	}
 
-	private abstract static class FlowItemSnapshotBaseDto {
+	private abstract static class FlowItemSnapshotBase {
 		private final int priority;
 		private final long lateness;
 		private final String recipe;
 
-		private FlowItemSnapshotBaseDto(final int priority, final long lateness, final String recipe) {
+		private FlowItemSnapshotBase(final int priority, final long lateness, final String recipe) {
 			this.priority = priority;
 			this.lateness = lateness;
 			this.recipe = recipe;
 		}
 
-		protected int getPriority() {
+		public int getPriority() {
 			return this.priority;
 		}
 
-		protected long getLateness() {
+		public long getLateness() {
 			return this.lateness;
 		}
 
-		protected String getRecipe() {
+		public String getRecipe() {
 			return this.recipe;
 		}
 	}
 
-	public static class FlowItemQueuedSnapshotDto extends FlowItemSnapshotBaseDto {
+	public static class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 		private final long remainingCycleTime;
 		private final long processingTime;
 		private final long expectedSetupTime;
 		private final long timeSinceArrival;
 
-		private FlowItemQueuedSnapshotDto(final long remainingCycleTime, final long processingTime,
+		private FlowItemQueuedSnapshot(final long remainingCycleTime, final long processingTime,
 				final long expectedSetupTime, final long timeSinceArrival, final int priority,
 				final long lateness, final String recipe) {
 			super(priority, lateness, recipe);
@@ -234,95 +265,75 @@ public final class DispatchDecisionSnapshot {
 			this.timeSinceArrival = timeSinceArrival;
 		}
 
-		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final ToolGroup toolGroup,
+		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final ToolGroup toolGroup,
 				final long currentTime) {
-			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item),
 					calculateExpectedSetupTime(toolGroup, item), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
-		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final long currentTime) {
-			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item), 0L,
-					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
-					calculateLateness(item, currentTime), calculateRecipe(item));
-		}
-
-		public static FlowItemQueuedSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
+		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
-			return new FlowItemQueuedSnapshotDto(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item),
 					calculateExpectedSetupTime(tool, item), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
-		public FlowItemQueuedSnapshot toProto() {
-			return FlowItemQueuedSnapshot.newBuilder()
-					.setRemainingCycleTime(this.remainingCycleTime)
-					.setProcessingTime(this.processingTime)
-					.setExpectedSetupTime(this.expectedSetupTime)
-					.setTimeSinceArrival(getTimeSinceArrival())
-					.setPriority(getPriority())
-					.setLateness(getLateness())
-					.setRecipe(getRecipe())
-					.build();
+		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final long currentTime) {
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item), 0L,
+					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
+					calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
-		protected long getRemainingCycleTime() {
+		public long getRemainingCycleTime() {
 			return this.remainingCycleTime;
 		}
 
-		protected long getProcessingTime() {
+		public long getProcessingTime() {
 			return this.processingTime;
 		}
 
-		protected long getExpectedSetupTime() {
+		public long getExpectedSetupTime() {
 			return this.expectedSetupTime;
 		}
 
-		protected long getTimeSinceArrival() {
+		public long getTimeSinceArrival() {
 			return this.timeSinceArrival;
 		}
 	}
 
-	public static final class FlowItemInProcessSnapshotDto extends FlowItemSnapshotBaseDto {
+	public static final class FlowItemInProcessSnapshot extends FlowItemSnapshotBase {
 		private final long remainingCycleTime;
 		private final long processingTimeLeft;
 
-		private FlowItemInProcessSnapshotDto(final long remainingCycleTime, final long processingTimeLeft,
+		private FlowItemInProcessSnapshot(final long remainingCycleTime, final long processingTimeLeft,
 				final int priority, final long lateness) {
 			super(priority, lateness, "");
 			this.remainingCycleTime = remainingCycleTime;
 			this.processingTimeLeft = processingTimeLeft;
 		}
 
-		public static FlowItemInProcessSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
+		public static FlowItemInProcessSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
 			final long remainingProcessTime = tool.getToolStateMachine().getRemainingProcessTime(tool);
 			final long processingTimeLeft = Math.max(0L, remainingProcessTime);
-			return new FlowItemInProcessSnapshotDto(
-					calculateRemainingCycleTime(item, processingTimeLeft),
-					processingTimeLeft,
-					calculatePriority(item),
-					calculateLateness(item, currentTime));
+			return new FlowItemInProcessSnapshot(calculateRemainingCycleTime(item, processingTimeLeft),
+					processingTimeLeft, calculatePriority(item), calculateLateness(item, currentTime));
 		}
 
-		public FlowItemInProcessSnapshot toProto() {
-			return FlowItemInProcessSnapshot.newBuilder()
-					.setRemainingCycleTime(this.remainingCycleTime)
-					.setProcessingTimeLeft(this.processingTimeLeft)
-					.setPriority(getPriority())
-					.setLateness(getLateness())
-					.build();
-		}
-
-		protected long getRemainingCycleTime() {
+		public long getRemainingCycleTime() {
 			return this.remainingCycleTime;
+		}
+
+		public long getProcessingTimeLeft() {
+			return this.processingTimeLeft;
 		}
 	}
 
-	public static final class FlowItemQueuedWithIDSnapshotDto extends FlowItemQueuedSnapshotDto {
+	public static final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 		private final long id;
 
-		private FlowItemQueuedWithIDSnapshotDto(final long id, final long remainingCycleTime,
+		private FlowItemQueuedWithIDSnapshot(final long id, final long remainingCycleTime,
 				final long processingTime, final long expectedSetupTime, final long timeSinceArrival,
 				final int priority, final long lateness, final String recipe) {
 			super(remainingCycleTime, processingTime, expectedSetupTime, timeSinceArrival, priority, lateness,
@@ -330,25 +341,16 @@ public final class DispatchDecisionSnapshot {
 			this.id = id;
 		}
 
-		public static FlowItemQueuedWithIDSnapshotDto capture(final AbstractFlowItem item, final AbstractTool tool,
+		public static FlowItemQueuedWithIDSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
 				final long currentTime) {
-			return new FlowItemQueuedWithIDSnapshotDto(item.getId(), calculateRemainingCycleTime(item),
+			return new FlowItemQueuedWithIDSnapshot(item.getId(), calculateRemainingCycleTime(item),
 					calculateProcessingTime(item), calculateExpectedSetupTime(tool, item),
 					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
 					calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
-		public FlowItemQueuedWithIDSnapshot toWithIdProto() {
-			return FlowItemQueuedWithIDSnapshot.newBuilder()
-					.setId(this.id)
-					.setRemainingCycleTime(getRemainingCycleTime())
-					.setProcessingTime(getProcessingTime())
-					.setExpectedSetupTime(getExpectedSetupTime())
-					.setTimeSinceArrival(getTimeSinceArrival())
-					.setPriority(getPriority())
-					.setLateness(getLateness())
-					.setRecipe(getRecipe())
-					.build();
+		public long getId() {
+			return this.id;
 		}
 	}
 
@@ -522,7 +524,7 @@ public final class DispatchDecisionSnapshot {
 		if (item instanceof Batch) {
 			final Batch batch = (Batch) item;
 			if (batch.getItems().isEmpty()) {
-				return Long.MIN_VALUE;
+				return 0L;
 			}
 			long totalLateness = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
@@ -530,7 +532,6 @@ public final class DispatchDecisionSnapshot {
 			}
 			return Math.round(totalLateness / (double) batch.getItems().size());
 		}
-		return Long.MIN_VALUE;
+		return 0L;
 	}
-
 }
