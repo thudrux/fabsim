@@ -1,12 +1,14 @@
 package de.terministic.fabsim.metamodel.examples;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
@@ -149,23 +151,141 @@ public class MiniFab {
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		final FabModel model = createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
-		return runSimulation(model, simulationTimeHours);
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final int runs) {
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
+		return runMiniFabWithDispatchRule(dispatchRule, simulationTimeHours, runs, logWriter);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, null);
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, null);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		final FabModel model = createMiniFabModelWithExternalDispatch(provider, logWriter);
-		return runSimulation(model, simulationTimeHours);
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final int runs) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
+		if (runs <= 0) {
+			throw new IllegalArgumentException("runs must be a positive number");
+		}
+		if (runs > 1 && logWriter != null) {
+			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
+		}
+
+		final List<MiniFabRunResult> runResults = new ArrayList<>(runs);
+		for (int run = 0; run < runs; run++) {
+			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
+			final FabModel model = createMiniFabModelWithExternalDispatch(provider, effectiveLogWriter);
+			runResults.add(runSimulation(model, simulationTimeHours));
+		}
+		return aggregateRunResults(runs, simulationTimeHours, runResults);
 	}
 
 	public static Map<Integer, Integer> getPriorityWeights() {
 		return PRIORITY_WEIGHTS;
+	}
+
+	private MiniFabRunResult runMiniFabWithDispatchRule(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
+		if (runs <= 0) {
+			throw new IllegalArgumentException("runs must be a positive number");
+		}
+		if (runs > 1 && (logWriter != null || dispatchRule instanceof LoggingDispatchRule)) {
+			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
+		}
+
+		final List<MiniFabRunResult> runResults = new ArrayList<>(runs);
+		for (int run = 0; run < runs; run++) {
+			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
+			final FabModel model = createMiniFabModelWithDispatchRule(dispatchRule, effectiveLogWriter);
+			runResults.add(runSimulation(model, simulationTimeHours));
+		}
+		return aggregateRunResults(runs, simulationTimeHours, runResults);
+	}
+
+	private MiniFabRunResult aggregateRunResults(final int runs, final long simulationTimeHours,
+			final List<MiniFabRunResult> runResults) {
+		final SummaryStatistics throughputStatistics = summarize(runResults, Metric.THROUGHPUT);
+		final SummaryStatistics tardyWafersStatistics = summarize(runResults, Metric.TARDY_WAFERS);
+		final SummaryStatistics totalWeightedTardinessStatistics = summarize(runResults,
+				Metric.TOTAL_WEIGHTED_TARDINESS);
+		return new MiniFabRunResult(runs, simulationTimeHours, simulationTimeHours * (double) HOUR,
+				throughputStatistics.mean, throughputStatistics.stdDev, tardyWafersStatistics.mean,
+				tardyWafersStatistics.stdDev, totalWeightedTardinessStatistics.mean,
+				totalWeightedTardinessStatistics.stdDev);
+	}
+
+	private SummaryStatistics summarize(final List<MiniFabRunResult> runResults, final Metric metric) {
+		final double[] values = new double[runResults.size()];
+		for (int i = 0; i < runResults.size(); i++) {
+			final MiniFabRunResult result = runResults.get(i);
+			switch (metric) {
+			case THROUGHPUT:
+				values[i] = result.getFinishedWafers();
+				break;
+			case TARDY_WAFERS:
+				values[i] = result.getTardyWafers();
+				break;
+			case TOTAL_WEIGHTED_TARDINESS:
+				values[i] = result.getTotalWeightedTardiness();
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported metric: " + metric);
+			}
+		}
+		return summarize(values);
+	}
+
+	private SummaryStatistics summarize(final double[] values) {
+		if (values.length == 0) {
+			throw new IllegalArgumentException("values must not be empty");
+		}
+		double sum = 0.0d;
+		for (final double value : values) {
+			sum += value;
+		}
+		final double mean = sum / values.length;
+		double variance = 0.0d;
+		if (values.length > 1) {
+			for (final double value : values) {
+				final double delta = value - mean;
+				variance += delta * delta;
+			}
+			variance = variance / (values.length - 1);
+		}
+		return new SummaryStatistics(mean, Math.sqrt(Math.max(0.0d, variance)));
+	}
+
+	private static final class SummaryStatistics {
+		private final double mean;
+		private final double stdDev;
+
+		private SummaryStatistics(final double mean, final double stdDev) {
+			this.mean = mean;
+			this.stdDev = stdDev;
+		}
+	}
+
+	private enum Metric {
+		THROUGHPUT,
+		TARDY_WAFERS,
+		TOTAL_WEIGHTED_TARDINESS
 	}
 
 	private MiniFabRunResult runSimulation(final FabModel model, final long simulationTimeHours) {

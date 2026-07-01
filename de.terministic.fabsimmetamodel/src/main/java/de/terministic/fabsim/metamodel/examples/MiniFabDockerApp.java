@@ -8,6 +8,7 @@ import java.util.Locale;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchRules.Random;
 import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
@@ -15,6 +16,7 @@ public final class MiniFabDockerApp {
 
 	private static final class CliConfig {
 		private long simulationTimeHours = -1L;
+		private int runs = 1;
 		private String dispatchRuleName;
 		private Path logFile;
 		private boolean help;
@@ -47,12 +49,8 @@ public final class MiniFabDockerApp {
 		final LocalLogWriter logWriter = config.logFile == null ? null : new LocalLogWriter(config.logFile);
 		try {
 			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
-					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, logWriter);
-			System.out.println("MiniFab completed at simulation time " + result.getSimulationTimeHours()
-					+ " h (" + result.getSimulationTimeMillis() + " ms)");
-			System.out.println("Throughput: " + result.getThroughput() + " finished wafers");
-			System.out.println("Tardy: " + result.getTardyWafers() + " finished wafers");
-			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(result.getTotalWeightedTardiness()));
+					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, config.runs, logWriter);
+			printResult(result);
 			if (config.logFile != null) {
 				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
 			}
@@ -66,7 +64,7 @@ public final class MiniFabDockerApp {
 
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
 		if (dispatchRuleName == null || dispatchRuleName.trim().isEmpty()) {
-			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt is required");
+			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt|random is required");
 		}
 		final String normalizedDispatchRuleName = dispatchRuleName.trim().toLowerCase(Locale.ROOT);
 		if ("fifo".equals(normalizedDispatchRuleName)) {
@@ -77,6 +75,9 @@ public final class MiniFabDockerApp {
 		}
 		if ("srpt".equals(normalizedDispatchRuleName)) {
 			return new SRPT();
+		}
+		if ("random".equals(normalizedDispatchRuleName)) {
+			return new Random();
 		}
 		throw new IllegalArgumentException("Unsupported local dispatch rule: " + dispatchRuleName);
 	}
@@ -94,6 +95,10 @@ public final class MiniFabDockerApp {
 			}
 			if ("--simulation-time".equals(arg)) {
 				config.simulationTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
+				continue;
+			}
+			if ("--runs".equals(arg)) {
+				config.runs = parseRequiredInt(arg, nextValue(args, ++i, arg));
 				continue;
 			}
 			if ("--dispatch-rule".equals(arg)) {
@@ -116,13 +121,27 @@ public final class MiniFabDockerApp {
 			throw new IllegalArgumentException("--simulation-time must be a positive number of hours");
 		}
 		if (config.dispatchRuleName == null) {
-			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt is required");
+			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt|random is required");
+		}
+		if (config.runs <= 0) {
+			throw new IllegalArgumentException("--runs must be a positive number");
+		}
+		if (config.runs > 1 && config.logFile != null) {
+			throw new IllegalArgumentException("--log-file is only supported when --runs is 1");
 		}
 	}
 
 	private long parseRequiredLong(final String optionName, final String value) {
 		try {
 			return Long.parseLong(value);
+		} catch (final NumberFormatException ex) {
+			throw new IllegalArgumentException(optionName + " requires a numeric value");
+		}
+	}
+
+	private int parseRequiredInt(final String optionName, final String value) {
+		try {
+			return Integer.parseInt(value);
 		} catch (final NumberFormatException ex) {
 			throw new IllegalArgumentException(optionName + " requires a numeric value");
 		}
@@ -136,7 +155,32 @@ public final class MiniFabDockerApp {
 		}
 	}
 
-	private static String formatScientificMillis(final long durationMillis) {
+	private void printResult(final MiniFabRunResult result) {
+		if (result.getRuns() == 1L) {
+			System.out.println("MiniFab completed at simulation time " + result.getSimulationTimeHours()
+					+ " h (" + result.getSimulationTimeMillis() + " ms)");
+			System.out.println("Throughput: " + result.getThroughput() + " finished wafers");
+			System.out.println("Tardy: " + result.getTardyWafers() + " finished wafers");
+			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(result.getTotalWeightedTardiness()));
+			return;
+		}
+
+		System.out.println("MiniFab completed at simulation time " + formatDecimal(result.getSimulationTimeHoursMean())
+				+ " h (" + formatDecimal(result.getSimulationTimeMillisMean()) + " ms)");
+		System.out.println("Throughput: mean=" + formatDecimal(result.getThroughputMean()) + ", std="
+				+ formatDecimal(result.getThroughputStdDev()) + " finished wafers");
+		System.out.println("Tardy: mean=" + formatDecimal(result.getTardyWafersMean()) + ", std="
+				+ formatDecimal(result.getTardyWafersStdDev()) + " finished wafers");
+		System.out.println("Total Weighted Tardiness: mean="
+				+ formatScientificMillis(result.getTotalWeightedTardinessMean()) + ", std="
+				+ formatScientificMillis(result.getTotalWeightedTardinessStdDev()));
+	}
+
+	private static String formatDecimal(final double value) {
+		return String.format(Locale.ROOT, "%.3f", Double.valueOf(value));
+	}
+
+	private static String formatScientificMillis(final double durationMillis) {
 		return String.format(Locale.ROOT, "%.3e ms", Double.valueOf(durationMillis));
 	}
 
@@ -154,6 +198,6 @@ public final class MiniFabDockerApp {
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar minifab.jar --simulation-time <hours> --dispatch-rule fifo|edd|srpt [--log-file <path>]");
+				"  java -jar minifab.jar --simulation-time <hours> [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
 	}
 }
