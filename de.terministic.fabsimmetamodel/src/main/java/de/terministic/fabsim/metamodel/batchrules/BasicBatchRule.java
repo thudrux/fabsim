@@ -48,14 +48,17 @@ public class BasicBatchRule extends AbstractBatchRule {
 			logger.trace("i={}", i);
 			int roomInBatch = maxBatch - batch.getSize();
 			logger.trace("room in batch is: {}", roomInBatch);
-			if (roomInBatch >= list.get(i).getSize()) {
-				logger.trace("Adding {} to {}", list.get(i), batch);
-				batch.addItem(list.get(i));
-			} else {
-				AbstractFlowItem child = ((Lot) list.get(i)).splitOfChild(roomInBatch);
+			final AbstractFlowItem currentItem = list.get(i);
+			if (roomInBatch >= currentItem.getSize()) {
+				logger.trace("Adding {} to {}", currentItem, batch);
+				batch.addItem(currentItem);
+			} else if (currentItem instanceof Lot) {
+				AbstractFlowItem child = ((Lot) currentItem).splitOfChild(roomInBatch);
 				list.add(i++, child);
 				logger.trace("Adding {} to {}", child, batch);
 				batch.addItem(child);
+			} else {
+				logger.trace("Skipping {} because it does not fit into the current batch", currentItem);
 			}
 			i++;
 			logger.trace("end of while");
