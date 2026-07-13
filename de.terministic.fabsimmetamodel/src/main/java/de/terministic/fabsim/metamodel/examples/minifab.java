@@ -73,6 +73,10 @@ public class MiniFab {
 	private static final long STATION2_REPAIR_MIN = 6L * HOUR;
 	private static final long STATION2_REPAIR_MAX = 8L * HOUR;
 
+	private static final long STATION3_SETUP_TIME_SAME_LOT_TYPE = 10L * MINUTE;
+	private static final long STATION3_SETUP_TIME_SAME_STEP = 5L * MINUTE;
+	private static final long STATION3_SETUP_TIME_DEFAULT = 12L * MINUTE;
+
 	private static final int PA_PRIORITY = 1;
 	private static final int PB_PRIORITY = 2;
 	private static final int TW_PRIORITY = 3;
@@ -80,6 +84,10 @@ public class MiniFab {
 	private static final int PB_PRIORITY_WEIGHT = 5;
 	private static final int TW_PRIORITY_WEIGHT = 1;
 	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
+
+	private static final long PA_WEEKLY_LOTS = 51L;
+	private static final long PB_WEEKLY_LOTS = 30L;
+	private static final long TW_WEEKLY_LOTS = 3L;
 
 	public static final double FLOW_FACTOR = 3.0;
 	private static final long DUE_DATE_LEAD_TIME = Math.round(
@@ -102,6 +110,10 @@ public class MiniFab {
 	private SetupState pbS6Setup;
 	private SetupState twS3Setup;
 	private SetupState twS6Setup;
+
+	// ---------------------------------------------------------------------
+	// Public model factory API
+	// ---------------------------------------------------------------------
 
 	public FabModel createMiniFabModel() {
 		return createMiniFabModelWithLocalDispatch(new FIFO());
@@ -143,6 +155,10 @@ public class MiniFab {
 		}
 		return createMiniFabModel(model, effectiveRule);
 	}
+
+	// ---------------------------------------------------------------------
+	// Public simulation API
+	// ---------------------------------------------------------------------
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours) {
@@ -197,9 +213,9 @@ public class MiniFab {
 		return aggregateRunResults(runs, simulationTimeHours, runResults);
 	}
 
-	public static Map<Integer, Integer> getPriorityWeights() {
-		return PRIORITY_WEIGHTS;
-	}
+	// ---------------------------------------------------------------------
+	// Internal simulation orchestration
+	// ---------------------------------------------------------------------
 
 	private MiniFabRunResult runMiniFabWithDispatchRule(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
@@ -218,6 +234,10 @@ public class MiniFab {
 		}
 		return aggregateRunResults(runs, simulationTimeHours, runResults);
 	}
+
+	// ---------------------------------------------------------------------
+	// Result aggregation and statistics
+	// ---------------------------------------------------------------------
 
 	private MiniFabRunResult aggregateRunResults(final int runs, final long simulationTimeHours,
 			final List<MiniFabRunResult> runResults) {
@@ -288,12 +308,16 @@ public class MiniFab {
 		TOTAL_WEIGHTED_TARDINESS
 	}
 
+	// ---------------------------------------------------------------------
+	// Simulation execution
+	// ---------------------------------------------------------------------
+
 	private MiniFabRunResult runSimulation(final FabModel model, final long simulationTimeHours) {
 		final SimulationEngine engine = new FabSimulationEngine();
 		engine.init(model);
 		final long simulationTimeMillis = Math.multiplyExact(simulationTimeHours, HOUR);
 		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
-				MiniFab.getPriorityWeights());
+				PRIORITY_WEIGHTS);
 		engine.addListener(finishedLotStatisticsCollector);
 		engine.runSimulation(simulationTimeMillis);
 		return new MiniFabRunResult(simulationTimeHours, simulationTimeMillis,
@@ -302,9 +326,12 @@ public class MiniFab {
 				finishedLotStatisticsCollector.getTotalWeightedTardiness());
 	}
 
-	private FabModel createMiniFabModel(FabModel model, AbstractDispatchRule dispatchRule) {
+	// ---------------------------------------------------------------------
+	// Model assembly
+	// ---------------------------------------------------------------------
 
-		Sink sink = (Sink) model.getSimComponentFactory().createSink("Sink");
+	private FabModel createMiniFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
+		final Sink sink = (Sink) model.getSimComponentFactory().createSink("Sink");
 
 		this.station1 = createStation1(model);
 		this.station2 = createStation2(model);
@@ -318,56 +345,53 @@ public class MiniFab {
 		return model;
 	}
 
-	private ToolGroup createStation1(FabModel model) {
-		ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup(
-			"Station1", 2, ProcessingType.BATCH
-		);
+	// ---------------------------------------------------------------------
+	// Station configuration
+	// ---------------------------------------------------------------------
+
+	private ToolGroup createStation1(final FabModel model) {
+		final ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup("Station1", 2,
+				ProcessingType.BATCH);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup(
-			"Station1_PreventiveMaintenance",
-			model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_DURATION),
-			model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_INTERVAL),
-			station
-		);
-			
+				"Station1_PreventiveMaintenance",
+				model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_DURATION),
+				model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_INTERVAL), station);
+
 		return station;
 	}
 
-	private ToolGroup createStation2(FabModel model) {
-		ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup("Station2", 2,
+	private ToolGroup createStation2(final FabModel model) {
+		final ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup("Station2", 2,
 				ProcessingType.LOT);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup(
-			"Station2_PreventiveMaintenance",
-			model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_DURATION),
-			model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_INTERVAL),
-			station
-		);
+				"Station2_PreventiveMaintenance",
+				model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_DURATION),
+				model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_INTERVAL), station);
 
-		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup("Station2_UnscheduledBreakdown",
-			model.getValueObjectFactory().createUniformValueObject(STATION2_REPAIR_MIN, STATION2_REPAIR_MAX),
-			model.getValueObjectFactory().createUniformValueObject(STATION2_BREAKDOWN_MIN, STATION2_BREAKDOWN_MAX),
-			station
-		);
+		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup(
+				"Station2_UnscheduledBreakdown",
+				model.getValueObjectFactory().createUniformValueObject(STATION2_REPAIR_MIN, STATION2_REPAIR_MAX),
+				model.getValueObjectFactory().createUniformValueObject(STATION2_BREAKDOWN_MIN, STATION2_BREAKDOWN_MAX),
+				station);
 
 		return station;
 	}
 
-	private ToolGroup createStation3(FabModel model) {
-		ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup("Station3", 1,
+	private ToolGroup createStation3(final FabModel model) {
+		final ToolGroup station = (ToolGroup) model.getSimComponentFactory().createToolGroup("Station3", 1,
 				ProcessingType.LOT);
 
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup(
-			"Station3_PreventiveMaintenance",
-			model.getValueObjectFactory().createConstantValueObject(STATION3_MAINTENANCE_DURATION),
-			model.getValueObjectFactory().createConstantValueObject(STATION3_MAINTENANCE_INTERVAL),
-			station
-		);
-	
+				"Station3_PreventiveMaintenance",
+				model.getValueObjectFactory().createConstantValueObject(STATION3_MAINTENANCE_DURATION),
+				model.getValueObjectFactory().createConstantValueObject(STATION3_MAINTENANCE_INTERVAL), station);
+
 		return station;
 	}
 
-	private void configureStation3Setups(FabModel model) {
+	private void configureStation3Setups(final FabModel model) {
 		this.paS3Setup = createStation3SetupState(model, "Pa_S3");
 		this.paS6Setup = createStation3SetupState(model, "Pa_S6");
 		this.pbS3Setup = createStation3SetupState(model, "Pb_S3");
@@ -378,10 +402,10 @@ public class MiniFab {
 		addStation3SetupTransitions(model);
 	}
 
-	private void addStation3SetupTransitions(FabModel model) {
-		final SetupState[] states = new SetupState[] {
-				this.paS3Setup, this.paS6Setup, this.pbS3Setup, this.pbS6Setup, this.twS3Setup, this.twS6Setup
-		};
+	private void addStation3SetupTransitions(final FabModel model) {
+		// Station 3 is re-entrant, so every setup state needs an explicit change time.
+		final SetupState[] states = new SetupState[] { this.paS3Setup, this.paS6Setup, this.pbS3Setup, this.pbS6Setup,
+				this.twS3Setup, this.twS6Setup };
 		for (final SetupState currentState : states) {
 			for (final SetupState nextState : states) {
 				if (currentState != nextState) {
@@ -392,7 +416,7 @@ public class MiniFab {
 		}
 	}
 
-	private SetupState createStation3SetupState(FabModel model, String setupName) {
+	private SetupState createStation3SetupState(final FabModel model, final String setupName) {
 		return model.getSimComponentFactory().createSetupStateAndAddToToolGroup(setupName, this.station3);
 	}
 
@@ -402,12 +426,12 @@ public class MiniFab {
 		final boolean sameLotType = currentParts[0].equals(nextParts[0]);
 		final boolean sameStep = currentParts[1].equals(nextParts[1]);
 		if (sameLotType && !sameStep) {
-			return 10L * MINUTE;
+			return STATION3_SETUP_TIME_SAME_LOT_TYPE;
 		}
 		if (sameStep && !sameLotType) {
-			return 5L * MINUTE;
+			return STATION3_SETUP_TIME_SAME_STEP;
 		}
-		return 12L * MINUTE;
+		return STATION3_SETUP_TIME_DEFAULT;
 	}
 
 	private SetupState getStation3SetupState(final String productName, final String stepName) {
@@ -423,10 +447,14 @@ public class MiniFab {
 		throw new IllegalArgumentException("Unsupported product name for station 3 setup: " + productName);
 	}
 
-	private void createRecipesAndSources(FabModel model, Sink sink) {
-		createProductLine(model, sink, "Pa", "PaRecipe", 51L, PA_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "Pb", "PbRecipe", 30L, PB_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "TW", "TWRecipe", 3L, TW_PRIORITY, DUE_DATE_LEAD_TIME);
+	// ---------------------------------------------------------------------
+	// Product line wiring
+	// ---------------------------------------------------------------------
+
+	private void createRecipesAndSources(final FabModel model, final Sink sink) {
+		createProductLine(model, sink, "Pa", "PaRecipe", PA_WEEKLY_LOTS, PA_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pb", "PbRecipe", PB_WEEKLY_LOTS, PB_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "TW", "TWRecipe", TW_WEEKLY_LOTS, TW_PRIORITY, DUE_DATE_LEAD_TIME);
 	}
 
 	private static Map<Integer, Integer> createPriorityWeights() {
@@ -437,43 +465,41 @@ public class MiniFab {
 		return Collections.unmodifiableMap(weights);
 	}
 
-	private void createProductLine(FabModel model, Sink sink, String productName, String recipeName, long weeklyLots,
-			int priority, long dueDateLeadTime) {
-		Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
+	private void createProductLine(final FabModel model, final Sink sink, final String productName,
+			final String recipeName, final long weeklyLots, final int priority, final long dueDateLeadTime) {
+		final Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
 		final BatchDetails s1Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-			productName + "_Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1
-		);
+				productName + "_Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1);
 		final BatchDetails s5Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-			productName + "_Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1
-		);
+				productName + "_Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1);
 
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S1", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S1, STATION1_UNLOAD, s1Batch, null, ProcessType.LOT, recipe
-		);
+				"S1", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S1, STATION1_UNLOAD, s1Batch, null,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S2", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S2, STATION2_UNLOAD, null, null, ProcessType.LOT, recipe
-		);
+				"S2", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S2, STATION2_UNLOAD, null, null,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S3", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S3, STATION3_UNLOAD, null, s3Setup, ProcessType.LOT, recipe
-		);
+				"S3", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S3, STATION3_UNLOAD, null, s3Setup,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S4", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S4, STATION2_UNLOAD, null, null, ProcessType.LOT, recipe
-		);
+				"S4", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S4, STATION2_UNLOAD, null, null,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S5", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S5, STATION1_UNLOAD, s5Batch, null, ProcessType.LOT, recipe
-		);
+				"S5", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S5, STATION1_UNLOAD, s5Batch, null,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-			"S6", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S6, STATION3_UNLOAD, null, s6Setup, ProcessType.LOT, recipe
-		);
+				"S6", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S6, STATION3_UNLOAD, null, s6Setup,
+				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink", sink, 0L, ProcessType.LOT, recipe);
 
-		Product product = model.getSimComponentFactory().createProduct(productName, recipe);
-		ExponentialDuration interarrivalTime = model.getValueObjectFactory().createExponentialValueObject(WEEK / weeklyLots);
-		LotSource source = (LotSource) model.getSimComponentFactory().createSource(
-			"Source_" + productName, product, interarrivalTime
-		);
+		final Product product = model.getSimComponentFactory().createProduct(productName, recipe);
+		final ExponentialDuration interarrivalTime = model.getValueObjectFactory()
+				.createExponentialValueObject(WEEK / weeklyLots);
+		final LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_" + productName,
+				product, interarrivalTime);
 		source.setLotSize(LOT_SIZE);
 		source.setDefaultPriority(priority);
 		source.setDueDateLeadTime(dueDateLeadTime);
