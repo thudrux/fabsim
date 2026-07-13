@@ -63,26 +63,17 @@ After the simulation finishes, the launcher prints either single-run metrics or 
 
 This setup lets MiniFab delegate dispatch decisions to an external Python-based service through JPype. The Java simulation sends each dispatch request to Python, and Python returns the selected candidate.
 
-Use Maven from the repository root to build the jars:
+Use Maven from the repository root to build the shaded jar:
 
 ```bash
-mvn -f de.terministic.fabsimcore/pom.xml install
-mvn -f de.terministic.fabsimmetamodel/pom.xml package
+mvn clean package -Dmaven.test.skip=true
 ```
 
-Copy the following jars into your Python project, for example into a `jars/` folder inside that project.
+Copy the resulting single jar into your Python project, for example into a `libs/` folder inside that project.
 
-*Jars from inside the respective `target` directories*:
+- `de.terministic.fabsimmetamodel/target/fabsim.jar`
 
-- `de.terministic.fabsimcore/target/core-0.0.1-SNAPSHOT.jar`
-- `de.terministic.fabsimmetamodel/target/metamodel-0.0.1-SNAPSHOT.jar`
-
-*Jars from inside your local Maven `.m2` directory*:
-
-- `~/.m2/repository/org/slf4j/slf4j-api/1.7.32/slf4j-api-1.7.32.jar`
-- `~/.m2/repository/org/apache/logging/log4j/log4j-api/2.22.1/log4j-api-2.22.1.jar`
-- `~/.m2/repository/org/apache/logging/log4j/log4j-core/2.22.1/log4j-core-2.22.1.jar`
-- `~/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.22.1/log4j-slf4j-impl-2.22.1.jar`
+This jar already bundles the project classes and the runtime dependencies needed by JPype.
 
 The Java side exposes a `DispatchProvider` interface that Python implements through JPype. Java passes a `DispatchDecisionRequest` containing `fab_state` and `candidates`, and Python returns a `DispatchDecisionResponse` with the selected flow item id.
 
@@ -102,12 +93,7 @@ jpype.startJVM(
     jpype.getDefaultJVMPath(),
     "--enable-native-access=ALL-UNNAMED",
     classpath=[
-        str(jar_dir / "core-0.0.1-SNAPSHOT.jar"),
-        str(jar_dir / "metamodel-0.0.1-SNAPSHOT.jar"),
-        str(jar_dir / "slf4j-api-1.7.32.jar"),
-        str(jar_dir / "log4j-api-2.22.1.jar"),
-        str(jar_dir / "log4j-core-2.22.1.jar"),
-        str(jar_dir / "log4j-slf4j-impl-2.22.1.jar"),
+        str(jar_dir / "fabsim.jar"),
     ],
 )
 

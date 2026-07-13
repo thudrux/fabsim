@@ -198,6 +198,6 @@ public final class MiniFabDockerApp {
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar minifab.jar --simulation-time <hours> [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
+				"  java -jar fabsim.jar --simulation-time <hours> [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
 	}
 }
