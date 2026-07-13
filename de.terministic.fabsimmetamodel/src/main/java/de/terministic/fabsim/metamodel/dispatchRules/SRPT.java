@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
+import de.terministic.fabsim.metamodel.components.Batch;
+import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoBatchFlowItemQueue;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.FifoFlowItemQueue;
@@ -70,6 +72,12 @@ public class SRPT extends AbstractDispatchRule {
 	}
 
 	private long calculateRemainingProcessingTime(final AbstractFlowItem item) {
+		if (item instanceof Lot) {
+			return calculateRemainingProcessingTime((Lot) item);
+		}
+		if (item instanceof Batch) {
+			return calculateRemainingProcessingTime((Batch) item);
+		}
 		if (item == null || item.getRecipe() == null) {
 			return Long.MAX_VALUE;
 		}
@@ -87,6 +95,39 @@ public class SRPT extends AbstractDispatchRule {
 			remainingProcessingTime += Math.max(0L, step.getUnloadTime());
 		}
 		return remainingProcessingTime;
+	}
+
+	private long calculateRemainingProcessingTime(final Lot lot) {
+		if (lot == null) {
+			return Long.MAX_VALUE;
+		}
+
+		final int currentStepNumber = lot.getCurrentStepNumber();
+		if (currentStepNumber < 0 || lot.getRecipe() == null || currentStepNumber >= lot.getRecipe().size()) {
+			return Long.MAX_VALUE;
+		}
+
+		long remainingProcessingTime = 0L;
+		for (int i = currentStepNumber; i < lot.getRecipe().size(); i++) {
+			final ProcessStep step = lot.getRecipe().get(i);
+			remainingProcessingTime += Math.max(0L, step.getLoadTime());
+			remainingProcessingTime += Math.max(0L, step.getDuration(lot));
+			remainingProcessingTime += Math.max(0L, step.getUnloadTime());
+		}
+		return remainingProcessingTime;
+	}
+
+	private long calculateRemainingProcessingTime(final Batch batch) {
+		if (batch == null || batch.getItems().isEmpty()) {
+			return Long.MAX_VALUE;
+		}
+
+		long shortestRemainingProcessingTime = Long.MAX_VALUE;
+		for (final AbstractFlowItem child : batch.getItems()) {
+			shortestRemainingProcessingTime = Math.min(shortestRemainingProcessingTime,
+					calculateRemainingProcessingTime(child));
+		}
+		return shortestRemainingProcessingTime;
 	}
 
 	private long getArrivalTime(final AbstractFlowItem item) {

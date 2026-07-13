@@ -69,20 +69,31 @@ public class EDD extends AbstractDispatchRule {
 
 	private long calculateDueDate(final AbstractFlowItem item) {
 		if (item instanceof Lot) {
-			return ((Lot) item).getDueDate();
+			return calculateDueDate((Lot) item);
 		}
 		if (item instanceof Batch) {
-			final Batch batch = (Batch) item;
-			if (batch.getItems().isEmpty()) {
-				return Long.MAX_VALUE;
-			}
-			long earliestDueDate = Long.MAX_VALUE;
-			for (final AbstractFlowItem child : batch.getItems()) {
-				earliestDueDate = Math.min(earliestDueDate, calculateDueDate(child));
-			}
-			return earliestDueDate;
+			return calculateDueDate((Batch) item);
 		}
 		return Long.MAX_VALUE;
+	}
+
+	private long calculateDueDate(final Lot lot) {
+		if (lot == null) {
+			return Long.MAX_VALUE;
+		}
+		return lot.getDueDate();
+	}
+
+	private long calculateDueDate(final Batch batch) {
+		if (batch == null || batch.getItems().isEmpty()) {
+			return Long.MAX_VALUE;
+		}
+
+		long earliestDueDate = Long.MAX_VALUE;
+		for (final AbstractFlowItem child : batch.getItems()) {
+			earliestDueDate = Math.min(earliestDueDate, calculateDueDate(child));
+		}
+		return earliestDueDate;
 	}
 
 	private long getArrivalTime(final AbstractFlowItem item) {
