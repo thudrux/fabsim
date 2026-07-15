@@ -170,7 +170,7 @@ public final class MiniFabDockerApp {
 	private void printResult(final MiniFabRunResult result) {
 		if (result.getRuns() == 1L) {
 			System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
-			System.out.println("Tardiness per wafer: " + formatHours(result.getTardinessPerWaferHours()));
+			System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));
 			System.out.println("Completed wafers: " + result.getCompletedWafers());
 			System.out.println("Tardy wafers: " + result.getTardyWafers());
 			System.out.println("Flow factor: " + formatDecimal(result.getFlowFactor()));
@@ -181,8 +181,8 @@ public final class MiniFabDockerApp {
 				+ formatDecimal(result.getCompletedWafersPerDayMean()) + ", std="
 				+ formatDecimal(result.getCompletedWafersPerDayStdDev()));
 		System.out.println("Tardiness per wafer: mean="
-				+ formatHours(result.getTardinessPerWaferHoursMean()) + ", std="
-				+ formatHours(result.getTardinessPerWaferHoursStdDev()));
+				+ formatMinutes(result.getTardinessPerWaferMinutesMean()) + ", std="
+				+ formatMinutes(result.getTardinessPerWaferMinutesStdDev()));
 		System.out.println("Completed wafers: mean=" + formatDecimal(result.getCompletedWafersMean()) + ", std="
 				+ formatDecimal(result.getCompletedWafersStdDev()));
 		System.out.println("Tardy wafers: mean=" + formatDecimal(result.getTardyWafersMean()) + ", std="
@@ -195,8 +195,8 @@ public final class MiniFabDockerApp {
 		return String.format(Locale.ROOT, "%.3f", value);
 	}
 
-	private static String formatHours(final double durationHours) {
-		return String.format(Locale.ROOT, "%.3f h", durationHours);
+	private static String formatMinutes(final double durationMinutes) {
+		return String.format(Locale.ROOT, "%.3f min", durationMinutes);
 	}
 
 	private String nextValue(final String[] args, final int index, final String optionName) {

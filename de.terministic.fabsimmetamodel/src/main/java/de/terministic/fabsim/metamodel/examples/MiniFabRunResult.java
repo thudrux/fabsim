@@ -8,8 +8,8 @@ public final class MiniFabRunResult {
 	private final double simulationTimeHoursMean;
 	private final double completedWafersPerDayMean;
 	private final double completedWafersPerDayStdDev;
-	private final double tardinessPerWaferHoursMean;
-	private final double tardinessPerWaferHoursStdDev;
+	private final double tardinessPerWaferMinutesMean;
+	private final double tardinessPerWaferMinutesStdDev;
 	private final double completedWafersMean;
 	private final double completedWafersStdDev;
 	private final double tardyWafersMean;
@@ -19,32 +19,32 @@ public final class MiniFabRunResult {
 
 	public MiniFabRunResult(final long simulationTimeHours,
 			final long completedWafers, final long tardyWafers,
-			final double tardinessPerWaferHours, final double flowFactorMean) {
-		this(simulationTimeHours, simulationTimeHours, completedWafers, tardyWafers, tardinessPerWaferHours,
+			final double tardinessPerWaferMinutes, final double flowFactorMean) {
+		this(simulationTimeHours, simulationTimeHours, completedWafers, tardyWafers, tardinessPerWaferMinutes,
 				flowFactorMean);
 	}
 
 	public MiniFabRunResult(final long simulationTimeHours, final long measurementTimeHours,
 			final long completedWafers, final long tardyWafers,
-			final double tardinessPerWaferHours, final double flowFactorMean) {
+			final double tardinessPerWaferMinutes, final double flowFactorMean) {
 		this(1L, simulationTimeHours,
 				completedWafers / (measurementTimeHours / HOURS_PER_DAY), 0.0d,
-				tardinessPerWaferHours, 0.0d, completedWafers, 0.0d, tardyWafers, 0.0d,
+				tardinessPerWaferMinutes, 0.0d, completedWafers, 0.0d, tardyWafers, 0.0d,
 				flowFactorMean, 0.0d);
 	}
 
 	public MiniFabRunResult(final long runs, final double simulationTimeHoursMean,
 			final double completedWafersPerDayMean,
-			final double completedWafersPerDayStdDev, final double tardinessPerWaferHoursMean,
-			final double tardinessPerWaferHoursStdDev, final double completedWafersMean,
+			final double completedWafersPerDayStdDev, final double tardinessPerWaferMinutesMean,
+			final double tardinessPerWaferMinutesStdDev, final double completedWafersMean,
 			final double completedWafersStdDev, final double tardyWafersMean, final double tardyWafersStdDev,
 			final double flowFactorMean, final double flowFactorStdDev) {
 		this.runs = runs;
 		this.simulationTimeHoursMean = simulationTimeHoursMean;
 		this.completedWafersPerDayMean = completedWafersPerDayMean;
 		this.completedWafersPerDayStdDev = completedWafersPerDayStdDev;
-		this.tardinessPerWaferHoursMean = tardinessPerWaferHoursMean;
-		this.tardinessPerWaferHoursStdDev = tardinessPerWaferHoursStdDev;
+		this.tardinessPerWaferMinutesMean = tardinessPerWaferMinutesMean;
+		this.tardinessPerWaferMinutesStdDev = tardinessPerWaferMinutesStdDev;
 		this.completedWafersMean = completedWafersMean;
 		this.completedWafersStdDev = completedWafersStdDev;
 		this.tardyWafersMean = tardyWafersMean;
@@ -77,16 +77,16 @@ public final class MiniFabRunResult {
 		return this.completedWafersPerDayStdDev;
 	}
 
-	public double getTardinessPerWaferHours() {
-		return this.tardinessPerWaferHoursMean;
+	public double getTardinessPerWaferMinutes() {
+		return this.tardinessPerWaferMinutesMean;
 	}
 
-	public double getTardinessPerWaferHoursMean() {
-		return this.tardinessPerWaferHoursMean;
+	public double getTardinessPerWaferMinutesMean() {
+		return this.tardinessPerWaferMinutesMean;
 	}
 
-	public double getTardinessPerWaferHoursStdDev() {
-		return this.tardinessPerWaferHoursStdDev;
+	public double getTardinessPerWaferMinutesStdDev() {
+		return this.tardinessPerWaferMinutesStdDev;
 	}
 
 	public long getCompletedWafers() {

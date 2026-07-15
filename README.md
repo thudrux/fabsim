@@ -64,7 +64,7 @@ Optional:
 After the simulation finishes, the launcher prints either single-run metrics or aggregated mean/std summaries for:
 
 - completed wafers per day
-- tardiness per wafer in hours
+- tardiness per wafer in minutes
 - completed wafers
 - tardy wafers
 - flow factor
@@ -130,8 +130,8 @@ run_count = 100
 result = mini_fab.runMiniFabWithExternalDispatch(provider, simulation_time_hours, run_count, warmup_time_hours)
 completed_wafers_per_day_mean = result.getCompletedWafersPerDayMean()
 completed_wafers_per_day_std = result.getCompletedWafersPerDayStdDev()
-tardiness_per_wafer_mean = result.getTardinessPerWaferHoursMean()
-tardiness_per_wafer_std = result.getTardinessPerWaferHoursStdDev()
+tardiness_per_wafer_mean = result.getTardinessPerWaferMinutesMean()
+tardiness_per_wafer_std = result.getTardinessPerWaferMinutesStdDev()
 completed_wafers_mean = result.getCompletedWafersMean()
 completed_wafers_std = result.getCompletedWafersStdDev()
 tardy_wafers_mean = result.getTardyWafersMean()

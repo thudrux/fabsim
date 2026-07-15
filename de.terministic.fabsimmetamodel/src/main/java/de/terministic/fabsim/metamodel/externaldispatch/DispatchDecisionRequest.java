@@ -20,6 +20,8 @@ import de.terministic.fabsim.metamodel.examples.MiniFab;
 
 public final class DispatchDecisionRequest {
 
+	private static final long MILLIS_PER_MINUTE = 60L * 1000L;
+
 	private final FabStateSnapshot fabState;
 	private final List<FlowItemQueuedWithIDSnapshot> candidates;
 
@@ -70,7 +72,7 @@ public final class DispatchDecisionRequest {
 		public static FabStateSnapshot capture(final FabModel model, final AbstractToolGroup selectedToolGroup,
 				final long currentTime) {
 			final List<ToolGroupSnapshot> toolGroups = new ArrayList<>();
-			long totalProjectedTardiness = 0L;
+			long totalProjectedTardinessMillis = 0L;
 			long workInProgress = 0L;
 			if (model != null) {
 				for (final AbstractToolGroup groupBase : model.getToolGroups().values()) {
@@ -79,12 +81,13 @@ public final class DispatchDecisionRequest {
 					final ToolGroupSnapshot toolGroup = ToolGroupSnapshot.capture(groupBase, waitingForDispatch,
 							currentTime);
 					toolGroups.add(toolGroup);
-					totalProjectedTardiness += toolGroup.totalProjectedTardiness;
+					totalProjectedTardinessMillis += toolGroup.totalProjectedTardiness;
 					workInProgress += toolGroup.workInProgress;
 				}
 			}
 			return new FabStateSnapshot(currentTime, Collections.unmodifiableList(toolGroups),
-					new CostSnapshot(totalProjectedTardiness, workInProgress));
+					new CostSnapshot(Math.round(totalProjectedTardinessMillis / (double) MILLIS_PER_MINUTE),
+							workInProgress));
 		}
 
 		public long getSimulationTime() {

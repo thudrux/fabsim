@@ -288,7 +288,7 @@ public class MiniFab {
 			final List<MiniFabRunResult> runResults) {
 		final SummaryStatistics completedWafersPerDayStatistics = summarize(runResults,
 				Metric.COMPLETED_WAFERS_PER_DAY);
-		final SummaryStatistics tardinessStatistics = summarize(runResults, Metric.TARDINESS_PER_WAFER_HOURS);
+		final SummaryStatistics tardinessStatistics = summarize(runResults, Metric.TARDINESS_PER_WAFER_MINUTES);
 		final SummaryStatistics completedWafersStatistics = summarize(runResults, Metric.COMPLETED_WAFERS);
 		final SummaryStatistics tardyWafersStatistics = summarize(runResults, Metric.TARDY_WAFERS);
 		final SummaryStatistics flowFactorStatistics = summarize(runResults, Metric.FLOW_FACTOR);
@@ -307,8 +307,8 @@ public class MiniFab {
 			case COMPLETED_WAFERS_PER_DAY:
 				values[i] = result.getCompletedWafersPerDay();
 				break;
-			case TARDINESS_PER_WAFER_HOURS:
-				values[i] = result.getTardinessPerWaferHours();
+			case TARDINESS_PER_WAFER_MINUTES:
+				values[i] = result.getTardinessPerWaferMinutes();
 				break;
 			case COMPLETED_WAFERS:
 				values[i] = result.getCompletedWafers();
@@ -358,7 +358,7 @@ public class MiniFab {
 
 	private enum Metric {
 		COMPLETED_WAFERS_PER_DAY,
-		TARDINESS_PER_WAFER_HOURS,
+		TARDINESS_PER_WAFER_MINUTES,
 		COMPLETED_WAFERS,
 		TARDY_WAFERS,
 		FLOW_FACTOR
@@ -382,7 +382,7 @@ public class MiniFab {
 		return new MiniFabRunResult(simulationTimeHours, measurementTimeHours,
 				finishedLotStatisticsCollector.getFinishedWafers(),
 				finishedLotStatisticsCollector.getTardyWafers(),
-				finishedLotStatisticsCollector.getTardinessPerWaferHours(),
+				finishedLotStatisticsCollector.getTardinessPerWaferMinutes(),
 				finishedLotStatisticsCollector.getFlowFactorMean());
 	}
 

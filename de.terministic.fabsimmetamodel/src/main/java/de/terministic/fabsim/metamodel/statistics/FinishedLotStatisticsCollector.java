@@ -89,12 +89,12 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 		return this.tardyLots;
 	}
 
-	public double getTardinessPerWaferHours() {
+	public double getTardinessPerWaferMinutes() {
 		if (this.finishedLots == 0L) {
 			return 0.0d;
 		}
-		final double tardinessHours = this.weightedTardiness / (double) (60L * 60L * 1000L);
-		return tardinessHours / (this.finishedLots * (double) this.fabModel.getLotSize());
+		final double tardinessMinutes = this.weightedTardiness / (double) (60L * 1000L);
+		return tardinessMinutes / (this.finishedLots * (double) this.fabModel.getLotSize());
 	}
 
 	public double getFlowFactorMean() {
