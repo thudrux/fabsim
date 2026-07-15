@@ -18,6 +18,7 @@ Run MiniFab in Docker when you want to use the predefined Java dispatch rules (`
 docker run --rm \
   minifab \
   --simulation-time 168 \
+  --warmup-time 24 \
   --dispatch-rule fifo
 ```
 
@@ -27,6 +28,7 @@ To run multiple simulations, pass `--runs <n>`:
 docker run --rm \
   minifab \
   --simulation-time 168 \
+  --warmup-time 24 \
   --runs 20 \
   --dispatch-rule fifo
 ```
@@ -40,6 +42,7 @@ docker run --rm \
   -v "$PWD/logs:/logs" \
   minifab \
   --simulation-time 168 \
+  --warmup-time 24 \
   --runs 1 \
   --dispatch-rule fifo \
   --log-file /logs/minifab.jsonl
@@ -54,10 +57,19 @@ Required arguments:
 
 Optional:
 
+- `--warmup-time <hours>`
 - `--runs <n>`
 - `--log-file <path>`
 
-After the simulation finishes, the launcher prints either single-run metrics or aggregated mean/std summaries depending on `--runs`.
+After the simulation finishes, the launcher prints either single-run metrics or aggregated mean/std summaries for:
+
+- completed wafers per day
+- tardiness per wafer in hours
+- completed wafers
+- tardy wafers
+- flow factor
+
+These metrics exclude any time spent in the warmup window.
 
 ### Build the jar and run via JPype
 
@@ -112,11 +124,18 @@ class Provider:
 provider = Provider()
 mini_fab = MiniFab()
 simulation_time_hours = 168
+warmup_time_hours = 24
 run_count = 100
 
-result = mini_fab.runMiniFabWithExternalDispatch(provider, simulation_time_hours, run_count)
-throughput_mean = result.getThroughputMean()
-throughput_std = result.getThroughputStdDev()
-twt_mean = result.getTotalWeightedTardinessMean()
-twt_std = result.getTotalWeightedTardinessStdDev()
+result = mini_fab.runMiniFabWithExternalDispatch(provider, simulation_time_hours, run_count, warmup_time_hours)
+completed_wafers_per_day_mean = result.getCompletedWafersPerDayMean()
+completed_wafers_per_day_std = result.getCompletedWafersPerDayStdDev()
+tardiness_per_wafer_mean = result.getTardinessPerWaferHoursMean()
+tardiness_per_wafer_std = result.getTardinessPerWaferHoursStdDev()
+completed_wafers_mean = result.getCompletedWafersMean()
+completed_wafers_std = result.getCompletedWafersStdDev()
+tardy_wafers_mean = result.getTardyWafersMean()
+tardy_wafers_std = result.getTardyWafersStdDev()
+flow_factor_mean = result.getFlowFactorMean()
+flow_factor_std = result.getFlowFactorStdDev()
 ```

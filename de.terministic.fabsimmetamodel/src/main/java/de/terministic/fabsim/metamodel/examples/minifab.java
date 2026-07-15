@@ -78,10 +78,10 @@ public class MiniFab {
 	private static final long STATION3_SETUP_TIME_DEFAULT = 12L * MINUTE;
 
 	private static final int PA_PRIORITY = 1;
-	private static final int PB_PRIORITY = 2;
-	private static final int TW_PRIORITY = 3;
-	private static final int PA_PRIORITY_WEIGHT = 10;
-	private static final int PB_PRIORITY_WEIGHT = 5;
+	private static final int PB_PRIORITY = 1;
+	private static final int TW_PRIORITY = 1;
+	private static final int PA_PRIORITY_WEIGHT = 1;
+	private static final int PB_PRIORITY_WEIGHT = 1;
 	private static final int TW_PRIORITY_WEIGHT = 1;
 	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
 
@@ -89,7 +89,7 @@ public class MiniFab {
 	private static final long PB_WEEKLY_LOTS = 30L;
 	private static final long TW_WEEKLY_LOTS = 3L;
 
-	public static final double FLOW_FACTOR = 3.0;
+	public static final double FLOW_FACTOR = 2.5;
 	private static final long DUE_DATE_LEAD_TIME = Math.round(
 		(
 			STATION1_PROCESS_S1 
@@ -162,53 +162,96 @@ public class MiniFab {
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, null);
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 0L, null);
 	}
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, logWriter);
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, 0L, logWriter);
 	}
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours, final int runs) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, null);
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, 0L, null);
 	}
 
 	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
 			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
-		return runMiniFabWithDispatchRule(dispatchRule, simulationTimeHours, runs, logWriter);
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, 0L, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final long warmupTimeHours) {
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, warmupTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final long warmupTimeHours, final LocalLogWriter logWriter) {
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, warmupTimeHours, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final int runs, final long warmupTimeHours) {
+		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, warmupTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
+			final long simulationTimeHours, final int runs, final long warmupTimeHours,
+			final LocalLogWriter logWriter) {
+		return runMiniFabWithDispatchRule(dispatchRule, simulationTimeHours, runs, warmupTimeHours, logWriter);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, null);
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, 0L, null);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, logWriter);
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, 0L, logWriter);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours, final int runs) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, null);
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, 0L, null);
 	}
 
 	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
 			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, 0L, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final long warmupTimeHours) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, warmupTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final long warmupTimeHours, final LocalLogWriter logWriter) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, warmupTimeHours, logWriter);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final int runs, final long warmupTimeHours) {
+		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, warmupTimeHours, null);
+	}
+
+	public MiniFabRunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
+			final long simulationTimeHours, final int runs, final long warmupTimeHours,
+			final LocalLogWriter logWriter) {
 		if (runs <= 0) {
 			throw new IllegalArgumentException("runs must be a positive number");
 		}
 		if (runs > 1 && logWriter != null) {
 			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
 		}
+		validateTiming(simulationTimeHours, warmupTimeHours);
 
 		final List<MiniFabRunResult> runResults = new ArrayList<>(runs);
 		for (int run = 0; run < runs; run++) {
 			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
 			final FabModel model = createMiniFabModelWithExternalDispatch(provider, effectiveLogWriter);
-			runResults.add(runSimulation(model, simulationTimeHours));
+			runResults.add(runSimulation(model, simulationTimeHours, warmupTimeHours));
 		}
 		return aggregateRunResults(runs, simulationTimeHours, runResults);
 	}
@@ -218,19 +261,21 @@ public class MiniFab {
 	// ---------------------------------------------------------------------
 
 	private MiniFabRunResult runMiniFabWithDispatchRule(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
+			final long simulationTimeHours, final int runs, final long warmupTimeHours,
+			final LocalLogWriter logWriter) {
 		if (runs <= 0) {
 			throw new IllegalArgumentException("runs must be a positive number");
 		}
 		if (runs > 1 && (logWriter != null || dispatchRule instanceof LoggingDispatchRule)) {
 			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
 		}
+		validateTiming(simulationTimeHours, warmupTimeHours);
 
 		final List<MiniFabRunResult> runResults = new ArrayList<>(runs);
 		for (int run = 0; run < runs; run++) {
 			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
 			final FabModel model = createMiniFabModelWithDispatchRule(dispatchRule, effectiveLogWriter);
-			runResults.add(runSimulation(model, simulationTimeHours));
+			runResults.add(runSimulation(model, simulationTimeHours, warmupTimeHours));
 		}
 		return aggregateRunResults(runs, simulationTimeHours, runResults);
 	}
@@ -241,14 +286,17 @@ public class MiniFab {
 
 	private MiniFabRunResult aggregateRunResults(final int runs, final long simulationTimeHours,
 			final List<MiniFabRunResult> runResults) {
-		final SummaryStatistics throughputStatistics = summarize(runResults, Metric.THROUGHPUT);
+		final SummaryStatistics completedWafersPerDayStatistics = summarize(runResults,
+				Metric.COMPLETED_WAFERS_PER_DAY);
+		final SummaryStatistics tardinessStatistics = summarize(runResults, Metric.TARDINESS_PER_WAFER_HOURS);
+		final SummaryStatistics completedWafersStatistics = summarize(runResults, Metric.COMPLETED_WAFERS);
 		final SummaryStatistics tardyWafersStatistics = summarize(runResults, Metric.TARDY_WAFERS);
-		final SummaryStatistics totalWeightedTardinessStatistics = summarize(runResults,
-				Metric.TOTAL_WEIGHTED_TARDINESS);
-		return new MiniFabRunResult(runs, simulationTimeHours, simulationTimeHours * (double) HOUR,
-				throughputStatistics.mean, throughputStatistics.stdDev, tardyWafersStatistics.mean,
-				tardyWafersStatistics.stdDev, totalWeightedTardinessStatistics.mean,
-				totalWeightedTardinessStatistics.stdDev);
+		final SummaryStatistics flowFactorStatistics = summarize(runResults, Metric.FLOW_FACTOR);
+		return new MiniFabRunResult(runs, simulationTimeHours,
+				completedWafersPerDayStatistics.mean, completedWafersPerDayStatistics.stdDev,
+				tardinessStatistics.mean, tardinessStatistics.stdDev,
+				completedWafersStatistics.mean, completedWafersStatistics.stdDev, tardyWafersStatistics.mean,
+				tardyWafersStatistics.stdDev, flowFactorStatistics.mean, flowFactorStatistics.stdDev);
 	}
 
 	private SummaryStatistics summarize(final List<MiniFabRunResult> runResults, final Metric metric) {
@@ -256,14 +304,20 @@ public class MiniFab {
 		for (int i = 0; i < runResults.size(); i++) {
 			final MiniFabRunResult result = runResults.get(i);
 			switch (metric) {
-			case THROUGHPUT:
-				values[i] = result.getFinishedWafers();
+			case COMPLETED_WAFERS_PER_DAY:
+				values[i] = result.getCompletedWafersPerDay();
+				break;
+			case TARDINESS_PER_WAFER_HOURS:
+				values[i] = result.getTardinessPerWaferHours();
+				break;
+			case COMPLETED_WAFERS:
+				values[i] = result.getCompletedWafers();
 				break;
 			case TARDY_WAFERS:
 				values[i] = result.getTardyWafers();
 				break;
-			case TOTAL_WEIGHTED_TARDINESS:
-				values[i] = result.getTotalWeightedTardiness();
+			case FLOW_FACTOR:
+				values[i] = result.getFlowFactor();
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported metric: " + metric);
@@ -303,27 +357,45 @@ public class MiniFab {
 	}
 
 	private enum Metric {
-		THROUGHPUT,
+		COMPLETED_WAFERS_PER_DAY,
+		TARDINESS_PER_WAFER_HOURS,
+		COMPLETED_WAFERS,
 		TARDY_WAFERS,
-		TOTAL_WEIGHTED_TARDINESS
+		FLOW_FACTOR
 	}
 
 	// ---------------------------------------------------------------------
 	// Simulation execution
 	// ---------------------------------------------------------------------
 
-	private MiniFabRunResult runSimulation(final FabModel model, final long simulationTimeHours) {
+	private MiniFabRunResult runSimulation(final FabModel model, final long simulationTimeHours,
+			final long warmupTimeHours) {
 		final SimulationEngine engine = new FabSimulationEngine();
 		engine.init(model);
 		final long simulationTimeMillis = Math.multiplyExact(simulationTimeHours, HOUR);
+		final long warmupTimeMillis = Math.multiplyExact(warmupTimeHours, HOUR);
+		final long measurementTimeHours = Math.subtractExact(simulationTimeHours, warmupTimeHours);
 		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
-				PRIORITY_WEIGHTS);
+				PRIORITY_WEIGHTS, warmupTimeMillis);
 		engine.addListener(finishedLotStatisticsCollector);
 		engine.runSimulation(simulationTimeMillis);
-		return new MiniFabRunResult(simulationTimeHours, simulationTimeMillis,
+		return new MiniFabRunResult(simulationTimeHours, measurementTimeHours,
 				finishedLotStatisticsCollector.getFinishedWafers(),
 				finishedLotStatisticsCollector.getTardyWafers(),
-				finishedLotStatisticsCollector.getTotalWeightedTardiness());
+				finishedLotStatisticsCollector.getTardinessPerWaferHours(),
+				finishedLotStatisticsCollector.getFlowFactorMean());
+	}
+
+	private void validateTiming(final long simulationTimeHours, final long warmupTimeHours) {
+		if (simulationTimeHours <= 0L) {
+			throw new IllegalArgumentException("simulationTimeHours must be a positive number");
+		}
+		if (warmupTimeHours < 0L) {
+			throw new IllegalArgumentException("warmupTimeHours must not be negative");
+		}
+		if (warmupTimeHours >= simulationTimeHours) {
+			throw new IllegalArgumentException("warmupTimeHours must be less than simulationTimeHours");
+		}
 	}
 
 	// ---------------------------------------------------------------------

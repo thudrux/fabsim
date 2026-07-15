@@ -16,6 +16,7 @@ public final class MiniFabDockerApp {
 
 	private static final class CliConfig {
 		private long simulationTimeHours = -1L;
+		private long warmupTimeHours = 0L;
 		private int runs = 1;
 		private String dispatchRuleName;
 		private Path logFile;
@@ -49,7 +50,8 @@ public final class MiniFabDockerApp {
 		final LocalLogWriter logWriter = config.logFile == null ? null : new LocalLogWriter(config.logFile);
 		try {
 			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
-					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, config.runs, logWriter);
+					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, config.runs,
+					config.warmupTimeHours, logWriter);
 			printResult(result);
 			if (config.logFile != null) {
 				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
@@ -97,6 +99,10 @@ public final class MiniFabDockerApp {
 				config.simulationTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
+			if ("--warmup-time".equals(arg)) {
+				config.warmupTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
+				continue;
+			}
 			if ("--runs".equals(arg)) {
 				config.runs = parseRequiredInt(arg, nextValue(args, ++i, arg));
 				continue;
@@ -119,6 +125,12 @@ public final class MiniFabDockerApp {
 	private void validate(final CliConfig config) {
 		if (config.simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("--simulation-time must be a positive number of hours");
+		}
+		if (config.warmupTimeHours < 0L) {
+			throw new IllegalArgumentException("--warmup-time must not be negative");
+		}
+		if (config.warmupTimeHours >= config.simulationTimeHours) {
+			throw new IllegalArgumentException("--warmup-time must be less than --simulation-time");
 		}
 		if (config.dispatchRuleName == null) {
 			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt|random is required");
@@ -157,31 +169,34 @@ public final class MiniFabDockerApp {
 
 	private void printResult(final MiniFabRunResult result) {
 		if (result.getRuns() == 1L) {
-			System.out.println("MiniFab completed at simulation time " + result.getSimulationTimeHours()
-					+ " h (" + result.getSimulationTimeMillis() + " ms)");
-			System.out.println("Throughput: " + result.getThroughput() + " finished wafers");
-			System.out.println("Tardy: " + result.getTardyWafers() + " finished wafers");
-			System.out.println("Total Weighted Tardiness: " + formatScientificMillis(result.getTotalWeightedTardiness()));
+			System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
+			System.out.println("Tardiness per wafer: " + formatHours(result.getTardinessPerWaferHours()));
+			System.out.println("Completed wafers: " + result.getCompletedWafers());
+			System.out.println("Tardy wafers: " + result.getTardyWafers());
+			System.out.println("Flow factor: " + formatDecimal(result.getFlowFactor()));
 			return;
 		}
 
-		System.out.println("MiniFab completed at simulation time " + formatDecimal(result.getSimulationTimeHoursMean())
-				+ " h (" + formatDecimal(result.getSimulationTimeMillisMean()) + " ms)");
-		System.out.println("Throughput: mean=" + formatDecimal(result.getThroughputMean()) + ", std="
-				+ formatDecimal(result.getThroughputStdDev()) + " finished wafers");
-		System.out.println("Tardy: mean=" + formatDecimal(result.getTardyWafersMean()) + ", std="
-				+ formatDecimal(result.getTardyWafersStdDev()) + " finished wafers");
-		System.out.println("Total Weighted Tardiness: mean="
-				+ formatScientificMillis(result.getTotalWeightedTardinessMean()) + ", std="
-				+ formatScientificMillis(result.getTotalWeightedTardinessStdDev()));
+		System.out.println("Completed wafers per day: mean="
+				+ formatDecimal(result.getCompletedWafersPerDayMean()) + ", std="
+				+ formatDecimal(result.getCompletedWafersPerDayStdDev()));
+		System.out.println("Tardiness per wafer: mean="
+				+ formatHours(result.getTardinessPerWaferHoursMean()) + ", std="
+				+ formatHours(result.getTardinessPerWaferHoursStdDev()));
+		System.out.println("Completed wafers: mean=" + formatDecimal(result.getCompletedWafersMean()) + ", std="
+				+ formatDecimal(result.getCompletedWafersStdDev()));
+		System.out.println("Tardy wafers: mean=" + formatDecimal(result.getTardyWafersMean()) + ", std="
+				+ formatDecimal(result.getTardyWafersStdDev()));
+		System.out.println("Flow factor: mean=" + formatDecimal(result.getFlowFactorMean()) + ", std="
+				+ formatDecimal(result.getFlowFactorStdDev()));
 	}
 
 	private static String formatDecimal(final double value) {
-		return String.format(Locale.ROOT, "%.3f", Double.valueOf(value));
+		return String.format(Locale.ROOT, "%.3f", value);
 	}
 
-	private static String formatScientificMillis(final double durationMillis) {
-		return String.format(Locale.ROOT, "%.3e ms", Double.valueOf(durationMillis));
+	private static String formatHours(final double durationHours) {
+		return String.format(Locale.ROOT, "%.3f h", durationHours);
 	}
 
 	private String nextValue(final String[] args, final int index, final String optionName) {
@@ -198,6 +213,6 @@ public final class MiniFabDockerApp {
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar fabsim.jar --simulation-time <hours> [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
+				"  java -jar fabsim.jar --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
 	}
 }
