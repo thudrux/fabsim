@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Locale;
 
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchRules.CriticalRatio;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
@@ -66,20 +67,23 @@ public final class MiniFabDockerApp {
 
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
 		if (dispatchRuleName == null || dispatchRuleName.trim().isEmpty()) {
-			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt|random is required");
+			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
 		}
 		final String normalizedDispatchRuleName = dispatchRuleName.trim().toLowerCase(Locale.ROOT);
+		if ("random".equals(normalizedDispatchRuleName)) {
+			return new Random();
+		}
 		if ("fifo".equals(normalizedDispatchRuleName)) {
 			return new FIFO();
 		}
 		if ("edd".equals(normalizedDispatchRuleName)) {
 			return new EDD();
 		}
+		if ("cr".equals(normalizedDispatchRuleName)) {
+			return new CriticalRatio();
+		}
 		if ("srpt".equals(normalizedDispatchRuleName)) {
 			return new SRPT();
-		}
-		if ("random".equals(normalizedDispatchRuleName)) {
-			return new Random();
 		}
 		throw new IllegalArgumentException("Unsupported local dispatch rule: " + dispatchRuleName);
 	}
@@ -133,7 +137,7 @@ public final class MiniFabDockerApp {
 			throw new IllegalArgumentException("--warmup-time must be less than --simulation-time");
 		}
 		if (config.dispatchRuleName == null) {
-			throw new IllegalArgumentException("--dispatch-rule fifo|edd|srpt|random is required");
+			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
 		}
 		if (config.runs <= 0) {
 			throw new IllegalArgumentException("--runs must be a positive number");
@@ -213,6 +217,6 @@ public final class MiniFabDockerApp {
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar fabsim.jar --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule fifo|edd|srpt|random [--log-file <path>]");
+				"  java -jar fabsim.jar --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
 	}
 }

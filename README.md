@@ -12,7 +12,7 @@ Build the image from the repository root:
 docker build -t minifab .
 ```
 
-Run MiniFab in Docker when you want to use the predefined Java dispatch rules (`fifo`, `edd`, `srpt`, `random`) and optionally write dispatch logs to a mounted host path.
+Run MiniFab in Docker when you want to use the predefined Java dispatch rules (`random`, `fifo`, `edd`, `cr`, `srpt`) and optionally write dispatch logs to a mounted host path.
 
 ```bash
 docker run --rm \
@@ -53,7 +53,7 @@ docker run --rm \
 Required arguments:
 
 - `--simulation-time <hours>`
-- `--dispatch-rule fifo|edd|srpt|random`
+- `--dispatch-rule random|fifo|edd|cr|srpt`
 
 Optional:
 
