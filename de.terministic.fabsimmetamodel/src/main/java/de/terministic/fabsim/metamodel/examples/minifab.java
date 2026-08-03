@@ -28,23 +28,12 @@ import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
 import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 
-/**
- * This model is based on the MiniFab environment from researchers from Arizona State
- * University and Intel. A detailed description can be found in
- * I. A. El-Khouly, K. S. El-Kilany and A. E. El-Sayed, "Modelling and
- * simulation of re-entrant flow shop scheduling: An application in
- * semiconductor manufacturing," 2009 International Conference on Computers &
- * Industrial Engineering, Troyes, France, 2009, pp. 211-216,
- * DOI: 10.1109/ICCIE.2009.5223754.
- */
 public class MiniFab {
 	private static final long SECOND = 1000L;
 	private static final long MINUTE = 60L * SECOND;
 	private static final long HOUR = 60L * MINUTE;
-	private static final long DAY = 24L * HOUR;
-	private static final long WEEK = 7L * DAY;
 
-	private static final int LOT_SIZE = 24;
+	private static final int LOT_SIZE = 25;
 	private static final int STATION1_BATCH_SIZE = LOT_SIZE * 3;
 
 	private static final long STATION1_LOAD = 20L * MINUTE;
@@ -85,9 +74,9 @@ public class MiniFab {
 	private static final int TW_PRIORITY_WEIGHT = 1;
 	private static final Map<Integer, Integer> PRIORITY_WEIGHTS = createPriorityWeights();
 
-	private static final long PA_WEEKLY_LOTS = 51L;
-	private static final long PB_WEEKLY_LOTS = 30L;
-	private static final long TW_WEEKLY_LOTS = 3L;
+	private static final long PA_INTERARRIVAL_TIME = 225 * MINUTE;
+	private static final long PB_INTERARRIVAL_TIME = 381 * MINUTE;
+	private static final long TW_INTERARRIVAL_TIME = 4567 * MINUTE;
 
 	public static final double FLOW_FACTOR = 2.5;
 	private static final long DUE_DATE_LEAD_TIME = Math.round(
@@ -524,9 +513,9 @@ public class MiniFab {
 	// ---------------------------------------------------------------------
 
 	private void createRecipesAndSources(final FabModel model, final Sink sink) {
-		createProductLine(model, sink, "Pa", "PaRecipe", PA_WEEKLY_LOTS, PA_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "Pb", "PbRecipe", PB_WEEKLY_LOTS, PB_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "TW", "TWRecipe", TW_WEEKLY_LOTS, TW_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pa", "PaRecipe", PA_INTERARRIVAL_TIME, PA_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pb", "PbRecipe", PB_INTERARRIVAL_TIME, PB_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "TW", "TWRecipe", TW_INTERARRIVAL_TIME, TW_PRIORITY, DUE_DATE_LEAD_TIME);
 	}
 
 	private static Map<Integer, Integer> createPriorityWeights() {
@@ -538,7 +527,7 @@ public class MiniFab {
 	}
 
 	private void createProductLine(final FabModel model, final Sink sink, final String productName,
-			final String recipeName, final long weeklyLots, final int priority, final long dueDateLeadTime) {
+			final String recipeName, final long interarrivalTimeMean, final int priority, final long dueDateLeadTime) {
 		final Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
@@ -569,7 +558,7 @@ public class MiniFab {
 
 		final Product product = model.getSimComponentFactory().createProduct(productName, recipe);
 		final ExponentialDuration interarrivalTime = model.getValueObjectFactory()
-				.createExponentialValueObject(WEEK / weeklyLots);
+				.createExponentialValueObject(interarrivalTimeMean);
 		final LotSource source = (LotSource) model.getSimComponentFactory().createSource("Source_" + productName,
 				product, interarrivalTime);
 		source.setLotSize(LOT_SIZE);
