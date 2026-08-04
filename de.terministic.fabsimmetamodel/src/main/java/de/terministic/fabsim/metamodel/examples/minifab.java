@@ -19,6 +19,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
@@ -431,11 +432,12 @@ public class MiniFab {
 				model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_DURATION),
 				model.getValueObjectFactory().createConstantValueObject(STATION2_MAINTENANCE_INTERVAL), station);
 
-		model.getSimComponentFactory().createSimulationTimeBasedBreakdownAndAddToToolGroup(
-				"Station2_UnscheduledBreakdown",
+		final SimTimeBasedBreakdown breakdown = model.getSimComponentFactory()
+				.createSimulationTimeBasedBreakdownAndAddToToolGroup("Station2_UnscheduledBreakdown",
 				model.getValueObjectFactory().createUniformValueObject(STATION2_REPAIR_MIN, STATION2_REPAIR_MAX),
 				model.getValueObjectFactory().createUniformValueObject(STATION2_BREAKDOWN_MIN, STATION2_BREAKDOWN_MAX),
 				station);
+		breakdown.setScrapsInProcessItems(true);
 
 		return station;
 	}

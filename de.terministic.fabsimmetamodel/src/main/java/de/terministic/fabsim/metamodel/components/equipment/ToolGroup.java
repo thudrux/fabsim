@@ -234,6 +234,16 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 		this.busyTools.addAll(tools);
 	}
 
+	public void scrapFlowItem(final AbstractFlowItem flowItem, final AbstractResource resource) {
+		if (flowItem == null) {
+			return;
+		}
+		this.logger.trace("Scrapping flow item {} on {}", flowItem, resource);
+		flowItem.getStatistics().put("scrap_time", getTime());
+		flowItem.getStatistics().put("scrap_step", (long) flowItem.getCurrentStepNumber());
+		this.inProcessMap.remove(flowItem);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *

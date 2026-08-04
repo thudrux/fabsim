@@ -30,4 +30,8 @@ public interface IBreakdown {
 	public double getAvgCycleLength();
 
 	public double getAvgDownTimePerCycle();
+
+	public default boolean scrapsInProcessItems() {
+		return false;
+	}
 }

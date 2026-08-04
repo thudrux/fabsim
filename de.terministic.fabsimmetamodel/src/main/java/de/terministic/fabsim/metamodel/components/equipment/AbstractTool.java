@@ -187,6 +187,10 @@ public abstract class AbstractTool extends AbstractResource {
 		getSimulationEngine().getEventList().scheduleEvent(event);
 	}
 
+	public void scrapFlowItem(final AbstractFlowItem flowItem) {
+		((ToolGroup) this.parent).scrapFlowItem(flowItem, this);
+	}
+
 	public void setCurrentSetupState(final SetupState currentSetupState) {
 		this.currentSetupState = currentSetupState;
 	}

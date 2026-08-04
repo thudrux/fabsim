@@ -20,6 +20,7 @@ import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.Pro
 public abstract class AbstractProductiveToolState extends AbstractToolState {
 
 	protected BreakdownToolState breakdownToolState;
+	private StandbyToolState scrapRecoveryToolState;
 
 	public AbstractProductiveToolState(final FabModel model) {
 		super(model);
@@ -152,8 +153,20 @@ public abstract class AbstractProductiveToolState extends AbstractToolState {
 				details.getOperatorInUse().postponeDemand(details.getDemand());
 			}
 		}
+		if (breakdown.scrapsInProcessItems()) {
+			tool.scrapFlowItem(details.getItem());
+			getStateDetails().remove(tool);
+		}
 		details.setState(State.PAUSED);
 		return this.breakdownToolState;
+	}
+
+	@Override
+	public AbstractToolState getStateAfterBreakdownFinished(final AbstractTool tool) {
+		if (!getStateDetails().containsKey(tool) && this.scrapRecoveryToolState != null) {
+			return this.scrapRecoveryToolState;
+		}
+		return this;
 	}
 
 	@Override
@@ -241,6 +254,10 @@ public abstract class AbstractProductiveToolState extends AbstractToolState {
 
 	public void setBreakdownToolState(final BreakdownToolState breakdownToolState) {
 		this.breakdownToolState = breakdownToolState;
+	}
+
+	public void setScrapRecoveryToolState(final StandbyToolState scrapRecoveryToolState) {
+		this.scrapRecoveryToolState = scrapRecoveryToolState;
 	}
 
 	public void startTaskWithOperator(final OperatorDemand operatorDemand) {

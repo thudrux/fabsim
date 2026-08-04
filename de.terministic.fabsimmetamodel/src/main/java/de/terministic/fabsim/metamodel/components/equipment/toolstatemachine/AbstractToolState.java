@@ -115,6 +115,10 @@ public abstract class AbstractToolState {
 		return this.stateDetails;
 	}
 
+	public AbstractToolState getStateAfterBreakdownFinished(final AbstractTool tool) {
+		return this;
+	}
+
 	/**
 	 * Returns whether a event which did not cause a state change should be
 	 * triggered as soon as the current state is changed

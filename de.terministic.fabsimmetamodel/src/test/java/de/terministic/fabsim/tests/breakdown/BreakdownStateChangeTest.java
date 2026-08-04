@@ -21,6 +21,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
+import de.terministic.fabsim.metamodel.components.equipment.breakdown.SimTimeBasedBreakdown;
 import de.terministic.fabsim.metamodel.statistics.ToolStateChangeLog;
 import de.terministic.fabsim.metamodel.statistics.ToolStateLogEntry;
 
@@ -111,6 +112,33 @@ public class BreakdownStateChangeTest {
 
 		Assertions.assertEquals(62L, toolLogList.get(4).getTime());
 		Assertions.assertEquals(SemiE10EquipmentState.SB_NO_MATERIAL, toolLogList.get(4).getNewState());
+	}
+
+	@Test
+	public void breakdownScrapsProductiveLotTest() {
+		IValue mttr = model.getValueObjectFactory().createConstantValueObject(5L);
+		IValue mtbf = model.getValueObjectFactory().createConstantValueObject(53L);
+		SimTimeBasedBreakdown breakdown = model.getSimComponentFactory()
+				.createSimulationTimeBasedBreakdownAndAddToToolGroup("SmallBreakdown", mttr, mtbf, toolGroup);
+		breakdown.setScrapsInProcessItems(true);
+
+		engine.init(model);
+		ToolStateChangeLog log = new ToolStateChangeLog();
+		toolGroup.addListener(log);
+
+		engine.runSimulation(80L);
+		List<ToolStateLogEntry> toolLogList = log.getLog().get(toolGroup.getToolByIndex(0));
+
+		Assertions.assertEquals(4, toolLogList.size());
+
+		Assertions.assertEquals(50L, toolLogList.get(1).getTime());
+		Assertions.assertEquals(SemiE10EquipmentState.PR, toolLogList.get(1).getNewState());
+
+		Assertions.assertEquals(53L, toolLogList.get(2).getTime());
+		Assertions.assertEquals(SemiE10EquipmentState.UD, toolLogList.get(2).getNewState());
+
+		Assertions.assertEquals(58L, toolLogList.get(3).getTime());
+		Assertions.assertEquals(SemiE10EquipmentState.SB_NO_MATERIAL, toolLogList.get(3).getNewState());
 	}
 
 	@Test
