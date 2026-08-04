@@ -38,30 +38,24 @@ public class MiniFab {
 	private static final int STATION1_BATCH_SIZE = LOT_SIZE * 3;
 
 	private static final long STATION1_LOAD = 20L * MINUTE;
-	private static final long STATION1_PROCESS_S1 = 225L * MINUTE;
-	private static final long STATION1_PROCESS_S5 = 255L * MINUTE;
 	private static final long STATION1_UNLOAD = 40L * MINUTE;
 	private static final long STATION1_MAINTENANCE_DURATION = 75L * MINUTE;
-	private static final long STATION1_MAINTENANCE_INTERVAL = 24L * HOUR;
+	private static final long STATION1_MAINTENANCE_INTERVAL = 1440L * MINUTE;
 
 	private static final long STATION2_LOAD = 15L * MINUTE;
-	private static final long STATION2_PROCESS_S2 = 30L * MINUTE;
-	private static final long STATION2_PROCESS_S4 = 50L * MINUTE;
 	private static final long STATION2_UNLOAD = 15L * MINUTE;
 	private static final long STATION2_MAINTENANCE_DURATION = 120L * MINUTE;
-	private static final long STATION2_MAINTENANCE_INTERVAL = 12L * HOUR;
+	private static final long STATION2_MAINTENANCE_INTERVAL = 720L * MINUTE;
 
 	private static final long STATION3_LOAD = 10L * MINUTE;
-	private static final long STATION3_PROCESS_S3 = 55L * MINUTE;
-	private static final long STATION3_PROCESS_S6 = 10L * MINUTE;
 	private static final long STATION3_UNLOAD = 10L * MINUTE;
 	private static final long STATION3_MAINTENANCE_DURATION = 30L * MINUTE;
-	private static final long STATION3_MAINTENANCE_INTERVAL = 12L * HOUR;
+	private static final long STATION3_MAINTENANCE_INTERVAL = 720L * MINUTE;
 
-	private static final long STATION2_BREAKDOWN_MIN = 24L * HOUR;
-	private static final long STATION2_BREAKDOWN_MAX = 76L * HOUR;
-	private static final long STATION2_REPAIR_MIN = 6L * HOUR;
-	private static final long STATION2_REPAIR_MAX = 8L * HOUR;
+	private static final long STATION2_BREAKDOWN_MIN = 1440L * MINUTE;
+	private static final long STATION2_BREAKDOWN_MAX = 4560L * MINUTE;
+	private static final long STATION2_REPAIR_MIN = 360L * MINUTE;
+	private static final long STATION2_REPAIR_MAX = 480L * MINUTE;
 
 	private static final long STATION3_SETUP_TIME_SAME_LOT_TYPE = 10L * MINUTE;
 	private static final long STATION3_SETUP_TIME_SAME_STEP = 5L * MINUTE;
@@ -80,16 +74,31 @@ public class MiniFab {
 	private static final long TW_INTERARRIVAL_TIME = 4567 * MINUTE;
 
 	public static final double FLOW_FACTOR = 2.5;
-	private static final long DUE_DATE_LEAD_TIME = Math.round(
-		(
-			STATION1_PROCESS_S1 
-			+ STATION2_PROCESS_S2 
-			+ STATION3_PROCESS_S3 
-			+ STATION2_PROCESS_S4
-			+ STATION1_PROCESS_S5 
-			+ STATION3_PROCESS_S6
-		) * FLOW_FACTOR
-	);
+
+	private static final ProductProcessingTimes PA_PROCESS_TIMES = new ProductProcessingTimes(
+			225L * MINUTE,
+			18L * MINUTE,
+			70L * MINUTE,
+			34L * MINUTE,
+			255L * MINUTE,
+			16L * MINUTE);
+	private static final ProductProcessingTimes PB_PROCESS_TIMES = new ProductProcessingTimes(
+			225L * MINUTE,
+			30L * MINUTE,
+			55L * MINUTE,
+			50L * MINUTE,
+			255L * MINUTE,
+			10L * MINUTE);
+	private static final ProductProcessingTimes TW_PROCESS_TIMES = new ProductProcessingTimes(
+			225L * MINUTE,
+			42L * MINUTE,
+			40L * MINUTE,
+			66L * MINUTE,
+			255L * MINUTE,
+			4L * MINUTE);
+	private static final long PA_DUE_DATE_LEAD_TIME = dueDateLeadTime(PA_PROCESS_TIMES);
+	private static final long PB_DUE_DATE_LEAD_TIME = dueDateLeadTime(PB_PROCESS_TIMES);
+	private static final long TW_DUE_DATE_LEAD_TIME = dueDateLeadTime(TW_PROCESS_TIMES);
 
 	private ToolGroup station1;
 	private ToolGroup station2;
@@ -100,6 +109,10 @@ public class MiniFab {
 	private SetupState pbS6Setup;
 	private SetupState twS3Setup;
 	private SetupState twS6Setup;
+
+	private static long dueDateLeadTime(final ProductProcessingTimes processingTimes) {
+		return Math.round(processingTimes.getTotalProcessDuration() * FLOW_FACTOR);
+	}
 
 	// ---------------------------------------------------------------------
 	// Public model factory API
@@ -515,9 +528,12 @@ public class MiniFab {
 	// ---------------------------------------------------------------------
 
 	private void createRecipesAndSources(final FabModel model, final Sink sink) {
-		createProductLine(model, sink, "Pa", "PaRecipe", PA_INTERARRIVAL_TIME, PA_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "Pb", "PbRecipe", PB_INTERARRIVAL_TIME, PB_PRIORITY, DUE_DATE_LEAD_TIME);
-		createProductLine(model, sink, "TW", "TWRecipe", TW_INTERARRIVAL_TIME, TW_PRIORITY, DUE_DATE_LEAD_TIME);
+		createProductLine(model, sink, "Pa", "PaRecipe", PA_INTERARRIVAL_TIME, PA_PRIORITY,
+				PA_DUE_DATE_LEAD_TIME, PA_PROCESS_TIMES);
+		createProductLine(model, sink, "Pb", "PbRecipe", PB_INTERARRIVAL_TIME, PB_PRIORITY,
+				PB_DUE_DATE_LEAD_TIME, PB_PROCESS_TIMES);
+		createProductLine(model, sink, "TW", "TWRecipe", TW_INTERARRIVAL_TIME, TW_PRIORITY,
+				TW_DUE_DATE_LEAD_TIME, TW_PROCESS_TIMES);
 	}
 
 	private static Map<Integer, Integer> createPriorityWeights() {
@@ -529,7 +545,8 @@ public class MiniFab {
 	}
 
 	private void createProductLine(final FabModel model, final Sink sink, final String productName,
-			final String recipeName, final long interarrivalTimeMean, final int priority, final long dueDateLeadTime) {
+			final String recipeName, final long interarrivalTimeMean, final int priority, final long dueDateLeadTime,
+			final ProductProcessingTimes processingTimes) {
 		final Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
@@ -539,22 +556,22 @@ public class MiniFab {
 				productName + "_Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1);
 
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S1", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S1, STATION1_UNLOAD, s1Batch, null,
+				"S1", this.station1, null, STATION1_LOAD, processingTimes.s1, STATION1_UNLOAD, s1Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S2", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S2, STATION2_UNLOAD, null, null,
+				"S2", this.station2, null, STATION2_LOAD, processingTimes.s2, STATION2_UNLOAD, null, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S3", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S3, STATION3_UNLOAD, null, s3Setup,
+				"S3", this.station3, null, STATION3_LOAD, processingTimes.s3, STATION3_UNLOAD, null, s3Setup,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S4", this.station2, null, STATION2_LOAD, STATION2_PROCESS_S4, STATION2_UNLOAD, null, null,
+				"S4", this.station2, null, STATION2_LOAD, processingTimes.s4, STATION2_UNLOAD, null, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S5", this.station1, null, STATION1_LOAD, STATION1_PROCESS_S5, STATION1_UNLOAD, s5Batch, null,
+				"S5", this.station1, null, STATION1_LOAD, processingTimes.s5, STATION1_UNLOAD, s5Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S6", this.station3, null, STATION3_LOAD, STATION3_PROCESS_S6, STATION3_UNLOAD, null, s6Setup,
+				"S6", this.station3, null, STATION3_LOAD, processingTimes.s6, STATION3_UNLOAD, null, s6Setup,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink", sink, 0L, ProcessType.LOT, recipe);
 
@@ -567,5 +584,28 @@ public class MiniFab {
 		source.setDefaultPriority(priority);
 		source.setDueDateLeadTime(dueDateLeadTime);
 		source.setAllowSplit(false);
+	}
+
+	private static final class ProductProcessingTimes {
+		private final long s1;
+		private final long s2;
+		private final long s3;
+		private final long s4;
+		private final long s5;
+		private final long s6;
+
+		private ProductProcessingTimes(final long s1, final long s2, final long s3, final long s4,
+				final long s5, final long s6) {
+			this.s1 = s1;
+			this.s2 = s2;
+			this.s3 = s3;
+			this.s4 = s4;
+			this.s5 = s5;
+			this.s6 = s6;
+		}
+
+		private long getTotalProcessDuration() {
+			return this.s1 + this.s2 + this.s3 + this.s4 + this.s5 + this.s6;
+		}
 	}
 }
