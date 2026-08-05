@@ -372,6 +372,17 @@ public final class DispatchDecisionRequest {
 		if (item == null || item.getRecipe() == null) {
 			return 0L;
 		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			if (batch.getItems().isEmpty()) {
+				return 0L;
+			}
+			long totalRemainingCycleTime = 0L;
+			for (final AbstractFlowItem child : batch.getItems()) {
+				totalRemainingCycleTime += calculateRemainingCycleTime(child);
+			}
+			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
+		}
 		final int currentStepNumber = item.getCurrentStepNumber();
 		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
 			return 0L;
@@ -386,6 +397,17 @@ public final class DispatchDecisionRequest {
 	private static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft) {
 		if (item == null || item.getRecipe() == null) {
 			return Math.max(0L, processingTimeLeft);
+		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			if (batch.getItems().isEmpty()) {
+				return Math.max(0L, processingTimeLeft);
+			}
+			long totalRemainingCycleTime = 0L;
+			for (final AbstractFlowItem child : batch.getItems()) {
+				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft);
+			}
+			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
 		final int currentStepNumber = item.getCurrentStepNumber();
 		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {

@@ -36,6 +36,7 @@ public class MiniFab {
 
 	private static final int LOT_SIZE = 25;
 	private static final int STATION1_BATCH_SIZE = LOT_SIZE * 3;
+	private static final long STATION1_BATCH_MAX_WAIT = 1440L * MINUTE;
 
 	private static final long STATION1_LOAD = 20L * MINUTE;
 	private static final long STATION1_UNLOAD = 40L * MINUTE;
@@ -103,6 +104,8 @@ public class MiniFab {
 	private ToolGroup station1;
 	private ToolGroup station2;
 	private ToolGroup station3;
+	private BatchDetails station1Step1Batch;
+	private BatchDetails station1Step5Batch;
 	private SetupState paS3Setup;
 	private SetupState paS6Setup;
 	private SetupState pbS3Setup;
@@ -412,6 +415,7 @@ public class MiniFab {
 		this.station2 = createStation2(model);
 		this.station3 = createStation3(model);
 		this.station1.setDispatchRule(dispatchRule);
+		this.station1.setBatchRule(new MiniFabBatchRule(model));
 		this.station2.setDispatchRule(dispatchRule);
 		this.station3.setDispatchRule(dispatchRule);
 		configureStation3Setups(model);
@@ -432,6 +436,10 @@ public class MiniFab {
 				"Station1_PreventiveMaintenance",
 				model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_DURATION),
 				model.getValueObjectFactory().createConstantValueObject(STATION1_MAINTENANCE_INTERVAL), station);
+		this.station1Step1Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
+				"Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, STATION1_BATCH_MAX_WAIT, station);
+		this.station1Step5Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
+				"Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, STATION1_BATCH_MAX_WAIT, station);
 
 		return station;
 	}
@@ -550,13 +558,10 @@ public class MiniFab {
 		final Recipe recipe = model.getSimComponentFactory().createRecipe(recipeName);
 		final SetupState s3Setup = getStation3SetupState(productName, "S3");
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
-		final BatchDetails s1Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-				productName + "_Station1_Step1_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1);
-		final BatchDetails s5Batch = model.getSimComponentFactory().createBatchDetailsAndAddToToolGroup(
-				productName + "_Station1_Step5_Batch", STATION1_BATCH_SIZE, STATION1_BATCH_SIZE, this.station1);
 
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S1", this.station1, null, STATION1_LOAD, processingTimes.s1, STATION1_UNLOAD, s1Batch, null,
+				"S1", this.station1, null, STATION1_LOAD, processingTimes.s1, STATION1_UNLOAD,
+				this.station1Step1Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
 				"S2", this.station2, null, STATION2_LOAD, processingTimes.s2, STATION2_UNLOAD, null, null,
@@ -568,7 +573,8 @@ public class MiniFab {
 				"S4", this.station2, null, STATION2_LOAD, processingTimes.s4, STATION2_UNLOAD, null, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S5", this.station1, null, STATION1_LOAD, processingTimes.s5, STATION1_UNLOAD, s5Batch, null,
+				"S5", this.station1, null, STATION1_LOAD, processingTimes.s5, STATION1_UNLOAD,
+				this.station1Step5Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
 				"S6", this.station3, null, STATION3_LOAD, processingTimes.s6, STATION3_UNLOAD, null, s6Setup,
