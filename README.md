@@ -9,14 +9,16 @@ Java-based factory simulator.
 Build the image from the repository root:
 
 ```bash
-docker build -t minifab .
+docker build -t fabsim .
 ```
 
 Run MiniFab in Docker when you want to use the predefined Java dispatch rules (`random`, `fifo`, `edd`, `cr`, `srpt`) and optionally write dispatch logs to a mounted host path.
+The Docker launcher requires selecting a fab implementation with `--fab`; `minifab` is currently the only available implementation.
 
 ```bash
 docker run --rm \
-  minifab \
+  fabsim \
+  --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
   --dispatch-rule fifo
@@ -26,7 +28,8 @@ To run multiple simulations, pass `--runs <n>`:
 
 ```bash
 docker run --rm \
-  minifab \
+  fabsim \
+  --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
   --runs 20 \
@@ -40,7 +43,8 @@ mkdir -p logs
 
 docker run --rm \
   -v "$PWD/logs:/logs" \
-  minifab \
+  fabsim \
+  --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
   --runs 1 \
@@ -52,6 +56,7 @@ docker run --rm \
 
 Required arguments:
 
+- `--fab minifab`
 - `--simulation-time <hours>`
 - `--dispatch-rule random|fifo|edd|cr|srpt`
 
@@ -110,7 +115,7 @@ jpype.startJVM(
 )
 
 DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
-MiniFab = jpype.JClass("de.terministic.fabsim.metamodel.examples.MiniFab")
+MiniFab = jpype.JClass("de.terministic.fabsim.metamodel.examples.minifab.MiniFab")
 DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
 
 @JImplements(DispatchProvider)

@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.examples;
+package de.terministic.fabsim.metamodel.examples.minifab;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,7 +134,7 @@ public class MiniFab {
 	public FabModel createMiniFabModelWithExternalDispatch(final DispatchProvider provider,
 			final LocalLogWriter logWriter) {
 		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
-				provider);
+				provider, FLOW_FACTOR);
 		return createMiniFabModelWithDispatchRule(externalDispatchRule, logWriter);
 	}
 
@@ -157,7 +157,7 @@ public class MiniFab {
 		if (dispatchRule instanceof LoggingDispatchRule) {
 			effectiveRule = dispatchRule;
 		} else if (logWriter != null) {
-			effectiveRule = new LoggingDispatchRule(dispatchRule, logWriter);
+			effectiveRule = new LoggingDispatchRule(dispatchRule, logWriter, FLOW_FACTOR);
 		} else {
 			effectiveRule = dispatchRule;
 		}

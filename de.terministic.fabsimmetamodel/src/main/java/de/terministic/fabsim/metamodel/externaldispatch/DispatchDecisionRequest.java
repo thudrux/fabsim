@@ -16,7 +16,6 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
-import de.terministic.fabsim.metamodel.examples.MiniFab;
 
 public final class DispatchDecisionRequest {
 
@@ -24,25 +23,39 @@ public final class DispatchDecisionRequest {
 
 	private final FabStateSnapshot fabState;
 	private final List<FlowItemQueuedWithIDSnapshot> candidates;
+	private final double projectedCycleTimeFactor;
 
 	private DispatchDecisionRequest(final FabStateSnapshot fabState,
-			final List<FlowItemQueuedWithIDSnapshot> candidates) {
+			final List<FlowItemQueuedWithIDSnapshot> candidates, final double projectedCycleTimeFactor) {
 		this.fabState = fabState;
 		this.candidates = candidates;
+		this.projectedCycleTimeFactor = projectedCycleTimeFactor;
 	}
 
 	public static DispatchDecisionRequest capture(final FabModel model, final AbstractToolGroup toolGroup,
-			final AbstractTool tool, final Collection<AbstractFlowItem> candidates) {
+			final AbstractTool tool, final Collection<AbstractFlowItem> candidates,
+			final double projectedCycleTimeFactor) {
+		validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 		final long simulationTime = model == null || model.getSimulationEngine() == null ? 0L
 				: model.getSimulationEngine().getTime();
-		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime);
+		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime,
+				projectedCycleTimeFactor);
 		final List<FlowItemQueuedWithIDSnapshot> candidateSnapshots = new ArrayList<>();
 		if (candidates != null) {
 			for (final AbstractFlowItem item : candidates) {
-				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime));
+				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime,
+						projectedCycleTimeFactor));
 			}
 		}
-		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots));
+		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots),
+				projectedCycleTimeFactor);
+	}
+
+	public static void validateProjectedCycleTimeFactor(final double projectedCycleTimeFactor) {
+		if (Double.isNaN(projectedCycleTimeFactor) || Double.isInfinite(projectedCycleTimeFactor)
+				|| projectedCycleTimeFactor <= 0.0d) {
+			throw new IllegalArgumentException("projectedCycleTimeFactor must be a positive finite value");
+		}
 	}
 
 	public FabStateSnapshot getFabState() {
@@ -55,6 +68,10 @@ public final class DispatchDecisionRequest {
 
 	public long getSimulationTime() {
 		return this.fabState == null ? 0L : this.fabState.getSimulationTime();
+	}
+
+	public double getProjectedCycleTimeFactor() {
+		return this.projectedCycleTimeFactor;
 	}
 
 	public static final class FabStateSnapshot {
@@ -70,7 +87,8 @@ public final class DispatchDecisionRequest {
 		}
 
 		public static FabStateSnapshot capture(final FabModel model, final AbstractToolGroup selectedToolGroup,
-				final long currentTime) {
+				final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 			final List<ToolGroupSnapshot> toolGroups = new ArrayList<>();
 			long totalProjectedTardinessMillis = 0L;
 			long workInProgress = 0L;
@@ -79,7 +97,7 @@ public final class DispatchDecisionRequest {
 					final boolean waitingForDispatch = selectedToolGroup != null
 							&& groupBase.getId() == selectedToolGroup.getId();
 					final ToolGroupSnapshot toolGroup = ToolGroupSnapshot.capture(groupBase, waitingForDispatch,
-							currentTime);
+							currentTime, projectedCycleTimeFactor);
 					toolGroups.add(toolGroup);
 					totalProjectedTardinessMillis += toolGroup.totalProjectedTardiness;
 					workInProgress += toolGroup.workInProgress;
@@ -144,7 +162,8 @@ public final class DispatchDecisionRequest {
 		}
 
 		public static ToolGroupSnapshot capture(final AbstractToolGroup toolGroupBase,
-				final boolean waitingForDispatch, final long currentTime) {
+				final boolean waitingForDispatch, final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 			final ToolGroup toolGroup = (ToolGroup) toolGroupBase;
 			final List<ToolSnapshot> tools = new ArrayList<>();
 			for (final AbstractTool tool : toolGroup.getTools().values()) {
@@ -152,7 +171,8 @@ public final class DispatchDecisionRequest {
 			}
 			final List<FlowItemQueuedSnapshot> queuedItems = new ArrayList<>();
 			for (final AbstractFlowItem item : toolGroup.getQueue()) {
-				queuedItems.add(FlowItemQueuedSnapshot.capture(item, toolGroup, currentTime));
+				queuedItems.add(FlowItemQueuedSnapshot.capture(item, toolGroup, currentTime,
+						projectedCycleTimeFactor));
 			}
 			final List<FlowItemInProcessSnapshot> inProcessItems = new ArrayList<>();
 			final Map<AbstractTool, AbstractFlowItem> itemByTool = new LinkedHashMap<>();
@@ -162,15 +182,18 @@ public final class DispatchDecisionRequest {
 			for (final AbstractTool tool : toolGroup.getTools().values()) {
 				final AbstractFlowItem item = itemByTool.get(tool);
 				if (item != null) {
-					inProcessItems.add(FlowItemInProcessSnapshot.capture(item, tool, currentTime));
+					inProcessItems.add(FlowItemInProcessSnapshot.capture(item, tool, currentTime,
+							projectedCycleTimeFactor));
 				}
 			}
 			long totalProjectedTardiness = 0L;
 			for (final AbstractFlowItem item : toolGroup.getQueue()) {
-				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime);
+				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime,
+						projectedCycleTimeFactor);
 			}
 			for (final AbstractFlowItem item : itemByTool.values()) {
-				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime);
+				totalProjectedTardiness += calculateWaferLevelProjectedTardiness(item, currentTime,
+						projectedCycleTimeFactor);
 			}
 			long workInProgress = 0L;
 			for (final AbstractFlowItem item : toolGroup.getQueue()) {
@@ -269,21 +292,28 @@ public final class DispatchDecisionRequest {
 		}
 
 		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final ToolGroup toolGroup,
-				final long currentTime) {
-			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+				final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item, projectedCycleTimeFactor),
+					calculateProcessingTime(item),
 					calculateExpectedSetupTime(toolGroup, item), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
 		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-				final long currentTime) {
-			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item),
+				final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item, projectedCycleTimeFactor),
+					calculateProcessingTime(item),
 					calculateExpectedSetupTime(tool, item), calculateTimeSinceArrival(item, currentTime),
 					calculatePriority(item), calculateLateness(item, currentTime), calculateRecipe(item));
 		}
 
-		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final long currentTime) {
-			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item), calculateProcessingTime(item), 0L,
+		public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final long currentTime,
+				final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			return new FlowItemQueuedSnapshot(calculateRemainingCycleTime(item, projectedCycleTimeFactor),
+					calculateProcessingTime(item), 0L,
 					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
 					calculateLateness(item, currentTime), calculateRecipe(item));
 		}
@@ -317,10 +347,12 @@ public final class DispatchDecisionRequest {
 		}
 
 		public static FlowItemInProcessSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-				final long currentTime) {
+				final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 			final long remainingProcessTime = tool.getToolStateMachine().getRemainingProcessTime(tool);
 			final long processingTimeLeft = Math.max(0L, remainingProcessTime);
-			return new FlowItemInProcessSnapshot(calculateRemainingCycleTime(item, processingTimeLeft),
+			return new FlowItemInProcessSnapshot(calculateRemainingCycleTime(item, processingTimeLeft,
+					projectedCycleTimeFactor),
 					processingTimeLeft, calculatePriority(item), calculateLateness(item, currentTime));
 		}
 
@@ -345,8 +377,10 @@ public final class DispatchDecisionRequest {
 		}
 
 		public static FlowItemQueuedWithIDSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-				final long currentTime) {
-			return new FlowItemQueuedWithIDSnapshot(item.getId(), calculateRemainingCycleTime(item),
+				final long currentTime, final double projectedCycleTimeFactor) {
+			validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			return new FlowItemQueuedWithIDSnapshot(item.getId(), calculateRemainingCycleTime(item,
+					projectedCycleTimeFactor),
 					calculateProcessingTime(item), calculateExpectedSetupTime(tool, item),
 					calculateTimeSinceArrival(item, currentTime), calculatePriority(item),
 					calculateLateness(item, currentTime), calculateRecipe(item));
@@ -368,7 +402,8 @@ public final class DispatchDecisionRequest {
 		return Math.max(0L, item.getRecipe().get(currentStepNumber).getAvgDuration());
 	}
 
-	private static long calculateRemainingCycleTime(final AbstractFlowItem item) {
+	private static long calculateRemainingCycleTime(final AbstractFlowItem item,
+			final double projectedCycleTimeFactor) {
 		if (item == null || item.getRecipe() == null) {
 			return 0L;
 		}
@@ -379,7 +414,7 @@ public final class DispatchDecisionRequest {
 			}
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
-				totalRemainingCycleTime += calculateRemainingCycleTime(child);
+				totalRemainingCycleTime += calculateRemainingCycleTime(child, projectedCycleTimeFactor);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -391,10 +426,11 @@ public final class DispatchDecisionRequest {
 		for (int i = currentStepNumber; i < item.getRecipe().size(); i++) {
 			remainingProcessTime += calculateStepCycleTime(item, item.getRecipe().get(i));
 		}
-		return Math.round(remainingProcessTime * MiniFab.FLOW_FACTOR);
+		return Math.round(remainingProcessTime * projectedCycleTimeFactor);
 	}
 
-	private static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft) {
+	private static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft,
+			final double projectedCycleTimeFactor) {
 		if (item == null || item.getRecipe() == null) {
 			return Math.max(0L, processingTimeLeft);
 		}
@@ -405,7 +441,8 @@ public final class DispatchDecisionRequest {
 			}
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
-				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft);
+				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft,
+						projectedCycleTimeFactor);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -417,10 +454,11 @@ public final class DispatchDecisionRequest {
 		for (int i = currentStepNumber + 1; i < item.getRecipe().size(); i++) {
 			futureProcessTime += calculateStepCycleTime(item, item.getRecipe().get(i));
 		}
-		return Math.round((processingTimeLeft + futureProcessTime) * MiniFab.FLOW_FACTOR);
+		return Math.round((processingTimeLeft + futureProcessTime) * projectedCycleTimeFactor);
 	}
 
-	private static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime) {
+	private static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime,
+			final double projectedCycleTimeFactor) {
 		if (item == null) {
 			return 0L;
 		}
@@ -431,11 +469,12 @@ public final class DispatchDecisionRequest {
 			}
 			long total = 0L;
 			for (final AbstractFlowItem lot : batch.getItems()) {
-				total += calculateWaferLevelProjectedTardiness(lot, currentTime);
+				total += calculateWaferLevelProjectedTardiness(lot, currentTime, projectedCycleTimeFactor);
 			}
 			return total;
 		}
-		return item.getSize() * (calculateLateness(item, currentTime) + calculateRemainingCycleTime(item));
+		return item.getSize() * (calculateLateness(item, currentTime)
+				+ calculateRemainingCycleTime(item, projectedCycleTimeFactor));
 	}
 
 	private static long calculateWaferLevelWorkInProgress(final AbstractFlowItem item) {
@@ -559,4 +598,5 @@ public final class DispatchDecisionRequest {
 		}
 		return 0L;
 	}
+
 }

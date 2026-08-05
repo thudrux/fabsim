@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.examples;
+package de.terministic.fabsim.metamodel.examples.minifab;
 
 public final class MiniFabRunResult {
 

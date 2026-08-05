@@ -3,6 +3,8 @@ package de.terministic.fabsim.metamodel.examples;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
@@ -11,11 +13,16 @@ import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
 import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
+import de.terministic.fabsim.metamodel.examples.minifab.MiniFab;
+import de.terministic.fabsim.metamodel.examples.minifab.MiniFabRunResult;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
-public final class MiniFabDockerApp {
+public final class FabDockerApp {
+
+	private static final List<FabImplementation> FAB_IMPLEMENTATIONS = Arrays.asList(new MiniFabImplementation());
 
 	private static final class CliConfig {
+		private String fabName;
 		private long simulationTimeHours = -1L;
 		private long warmupTimeHours = 0L;
 		private int runs = 1;
@@ -24,8 +31,31 @@ public final class MiniFabDockerApp {
 		private boolean help;
 	}
 
+	private interface FabImplementation {
+		String getName();
+
+		void run(CliConfig config, AbstractDispatchRule dispatchRule, LocalLogWriter logWriter);
+	}
+
+	private static final class MiniFabImplementation implements FabImplementation {
+
+		@Override
+		public String getName() {
+			return "minifab";
+		}
+
+		@Override
+		public void run(final CliConfig config, final AbstractDispatchRule dispatchRule,
+				final LocalLogWriter logWriter) {
+			final MiniFab miniFab = new MiniFab();
+			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
+					dispatchRule, config.simulationTimeHours, config.runs, config.warmupTimeHours, logWriter);
+			printMiniFabResult(result);
+		}
+	}
+
 	public static void main(final String[] args) {
-		final MiniFabDockerApp app = new MiniFabDockerApp();
+		final FabDockerApp app = new FabDockerApp();
 		try {
 			final int exitCode = app.run(args);
 			System.exit(exitCode);
@@ -34,7 +64,7 @@ public final class MiniFabDockerApp {
 			printUsage();
 			System.exit(2);
 		} catch (final Exception ex) {
-			System.err.println("MiniFab execution failed: " + ex.getMessage());
+			System.err.println("Fab execution failed: " + ex.getMessage());
 			ex.printStackTrace(System.err);
 			System.exit(1);
 		}
@@ -47,13 +77,9 @@ public final class MiniFabDockerApp {
 			return 0;
 		}
 
-		final MiniFab miniFab = new MiniFab();
 		final LocalLogWriter logWriter = config.logFile == null ? null : new LocalLogWriter(config.logFile);
 		try {
-			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
-					createLocalDispatchRule(config.dispatchRuleName), config.simulationTimeHours, config.runs,
-					config.warmupTimeHours, logWriter);
-			printResult(result);
+			runFab(config, logWriter);
 			if (config.logFile != null) {
 				System.out.println("Dispatch log written to " + config.logFile + " (JSONL)");
 			}
@@ -63,6 +89,20 @@ public final class MiniFabDockerApp {
 				logWriter.close();
 			}
 		}
+	}
+
+	private void runFab(final CliConfig config, final LocalLogWriter logWriter) {
+		final FabImplementation fabImplementation = findFabImplementation(config.fabName);
+		fabImplementation.run(config, createLocalDispatchRule(config.dispatchRuleName), logWriter);
+	}
+
+	private FabImplementation findFabImplementation(final String fabName) {
+		for (final FabImplementation fabImplementation : FAB_IMPLEMENTATIONS) {
+			if (fabImplementation.getName().equals(fabName)) {
+				return fabImplementation;
+			}
+		}
+		throw new IllegalArgumentException("Unsupported fab implementation: " + fabName);
 	}
 
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
@@ -99,6 +139,10 @@ public final class MiniFabDockerApp {
 			if (!arg.startsWith("--")) {
 				throw new IllegalArgumentException("Unexpected argument: " + arg);
 			}
+			if ("--fab".equals(arg)) {
+				config.fabName = normalizeFabName(nextValue(args, ++i, arg));
+				continue;
+			}
 			if ("--simulation-time".equals(arg)) {
 				config.simulationTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
@@ -127,6 +171,12 @@ public final class MiniFabDockerApp {
 	}
 
 	private void validate(final CliConfig config) {
+		if (config.fabName == null) {
+			throw new IllegalArgumentException("--fab " + supportedFabNames() + " is required");
+		}
+		if (!isSupportedFab(config.fabName)) {
+			throw new IllegalArgumentException("--fab must be one of: " + supportedFabNames());
+		}
 		if (config.simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("--simulation-time must be a positive number of hours");
 		}
@@ -145,6 +195,13 @@ public final class MiniFabDockerApp {
 		if (config.runs > 1 && config.logFile != null) {
 			throw new IllegalArgumentException("--log-file is only supported when --runs is 1");
 		}
+	}
+
+	private String normalizeFabName(final String fabName) {
+		if (fabName == null || fabName.trim().isEmpty()) {
+			throw new IllegalArgumentException("--fab requires a value");
+		}
+		return fabName.trim().toLowerCase(Locale.ROOT);
 	}
 
 	private long parseRequiredLong(final String optionName, final String value) {
@@ -171,7 +228,27 @@ public final class MiniFabDockerApp {
 		}
 	}
 
-	private void printResult(final MiniFabRunResult result) {
+	private boolean isSupportedFab(final String fabName) {
+		for (final FabImplementation fabImplementation : FAB_IMPLEMENTATIONS) {
+			if (fabImplementation.getName().equals(fabName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String supportedFabNames() {
+		final StringBuilder names = new StringBuilder();
+		for (final FabImplementation fabImplementation : FAB_IMPLEMENTATIONS) {
+			if (names.length() > 0) {
+				names.append("|");
+			}
+			names.append(fabImplementation.getName());
+		}
+		return names.toString();
+	}
+
+	private static void printMiniFabResult(final MiniFabRunResult result) {
 		if (result.getRuns() == 1L) {
 			System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
 			System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));
@@ -215,8 +292,10 @@ public final class MiniFabDockerApp {
 	}
 
 	private static void printUsage() {
+		final String supportedFabNames = new FabDockerApp().supportedFabNames();
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar fabsim.jar --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
+				"  java -jar fabsim.jar --fab " + supportedFabNames
+						+ " --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
 	}
 }
