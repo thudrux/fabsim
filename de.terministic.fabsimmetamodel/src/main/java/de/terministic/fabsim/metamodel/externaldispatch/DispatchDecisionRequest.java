@@ -365,7 +365,7 @@ public final class DispatchDecisionRequest {
 		if (currentStepNumber < 0 || currentStepNumber >= item.getRecipe().size()) {
 			return 0L;
 		}
-		return Math.max(0L, item.getRecipe().get(currentStepNumber).getDuration(item));
+		return Math.max(0L, item.getRecipe().get(currentStepNumber).getAvgDuration());
 	}
 
 	private static long calculateRemainingCycleTime(final AbstractFlowItem item) {
@@ -457,7 +457,7 @@ public final class DispatchDecisionRequest {
 	}
 
 	private static long calculateStepCycleTime(final AbstractFlowItem item, final ProcessStep step) {
-		return Math.max(0L, step.getLoadTime()) + Math.max(0L, step.getDuration(item))
+		return Math.max(0L, step.getLoadTime()) + Math.max(0L, step.getAvgDuration())
 				+ Math.max(0L, step.getUnloadTime());
 	}
 

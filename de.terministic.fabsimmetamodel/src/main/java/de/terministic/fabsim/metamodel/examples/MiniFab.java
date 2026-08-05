@@ -8,6 +8,7 @@ import java.util.Map;
 
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ExponentialDuration;
+import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
 import de.terministic.fabsim.metamodel.components.LotSource;
@@ -75,6 +76,7 @@ public class MiniFab {
 	private static final long TW_INTERARRIVAL_TIME = 4567 * MINUTE;
 
 	public static final double FLOW_FACTOR = 2.5;
+	private static final double PROCESS_TIME_VARIATION = 0.15;
 
 	private static final ProductProcessingTimes PA_PROCESS_TIMES = new ProductProcessingTimes(
 			225L * MINUTE,
@@ -560,24 +562,30 @@ public class MiniFab {
 		final SetupState s6Setup = getStation3SetupState(productName, "S6");
 
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S1", this.station1, null, STATION1_LOAD, processingTimes.s1, STATION1_UNLOAD,
+				"S1", this.station1, null, STATION1_LOAD, createProcessingTime(model, processingTimes.s1),
+				STATION1_UNLOAD,
 				this.station1Step1Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S2", this.station2, null, STATION2_LOAD, processingTimes.s2, STATION2_UNLOAD, null, null,
+				"S2", this.station2, null, STATION2_LOAD, createProcessingTime(model, processingTimes.s2),
+				STATION2_UNLOAD, null, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S3", this.station3, null, STATION3_LOAD, processingTimes.s3, STATION3_UNLOAD, null, s3Setup,
+				"S3", this.station3, null, STATION3_LOAD, createProcessingTime(model, processingTimes.s3),
+				STATION3_UNLOAD, null, s3Setup,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S4", this.station2, null, STATION2_LOAD, processingTimes.s4, STATION2_UNLOAD, null, null,
+				"S4", this.station2, null, STATION2_LOAD, createProcessingTime(model, processingTimes.s4),
+				STATION2_UNLOAD, null, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S5", this.station1, null, STATION1_LOAD, processingTimes.s5, STATION1_UNLOAD,
+				"S5", this.station1, null, STATION1_LOAD, createProcessingTime(model, processingTimes.s5),
+				STATION1_UNLOAD,
 				this.station1Step5Batch, null,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe(
-				"S6", this.station3, null, STATION3_LOAD, processingTimes.s6, STATION3_UNLOAD, null, s6Setup,
+				"S6", this.station3, null, STATION3_LOAD, createProcessingTime(model, processingTimes.s6),
+				STATION3_UNLOAD, null, s6Setup,
 				ProcessType.LOT, recipe);
 		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Sink", sink, 0L, ProcessType.LOT, recipe);
 
@@ -590,6 +598,12 @@ public class MiniFab {
 		source.setDefaultPriority(priority);
 		source.setDueDateLeadTime(dueDateLeadTime);
 		source.setAllowSplit(false);
+	}
+
+	private static IValue createProcessingTime(final FabModel model, final long meanProcessingTime) {
+		final long variation = Math.round(meanProcessingTime * PROCESS_TIME_VARIATION);
+		return model.getValueObjectFactory().createUniformValueObject(
+				meanProcessingTime - variation, meanProcessingTime + variation);
 	}
 
 	private static final class ProductProcessingTimes {
