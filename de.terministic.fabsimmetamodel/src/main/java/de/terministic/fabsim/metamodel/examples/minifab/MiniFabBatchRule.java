@@ -13,13 +13,6 @@ import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 
 public class MiniFabBatchRule extends AbstractBatchRule {
 
-	private static final int LOTS_PER_BATCH = 3;
-	private static final String PRODUCT_PA = "Pa";
-	private static final String PRODUCT_PB = "Pb";
-	private static final String PRODUCT_TW = "TW";
-	private static final String STEP_S1 = "S1";
-	private static final String STEP_S5 = "S5";
-
 	public MiniFabBatchRule(final FabModel model) {
 		super(model, "MiniFabBatchRule");
 	}
@@ -45,7 +38,7 @@ public class MiniFabBatchRule extends AbstractBatchRule {
 	}
 
 	private Batch createFirstValidBatch(final List<AbstractFlowItem> items) {
-		if (items == null || items.size() < LOTS_PER_BATCH) {
+		if (items == null || items.size() < MiniFab.LOTS_PER_STATION1_BATCH) {
 			return null;
 		}
 		for (int first = 0; first < items.size() - 2; first++) {
@@ -65,11 +58,11 @@ public class MiniFabBatchRule extends AbstractBatchRule {
 	}
 
 	private boolean isValidMiniFabBatch(final List<AbstractFlowItem> items) {
-		if (items.size() != LOTS_PER_BATCH) {
+		if (items.size() != MiniFab.LOTS_PER_STATION1_BATCH) {
 			return false;
 		}
 		final String stepName = getStepName(items.get(0));
-		if (!STEP_S1.equals(stepName) && !STEP_S5.equals(stepName)) {
+		if (!MiniFab.STEP_S1.equals(stepName) && !MiniFab.STEP_S5.equals(stepName)) {
 			return false;
 		}
 		int twCount = 0;
@@ -81,20 +74,20 @@ public class MiniFabBatchRule extends AbstractBatchRule {
 			}
 			final String productName = getProductName(item);
 			switch (productName) {
-			case PRODUCT_TW:
+			case MiniFab.PRODUCT_TW:
 				twCount++;
 				break;
-			case PRODUCT_PA:
+			case MiniFab.PRODUCT_PA:
 				containsPa = true;
 				break;
-			case PRODUCT_PB:
+			case MiniFab.PRODUCT_PB:
 				containsPb = true;
 				break;
 			default:
 				break;
 			}
 		}
-		if (STEP_S1.equals(stepName)) {
+		if (MiniFab.STEP_S1.equals(stepName)) {
 			return twCount <= 1;
 		}
 		return !(containsPa && containsPb);

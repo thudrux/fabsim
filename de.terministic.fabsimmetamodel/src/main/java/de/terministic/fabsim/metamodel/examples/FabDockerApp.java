@@ -14,7 +14,7 @@ import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
 import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
 import de.terministic.fabsim.metamodel.examples.minifab.MiniFab;
-import de.terministic.fabsim.metamodel.examples.minifab.MiniFabRunResult;
+import de.terministic.fabsim.metamodel.examples.results.RunResult;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
 public final class FabDockerApp {
@@ -48,9 +48,9 @@ public final class FabDockerApp {
 		public void run(final CliConfig config, final AbstractDispatchRule dispatchRule,
 				final LocalLogWriter logWriter) {
 			final MiniFab miniFab = new MiniFab();
-			final MiniFabRunResult result = miniFab.runMiniFabWithLocalDispatch(
+			final RunResult result = miniFab.runMiniFabWithLocalDispatch(
 					dispatchRule, config.simulationTimeHours, config.runs, config.warmupTimeHours, logWriter);
-			printMiniFabResult(result);
+			printFabResult(result);
 		}
 	}
 
@@ -248,7 +248,7 @@ public final class FabDockerApp {
 		return names.toString();
 	}
 
-	private static void printMiniFabResult(final MiniFabRunResult result) {
+	private static void printFabResult(final RunResult result) {
 		if (result.getRuns() == 1L) {
 			System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
 			System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));

@@ -1,6 +1,6 @@
-package de.terministic.fabsim.metamodel.examples.minifab;
+package de.terministic.fabsim.metamodel.examples.results;
 
-public final class MiniFabRunResult {
+public final class RunResult {
 
 	private static final double HOURS_PER_DAY = 24.0d;
 
@@ -17,14 +17,14 @@ public final class MiniFabRunResult {
 	private final double flowFactorMean;
 	private final double flowFactorStdDev;
 
-	public MiniFabRunResult(final long simulationTimeHours,
+	public RunResult(final long simulationTimeHours,
 			final long completedWafers, final long tardyWafers,
 			final double tardinessPerWaferMinutes, final double flowFactorMean) {
 		this(simulationTimeHours, simulationTimeHours, completedWafers, tardyWafers, tardinessPerWaferMinutes,
 				flowFactorMean);
 	}
 
-	public MiniFabRunResult(final long simulationTimeHours, final long measurementTimeHours,
+	public RunResult(final long simulationTimeHours, final long measurementTimeHours,
 			final long completedWafers, final long tardyWafers,
 			final double tardinessPerWaferMinutes, final double flowFactorMean) {
 		this(1L, simulationTimeHours,
@@ -33,7 +33,7 @@ public final class MiniFabRunResult {
 				flowFactorMean, 0.0d);
 	}
 
-	public MiniFabRunResult(final long runs, final double simulationTimeHoursMean,
+	public RunResult(final long runs, final double simulationTimeHoursMean,
 			final double completedWafersPerDayMean,
 			final double completedWafersPerDayStdDev, final double tardinessPerWaferMinutesMean,
 			final double tardinessPerWaferMinutesStdDev, final double completedWafersMean,
