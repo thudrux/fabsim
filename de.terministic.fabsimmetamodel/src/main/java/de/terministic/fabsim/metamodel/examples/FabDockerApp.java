@@ -47,9 +47,9 @@ public final class FabDockerApp {
 		@Override
 		public void run(final CliConfig config, final AbstractDispatchRule dispatchRule,
 				final LocalLogWriter logWriter) {
-			final MiniFab miniFab = new MiniFab();
-			final RunResult result = miniFab.runMiniFabWithLocalDispatch(
-					dispatchRule, config.simulationTimeHours, config.runs, config.warmupTimeHours, logWriter);
+			final MiniFab miniFab = new MiniFab(dispatchRule, logWriter);
+			final RunResult result = miniFab.run(
+					config.simulationTimeHours, config.runs, config.warmupTimeHours);
 			printFabResult(result);
 		}
 	}

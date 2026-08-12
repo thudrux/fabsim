@@ -21,7 +21,6 @@ import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.examples.results.RunResult;
 import de.terministic.fabsim.metamodel.examples.results.RunResultAggregator;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
@@ -89,6 +88,16 @@ public class MiniFab {
 	private BatchDetails station1Step1Batch;
 	private BatchDetails station1Step5Batch;
 	private Map<String, SetupState> station3SetupStates;
+	private FabModel model;
+	private DispatchMode dispatchMode;
+	private AbstractDispatchRule dispatchRule;
+	private DispatchProvider dispatchProvider;
+	private LocalLogWriter logWriter;
+
+	private enum DispatchMode {
+		LOCAL,
+		EXTERNAL
+	}
 
 	static String recipeName(final String productName) {
 		return productName + "Recipe";
@@ -102,178 +111,76 @@ public class MiniFab {
 		return productName + SETUP_SEPARATOR + stepName;
 	}
 
-	// ---------------------------------------------------------------------
-	// Public model factory API
-	// ---------------------------------------------------------------------
-
-	public FabModel createMiniFabModel() {
-		return createMiniFabModelWithLocalDispatch(new FIFO());
+	public MiniFab(final DispatchProvider provider) {
+		if (provider == null) {
+			throw new IllegalArgumentException("provider must not be null");
+		}
+		this.dispatchMode = DispatchMode.EXTERNAL;
+		this.dispatchProvider = provider;
+		this.dispatchRule = null;
+		this.logWriter = null;
+		this.model = createFabModel();
 	}
 
-	public FabModel createMiniFabModelWithExternalDispatch(final DispatchProvider provider) {
-		return createMiniFabModelWithExternalDispatch(provider, null);
-	}
-
-	public FabModel createMiniFabModelWithExternalDispatch(final DispatchProvider provider,
-			final LocalLogWriter logWriter) {
-		final ExternalDispatchRule externalDispatchRule = new ExternalDispatchRule("MiniFabExternalDispatch",
-				provider, FLOW_FACTOR);
-		return createMiniFabModelWithDispatchRule(externalDispatchRule, logWriter);
-	}
-
-	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule) {
-		return createMiniFabModelWithDispatchRule(dispatchRule, null);
-	}
-
-	public FabModel createMiniFabModelWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final LocalLogWriter logWriter) {
-		return createMiniFabModelWithDispatchRule(dispatchRule, logWriter);
-	}
-
-	public FabModel createMiniFabModelWithDispatchRule(final AbstractDispatchRule dispatchRule,
+	public MiniFab(final AbstractDispatchRule dispatchRule,
 			final LocalLogWriter logWriter) {
 		if (dispatchRule == null) {
 			throw new IllegalArgumentException("dispatchRule must not be null");
 		}
-		FabModel model = new FabModel();
+		this.dispatchMode = DispatchMode.LOCAL;
+		this.dispatchRule = dispatchRule;
+		this.dispatchProvider = null;
+		this.logWriter = logWriter;
+		this.model = createFabModel();
+	}
+
+	private FabModel createFabModel() {
 		final AbstractDispatchRule effectiveRule;
-		if (dispatchRule instanceof LoggingDispatchRule) {
-			effectiveRule = dispatchRule;
-		} else if (logWriter != null) {
-			effectiveRule = new LoggingDispatchRule(dispatchRule, logWriter, FLOW_FACTOR);
-		} else {
-			effectiveRule = dispatchRule;
+		switch (this.dispatchMode) {
+			case EXTERNAL:
+				effectiveRule = new ExternalDispatchRule("MiniFabExternalDispatch",
+						this.dispatchProvider, FLOW_FACTOR);
+				break;
+			case LOCAL:
+				if (this.dispatchRule instanceof LoggingDispatchRule || this.logWriter == null) {
+					effectiveRule = this.dispatchRule;
+				} else {
+					effectiveRule = new LoggingDispatchRule(this.dispatchRule, this.logWriter, FLOW_FACTOR);
+				}
+				break;
+			default:
+				throw new IllegalStateException("MiniFab must be built before creating a model");
 		}
-		return createMiniFabModel(model, effectiveRule);
-	}
-
-	// ---------------------------------------------------------------------
-	// Public simulation API
-	// ---------------------------------------------------------------------
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 0L, null);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, 0L, logWriter);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, 0L, null);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, 0L, logWriter);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final long warmupTimeHours) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, warmupTimeHours, null);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final long warmupTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, 1, warmupTimeHours, logWriter);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs, final long warmupTimeHours) {
-		return runMiniFabWithLocalDispatch(dispatchRule, simulationTimeHours, runs, warmupTimeHours, null);
-	}
-
-	public RunResult runMiniFabWithLocalDispatch(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs, final long warmupTimeHours,
-			final LocalLogWriter logWriter) {
-		return runMiniFabWithDispatchRule(dispatchRule, simulationTimeHours, runs, warmupTimeHours, logWriter);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, 0L, null);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, 0L, logWriter);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final int runs) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, 0L, null);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final int runs, final LocalLogWriter logWriter) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, 0L, logWriter);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final long warmupTimeHours) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, warmupTimeHours, null);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final long warmupTimeHours, final LocalLogWriter logWriter) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, 1, warmupTimeHours, logWriter);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final int runs, final long warmupTimeHours) {
-		return runMiniFabWithExternalDispatch(provider, simulationTimeHours, runs, warmupTimeHours, null);
-	}
-
-	public RunResult runMiniFabWithExternalDispatch(final DispatchProvider provider,
-			final long simulationTimeHours, final int runs, final long warmupTimeHours,
-			final LocalLogWriter logWriter) {
-		if (runs <= 0) {
-			throw new IllegalArgumentException("runs must be a positive number");
-		}
-		if (runs > 1 && logWriter != null) {
-			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
-		}
-		validateTiming(simulationTimeHours, warmupTimeHours);
-
-		final List<RunResult> runResults = new ArrayList<>(runs);
-		for (int run = 0; run < runs; run++) {
-			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
-			final FabModel model = createMiniFabModelWithExternalDispatch(provider, effectiveLogWriter);
-			runResults.add(runSimulation(model, simulationTimeHours, warmupTimeHours));
-		}
-		return RunResultAggregator.aggregate(runs, simulationTimeHours, runResults);
-	}
-
-	// ---------------------------------------------------------------------
-	// Internal simulation orchestration
-	// ---------------------------------------------------------------------
-
-	private RunResult runMiniFabWithDispatchRule(final AbstractDispatchRule dispatchRule,
-			final long simulationTimeHours, final int runs, final long warmupTimeHours,
-			final LocalLogWriter logWriter) {
-		if (runs <= 0) {
-			throw new IllegalArgumentException("runs must be a positive number");
-		}
-		if (runs > 1 && (logWriter != null || dispatchRule instanceof LoggingDispatchRule)) {
-			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
-		}
-		validateTiming(simulationTimeHours, warmupTimeHours);
-
-		final List<RunResult> runResults = new ArrayList<>(runs);
-		for (int run = 0; run < runs; run++) {
-			final LocalLogWriter effectiveLogWriter = runs == 1 ? logWriter : null;
-			final FabModel model = createMiniFabModelWithDispatchRule(dispatchRule, effectiveLogWriter);
-			runResults.add(runSimulation(model, simulationTimeHours, warmupTimeHours));
-		}
-		return RunResultAggregator.aggregate(runs, simulationTimeHours, runResults);
+		return assembleMiniFabModel(new FabModel(), effectiveRule);
 	}
 
 	// ---------------------------------------------------------------------
 	// Simulation execution
 	// ---------------------------------------------------------------------
+
+	public RunResult run(final long simulationTimeHours, final int runs, final long warmupTimeHours) {
+		if (runs <= 0) {
+			throw new IllegalArgumentException("runs must be a positive number");
+		}
+		if (this.model == null) {
+			throw new IllegalStateException("MiniFab must be built before running the simulation");
+		}
+		if (runs > 1 && (this.logWriter != null || this.dispatchRule instanceof LoggingDispatchRule)) {
+			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
+		}
+		validateTiming(simulationTimeHours, warmupTimeHours);
+
+		final List<RunResult> runResults = new ArrayList<>(runs);
+		if (runs == 1) {
+			runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
+		} else {
+			for (int run = 0; run < runs; run++) {
+				this.model = createFabModel();
+				runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
+			}
+		}
+		return RunResultAggregator.aggregate(runs, simulationTimeHours, runResults);
+	}
 
 	private RunResult runSimulation(final FabModel model, final long simulationTimeHours,
 			final long warmupTimeHours) {
@@ -309,7 +216,7 @@ public class MiniFab {
 	// Model assembly
 	// ---------------------------------------------------------------------
 
-	private FabModel createMiniFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
+	private FabModel assembleMiniFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
 		final Sink sink = (Sink) model.getSimComponentFactory().createSink(STEP_SINK);
 
 		this.station1 = createStation1(model);

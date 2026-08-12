@@ -184,13 +184,12 @@ class Provider:
         return DispatchDecisionResponse.of(selected)
 
 provider = Provider()
-mini_fab = MiniFab()
+mini_fab = MiniFab(provider)
 simulation_time_hours = 168
 warmup_time_hours = 24
 run_count = 100
 
-result = mini_fab.runMiniFabWithExternalDispatch(
-    provider,
+result = mini_fab.run(
     simulation_time_hours,
     run_count,
     warmup_time_hours,
