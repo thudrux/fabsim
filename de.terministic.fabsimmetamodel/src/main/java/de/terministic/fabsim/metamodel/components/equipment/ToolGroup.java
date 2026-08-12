@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.metamodel.components.Lot;
-import de.terministic.fabsim.metamodel.components.ToolAndItem;
+import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
+import de.terministic.fabsim.metamodel.components.Lot;
+import de.terministic.fabsim.metamodel.components.ToolAndItem;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -232,16 +232,6 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 	 */
 	public void setStartedTools(final List<Tool> tools) {
 		this.busyTools.addAll(tools);
-	}
-
-	public void scrapFlowItem(final AbstractFlowItem flowItem, final AbstractResource resource) {
-		if (flowItem == null) {
-			return;
-		}
-		this.logger.trace("Scrapping flow item {} on {}", flowItem, resource);
-		flowItem.getStatistics().put("scrap_time", getTime());
-		flowItem.getStatistics().put("scrap_step", (long) flowItem.getCurrentStepNumber());
-		this.inProcessMap.remove(flowItem);
 	}
 
 	/*

@@ -77,13 +77,9 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 
 		load.setBreakdownToolState(ud);
 		load.setProcessingToolState(pr);
-		load.setScrapRecoveryToolState(sb);
 
 		unload.setStandbyToolState(sb);
 		unload.setBreakdownToolState(ud);
-		unload.setScrapRecoveryToolState(sb);
-
-		pr.setScrapRecoveryToolState(sb);
 
 		this.initialState = sb;
 
@@ -199,7 +195,7 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		final BreakdownToolState newState = (BreakdownToolState) currentState.onBreakdownTriggered(tool,
 				event.getBreakdown());
 		if (newState != null) {
-			newState.setPreviousState(tool, currentState.getStateAfterBreakdownFinished(tool));
+			newState.setPreviousState(tool, currentState);
 		}
 
 		this.logger.trace("[{}] new state is {}", tool.getTime(), newState);

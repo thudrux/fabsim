@@ -3,10 +3,10 @@ package de.terministic.fabsim.metamodel.components.equipment.breakdown;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.core.AbstractModelElement;
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.duration.IValue;
+import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.components.InvalidDataException;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.BreakdownTriggeredEvent;
 
@@ -16,7 +16,6 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 	protected HashMap<AbstractResource, Long> nextOccuranceOnTool = new LinkedHashMap<>();
 	protected long defaultFirstOccurance = 0L;
 	protected FabModel model;
-	private boolean scrapsInProcessItems = false;
 
 	public AbstractBreakdown(FabModel model, final String name, final IValue timeToRepair) {
 		super(model);
@@ -51,11 +50,6 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public boolean scrapsInProcessItems() {
-		return this.scrapsInProcessItems;
 	}
 
 	public long getNextOccuranceOnTool(final AbstractResource tool) {
@@ -115,10 +109,6 @@ public abstract class AbstractBreakdown extends AbstractModelElement implements 
 			this.nextOccuranceOnTool.put(resource, firstOccurance);
 		} else
 			throw new InvalidDataException("Tool " + resource.getName() + " is not covered by " + this.getName());
-	}
-
-	public void setScrapsInProcessItems(final boolean scrapsInProcessItems) {
-		this.scrapsInProcessItems = scrapsInProcessItems;
 	}
 
 	@Override
