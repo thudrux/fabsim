@@ -6,7 +6,7 @@
   <a href="#repository-structure"><b>Repository Structure</b></a> ·
   <a href="#supported-benchmarks"><b>Supported Benchmarks</b></a> ·
   <a href="#installation-and-usage"><b>Installation & Usage</b></a> ·
-  <a href="#data-format"><b>Data Format</b></a> ·
+  <a href="#dispatch-log-format"><b>Dispatch Logs</b></a> ·
   <a href="#development"><b>Development</b></a>
 </p>
 
@@ -38,10 +38,9 @@ Benchmark implementations are located in
 
 Currently supported:
 
-- MiniFab: an implementation of the Intel five-machine, six-step benchmark used in
-  Ingy A. El-Khouly, Khaled S. El-Kilany, and Aziz E. El-Sayed,
-  ["Modelling and simulation of re-entrant flow shop scheduling: An application in semiconductor manufacturing"](https://doi.org/10.1109/ICCIE.2009.5223754),
-  2009 International Conference on Computers & Industrial Engineering, pp. 211-216.
+- MiniFab: an implementation of the Intel five-machine, six-step benchmark introduced in
+  James C. Spier and Karl G. Kempf,
+  ["Simulation of emergent behavior in manufacturing systems"](https://ieeexplore.ieee.org/document/484347).
 
 ## Installation and Usage
 
@@ -87,8 +86,8 @@ docker run --rm \
   --dispatch-rule fifo
 ```
 
-To write the dispatch log to disk in the format described in [Data Format](#data-format), mount a host
-directory and pass `--log-file`.
+To write the dispatch log to disk in the format described in
+[Dispatch Log Format](#dispatch-log-format), mount a host directory and pass `--log-file`.
 Logging is only supported for a single run:
 
 ```bash
@@ -152,8 +151,8 @@ This jar bundles the project classes and runtime dependencies needed by JPype.
 
 The Java side exposes a `DispatchProvider` interface that Python implements through JPype. Java passes a
 `DispatchDecisionRequest` containing `fab_state` and `candidates`, and Python returns a
-`DispatchDecisionResponse` with the selected flow item id. The request and response structures
-are described in [Data Format](#data-format).
+`DispatchDecisionResponse` with the selected flow item id. The request methods available inside
+`selectDispatchCandidate` are described in [Dispatch Request API](#dispatch-request-api).
 
 Example flow:
 
@@ -168,7 +167,7 @@ jar_dir = python_project_root / "libs"
 jpype.startJVM(
     jpype.getDefaultJVMPath(),
     "--enable-native-access=ALL-UNNAMED",
-classpath=[
+    classpath=[
         str(jar_dir / "fabsim-benchmarks.jar"),
     ],
 )
@@ -198,140 +197,122 @@ result = mini_fab.run(
 )
 
 completed_wafers_per_day_mean = result.getCompletedWafersPerDayMean()
-completed_wafers_per_day_std = result.getCompletedWafersPerDayStdDev()
-tardiness_per_wafer_mean = result.getTardinessPerWaferMinutesMean()
-tardiness_per_wafer_std = result.getTardinessPerWaferMinutesStdDev()
-completed_wafers_mean = result.getCompletedWafersMean()
-completed_wafers_std = result.getCompletedWafersStdDev()
-tardy_wafers_mean = result.getTardyWafersMean()
-tardy_wafers_std = result.getTardyWafersStdDev()
-flow_factor_mean = result.getFlowFactorMean()
-flow_factor_std = result.getFlowFactorStdDev()
 ```
 
-## Data Format
+All result methods available on `result` are listed in [Run Result Methods](#run-result-methods).
 
-The interface between fabsim and an external dispatch service follows the schema below. The same schema is
-also used for local JSONL dispatch logs. Each logged line represents one dispatch decision.
+## Dispatch Log Format
 
-*NOTE*: All time values are expressed in milliseconds unless stated otherwise.
+When `--log-file <path>` is passed to the Docker/CLI runner, `LocalLogWriter` writes dispatch decisions as
+JSONL. Each line is one complete JSON object for one dispatch decision.
 
-```proto
-syntax = "proto3";
-
-service DispatchDecisionService {
-  rpc SelectDispatchCandidate(DispatchDecisionRequest) returns (DispatchDecisionResponse);
-}
-
-message DispatchDecisionRequest {
-  FabStateSnapshot fab_state = 1;
-  repeated FlowItemQueuedWithIDSnapshot candidates = 2;
-}
-
-message DispatchDecisionResponse {
-  int64 selected_flow_item_id = 1;
-}
-
-message LocalDispatchLog {
-  repeated DispatchDecisionLogEntry dispatch_decisions = 1;
-}
-
-message DispatchDecisionLogEntry {
-  FabStateSnapshot fab_state = 1;
-  DispatchDecisionSnapshot dispatch_decision = 2;
-}
-
-message DispatchDecisionSnapshot {
-  FlowItemQueuedSnapshot chosen_flow_item = 1;
-}
-
-message FabStateSnapshot {
-  int64 simulation_time = 1;
-  repeated ToolGroupSnapshot tool_groups = 2;
-  CostSnapshot cost_snapshot = 3;
-}
-
-message CostSnapshot {
-  int64 total_projected_tardiness = 1;
-  int64 work_in_progress = 2;
-}
-
-message ToolGroupSnapshot {
-  string name = 1;
-  bool waiting_for_dispatch = 2;
-  repeated ToolSnapshot tools = 3;
-  repeated FlowItemQueuedSnapshot queued_items = 4;
-  repeated FlowItemInProcessSnapshot in_process_items = 5;
-}
-
-message ToolSnapshot {
-  int64 id = 1;
-  string current_tool_state = 2;
-}
-
-message FlowItemQueuedSnapshot {
-  int64 remaining_cycle_time = 1;
-  int64 processing_time = 2;
-  int64 expected_setup_time = 3;
-  int64 time_since_arrival = 4;
-  int32 priority = 5;
-  int64 lateness = 6;
-  string recipe = 7;
-}
-
-message FlowItemInProcessSnapshot {
-  int64 remaining_cycle_time = 1;
-  int64 processing_time_left = 2;
-  int32 priority = 3;
-  int64 lateness = 4;
-}
-
-message FlowItemQueuedWithIDSnapshot {
-  int64 id = 1;
-  int64 remaining_cycle_time = 2;
-  int64 processing_time = 3;
-  int64 expected_setup_time = 4;
-  int64 time_since_arrival = 5;
-  int32 priority = 6;
-  int64 lateness = 7;
-  string recipe = 8;
-}
-```
+All time values are in milliseconds unless stated otherwise.
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `DispatchDecisionRequest.fab_state` | `FabStateSnapshot` | Current fab state at the dispatch decision point. |
-| `DispatchDecisionRequest.candidates` | `FlowItemQueuedWithIDSnapshot[]` | Candidate queued flow items from which the dispatch rule must choose exactly one. |
-| `DispatchDecisionResponse.selected_flow_item_id` | `int64` | ID of the selected candidate flow item. |
-| `LocalDispatchLog.dispatch_decisions` | `DispatchDecisionLogEntry[]` | Collection of recorded dispatch decisions. In JSONL output, each line stores one decision entry. |
-| `DispatchDecisionLogEntry.fab_state` | `FabStateSnapshot` | Fab state observed before the logged dispatch decision. |
-| `DispatchDecisionLogEntry.dispatch_decision` | `DispatchDecisionSnapshot` | Flow item selected by the dispatch rule. |
-| `DispatchDecisionSnapshot.chosen_flow_item` | `FlowItemQueuedSnapshot` | Snapshot of the selected queued item. |
-| `FabStateSnapshot.simulation_time` | `int64` | Current simulation timestamp. |
-| `FabStateSnapshot.tool_groups` | `ToolGroupSnapshot[]` | State of all tool groups in the fab. |
-| `FabStateSnapshot.cost_snapshot` | `CostSnapshot` | Aggregate cost-related state for the current decision point. |
-| `CostSnapshot.total_projected_tardiness` | `int64` | Projected total tardiness over work currently visible to the snapshot. |
-| `CostSnapshot.work_in_progress` | `int64` | Current work in progress. |
-| `ToolGroupSnapshot.name` | `string` | Tool-group name. |
-| `ToolGroupSnapshot.waiting_for_dispatch` | `bool` | Whether the tool group is currently requesting a dispatch decision. |
-| `ToolGroupSnapshot.tools` | `ToolSnapshot[]` | Tools belonging to the tool group. |
-| `ToolGroupSnapshot.queued_items` | `FlowItemQueuedSnapshot[]` | Items waiting in the tool-group queue. |
-| `ToolGroupSnapshot.in_process_items` | `FlowItemInProcessSnapshot[]` | Items currently being processed by the tool group. |
-| `ToolSnapshot.id` | `int64` | Tool identifier. |
-| `ToolSnapshot.current_tool_state` | `string` | Current tool state, such as standby, setup, processing, maintenance, or breakdown. |
-| `FlowItemQueuedSnapshot.remaining_cycle_time` | `int64` | Remaining planned cycle time for a queued item. |
-| `FlowItemQueuedSnapshot.processing_time` | `int64` | Processing time required at the current operation. |
-| `FlowItemQueuedSnapshot.expected_setup_time` | `int64` | Expected setup time before processing can start. |
-| `FlowItemQueuedSnapshot.time_since_arrival` | `int64` | Time since the item arrived in the current queue. |
-| `FlowItemQueuedSnapshot.priority` | `int32` | Item priority. |
-| `FlowItemQueuedSnapshot.lateness` | `int64` | Current lateness relative to the item's due-date target. |
-| `FlowItemQueuedSnapshot.recipe` | `string` | Recipe required for the current operation. |
-| `FlowItemInProcessSnapshot.remaining_cycle_time` | `int64` | Remaining planned cycle time for an item in process. |
-| `FlowItemInProcessSnapshot.processing_time_left` | `int64` | Remaining processing time on the current tool. |
-| `FlowItemInProcessSnapshot.priority` | `int32` | Item priority. |
-| `FlowItemInProcessSnapshot.lateness` | `int64` | Current lateness relative to the item's due-date target. |
-| `FlowItemQueuedWithIDSnapshot.id` | `int64` | Candidate flow item identifier used by `selected_flow_item_id`. |
-| `FlowItemQueuedWithIDSnapshot.*` | mixed | Same queued-item fields as `FlowItemQueuedSnapshot`, plus the candidate ID. |
+| `fab_state` | object | Fab snapshot before the dispatch decision. |
+| `fab_state.simulation_time` | integer | Current simulation timestamp. |
+| `fab_state.tool_groups` | array | Snapshot of every tool group in the fab. |
+| `fab_state.cost_snapshot` | object | Aggregate cost and WIP snapshot. |
+| `fab_state.cost_snapshot.total_projected_tardiness` | integer | Projected wafer-level tardiness, in minutes, over queued and in-process work. |
+| `fab_state.cost_snapshot.work_in_progress` | integer | Current wafer-level work in progress. |
+| `fab_state.tool_groups[].name` | string | Tool-group name. |
+| `fab_state.tool_groups[].waiting_for_dispatch` | boolean | Whether this is the tool group currently requesting a dispatch decision. |
+| `fab_state.tool_groups[].tools` | array | Tools belonging to the tool group. |
+| `fab_state.tool_groups[].tools[].id` | integer | Tool identifier. |
+| `fab_state.tool_groups[].tools[].current_tool_state` | string | Current tool state, such as `STANDBY`, `SETUP`, `PROCESSING`, `MAINTENANCE`, or `BREAKDOWN`. |
+| `fab_state.tool_groups[].queued_items` | array | Items waiting in the tool-group queue. |
+| `fab_state.tool_groups[].queued_items[].remaining_cycle_time` | integer | Projected remaining cycle time. |
+| `fab_state.tool_groups[].queued_items[].processing_time` | integer | Processing time required at the current operation. |
+| `fab_state.tool_groups[].queued_items[].expected_setup_time` | integer | Expected setup time before processing can start. |
+| `fab_state.tool_groups[].queued_items[].time_since_arrival` | integer | Time since the item arrived in the current queue. |
+| `fab_state.tool_groups[].queued_items[].priority` | integer | Item priority. |
+| `fab_state.tool_groups[].queued_items[].lateness` | integer | Current lateness relative to the item's due-date target. |
+| `fab_state.tool_groups[].queued_items[].recipe` | string | Recipe required for the current operation. |
+| `fab_state.tool_groups[].in_process_items` | array | Items currently being processed by the tool group. |
+| `fab_state.tool_groups[].in_process_items[].remaining_cycle_time` | integer | Projected remaining cycle time. |
+| `fab_state.tool_groups[].in_process_items[].processing_time_left` | integer | Remaining processing time on the current tool. |
+| `fab_state.tool_groups[].in_process_items[].priority` | integer | Item priority. |
+| `fab_state.tool_groups[].in_process_items[].lateness` | integer | Current lateness relative to the item's due-date target. |
+| `dispatch_decision` | object | Decision recorded by the selected dispatch rule. |
+| `dispatch_decision.chosen_flow_item` | object | Snapshot of the selected queued item. |
+| `dispatch_decision.chosen_flow_item.*` | mixed | Same fields as a queued item in `fab_state.tool_groups[].queued_items[]`. |
+
+Example line:
+
+```json
+{"fab_state":{"simulation_time":86400000,"tool_groups":[],"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":0}},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
+```
+
+## Dispatch Request API
+
+Inside a JPype `selectDispatchCandidate(self, request)` implementation, the `request` object provides the
+same fab-state shape as the log format plus candidate IDs needed to return a decision.
+
+```python
+@JImplements(DispatchProvider)
+class Provider:
+    @JOverride
+    def selectDispatchCandidate(self, request):
+        fab_state = request.getFabState()
+        cost = fab_state.getCostSnapshot()
+        wip = cost.getWorkInProgress()
+
+        for i in range(fab_state.getToolGroups().size()):
+            tool_group = fab_state.getToolGroups().get(i)
+            if tool_group.getWaitingForDispatch():
+                queue_length = tool_group.getQueuedItems().size()
+
+        candidates = request.getCandidates()
+        selected = candidates.get(0)
+        for i in range(1, candidates.size()):
+            candidate = candidates.get(i)
+            if candidate.getProcessingTime() < selected.getProcessingTime():
+                selected = candidate
+
+        return DispatchDecisionResponse.of(selected.getId())
+```
+
+| Java object | Methods |
+| --- | --- |
+| `DispatchDecisionRequest` | `getFabState()`, `getCandidates()`, `getSimulationTime()`, `getProjectedCycleTimeFactor()` |
+| `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()`, `getCostSnapshot()` |
+| `CostSnapshot` | `getTotalProjectedTardiness()`, `getWorkInProgress()` |
+| `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()`, `getInProcessItems()` |
+| `ToolSnapshot` | `getId()`, `getCurrentToolState()` |
+| `FlowItemQueuedSnapshot` | `getRemainingCycleTime()`, `getProcessingTime()`, `getExpectedSetupTime()`, `getTimeSinceArrival()`, `getPriority()`, `getLateness()`, `getRecipe()` |
+| `FlowItemInProcessSnapshot` | `getRemainingCycleTime()`, `getProcessingTimeLeft()`, `getPriority()`, `getLateness()` |
+| `FlowItemQueuedWithIDSnapshot` | `getId()` plus all `FlowItemQueuedSnapshot` methods |
+| `DispatchDecisionResponse` | `of(selected_flow_item_id)`, `getSelectedFlowItemId()` |
+
+`getCandidates()`, `getToolGroups()`, `getTools()`, `getQueuedItems()`, and `getInProcessItems()` return
+Java lists. From Python, use `.size()` and `.get(index)` or JPype's Java collection iteration support.
+
+## Run Result Methods
+
+`MiniFab.run(...)` returns a `RunResult`. For multi-run simulations, use the mean and standard-deviation
+methods. The methods without `Mean`/`StdDev` are single-run aliases or rounded aggregate values.
+
+| Method | Description |
+| --- | --- |
+| `getRuns()` | Number of simulation runs included in the result. |
+| `getSimulationTimeHours()` | Rounded mean simulation time in hours. |
+| `getSimulationTimeHoursMean()` | Mean simulation time in hours. |
+| `getCompletedWafersPerDay()` | Alias for `getCompletedWafersPerDayMean()`. |
+| `getCompletedWafersPerDayMean()` | Mean completed wafers per day after warmup. |
+| `getCompletedWafersPerDayStdDev()` | Standard deviation of completed wafers per day after warmup. |
+| `getTardinessPerWaferMinutes()` | Alias for `getTardinessPerWaferMinutesMean()`. |
+| `getTardinessPerWaferMinutesMean()` | Mean tardiness per wafer in minutes after warmup. |
+| `getTardinessPerWaferMinutesStdDev()` | Standard deviation of tardiness per wafer in minutes after warmup. |
+| `getCompletedWafers()` | Rounded mean completed wafers after warmup. |
+| `getCompletedWafersMean()` | Mean completed wafers after warmup. |
+| `getCompletedWafersStdDev()` | Standard deviation of completed wafers after warmup. |
+| `getTardyWafers()` | Rounded mean tardy wafers after warmup. |
+| `getTardyWafersMean()` | Mean tardy wafers after warmup. |
+| `getTardyWafersStdDev()` | Standard deviation of tardy wafers after warmup. |
+| `getFlowFactor()` | Alias for `getFlowFactorMean()`. |
+| `getFlowFactorMean()` | Mean flow factor after warmup. |
+| `getFlowFactorStdDev()` | Standard deviation of flow factor after warmup. |
 
 ## Development
 
