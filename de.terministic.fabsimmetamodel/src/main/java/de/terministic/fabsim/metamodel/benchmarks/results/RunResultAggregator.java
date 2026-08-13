@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.examples.results;
+package de.terministic.fabsim.metamodel.benchmarks.results;
 
 import java.util.List;
 

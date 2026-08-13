@@ -1,15 +1,12 @@
-package de.terministic.fabsim.metamodel.examples.minifab;
+package de.terministic.fabsim.metamodel.benchmarks.minifab;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.FabSimulationEngine;
+import de.terministic.fabsim.metamodel.benchmarks.BenchmarkFab;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.Product;
@@ -20,20 +17,11 @@ import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
-import de.terministic.fabsim.metamodel.examples.results.RunResult;
-import de.terministic.fabsim.metamodel.examples.results.RunResultAggregator;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
-import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
-import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 
-public class MiniFab {
-	static final long SECOND = 1000L;
-	static final long MINUTE = 60L * SECOND;
-	static final long HOUR = 60L * MINUTE;
-
+public class MiniFab extends BenchmarkFab {
 	static final String PRODUCT_PA = "Pa";
 	static final String PRODUCT_PB = "Pb";
 	static final String PRODUCT_TW = "TW";
@@ -88,16 +76,6 @@ public class MiniFab {
 	private BatchDetails station1Step1Batch;
 	private BatchDetails station1Step5Batch;
 	private Map<String, SetupState> station3SetupStates;
-	private FabModel model;
-	private DispatchMode dispatchMode;
-	private AbstractDispatchRule dispatchRule;
-	private DispatchProvider dispatchProvider;
-	private LocalLogWriter logWriter;
-
-	private enum DispatchMode {
-		LOCAL,
-		EXTERNAL
-	}
 
 	static String recipeName(final String productName) {
 		return productName + "Recipe";
@@ -112,111 +90,35 @@ public class MiniFab {
 	}
 
 	public MiniFab(final DispatchProvider provider) {
-		if (provider == null) {
-			throw new IllegalArgumentException("provider must not be null");
-		}
-		this.dispatchMode = DispatchMode.EXTERNAL;
-		this.dispatchProvider = provider;
-		this.dispatchRule = null;
-		this.logWriter = null;
-		this.model = createFabModel();
+		super(provider);
 	}
 
 	public MiniFab(final AbstractDispatchRule dispatchRule,
 			final LocalLogWriter logWriter) {
-		if (dispatchRule == null) {
-			throw new IllegalArgumentException("dispatchRule must not be null");
-		}
-		this.dispatchMode = DispatchMode.LOCAL;
-		this.dispatchRule = dispatchRule;
-		this.dispatchProvider = null;
-		this.logWriter = logWriter;
-		this.model = createFabModel();
-	}
-
-	private FabModel createFabModel() {
-		final AbstractDispatchRule effectiveRule;
-		switch (this.dispatchMode) {
-			case EXTERNAL:
-				effectiveRule = new ExternalDispatchRule("MiniFabExternalDispatch",
-						this.dispatchProvider, FLOW_FACTOR);
-				break;
-			case LOCAL:
-				if (this.dispatchRule instanceof LoggingDispatchRule || this.logWriter == null) {
-					effectiveRule = this.dispatchRule;
-				} else {
-					effectiveRule = new LoggingDispatchRule(this.dispatchRule, this.logWriter, FLOW_FACTOR);
-				}
-				break;
-			default:
-				throw new IllegalStateException("MiniFab must be built before creating a model");
-		}
-		return assembleMiniFabModel(new FabModel(), effectiveRule);
-	}
-
-	// ---------------------------------------------------------------------
-	// Simulation execution
-	// ---------------------------------------------------------------------
-
-	public RunResult run(final long simulationTimeHours, final int runs, final long warmupTimeHours) {
-		if (runs <= 0) {
-			throw new IllegalArgumentException("runs must be a positive number");
-		}
-		if (this.model == null) {
-			throw new IllegalStateException("MiniFab must be built before running the simulation");
-		}
-		if (runs > 1 && (this.logWriter != null || this.dispatchRule instanceof LoggingDispatchRule)) {
-			throw new IllegalArgumentException("Logging is only supported for a single MiniFab run");
-		}
-		validateTiming(simulationTimeHours, warmupTimeHours);
-
-		final List<RunResult> runResults = new ArrayList<>(runs);
-		if (runs == 1) {
-			runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
-		} else {
-			for (int run = 0; run < runs; run++) {
-				this.model = createFabModel();
-				runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
-			}
-		}
-		return RunResultAggregator.aggregate(runs, simulationTimeHours, runResults);
-	}
-
-	private RunResult runSimulation(final FabModel model, final long simulationTimeHours,
-			final long warmupTimeHours) {
-		final SimulationEngine engine = new FabSimulationEngine();
-		engine.init(model);
-		final long simulationTimeMillis = Math.multiplyExact(simulationTimeHours, HOUR);
-		final long warmupTimeMillis = Math.multiplyExact(warmupTimeHours, HOUR);
-		final long measurementTimeHours = Math.subtractExact(simulationTimeHours, warmupTimeHours);
-		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
-				MiniFabProducts.PRIORITY_WEIGHTS, warmupTimeMillis);
-		engine.addListener(finishedLotStatisticsCollector);
-		engine.runSimulation(simulationTimeMillis);
-		return new RunResult(simulationTimeHours, measurementTimeHours,
-				finishedLotStatisticsCollector.getFinishedWafers(),
-				finishedLotStatisticsCollector.getTardyWafers(),
-				finishedLotStatisticsCollector.getTardinessPerWaferMinutes(),
-				finishedLotStatisticsCollector.getFlowFactorMean());
-	}
-
-	private void validateTiming(final long simulationTimeHours, final long warmupTimeHours) {
-		if (simulationTimeHours <= 0L) {
-			throw new IllegalArgumentException("simulationTimeHours must be a positive number");
-		}
-		if (warmupTimeHours < 0L) {
-			throw new IllegalArgumentException("warmupTimeHours must not be negative");
-		}
-		if (warmupTimeHours >= simulationTimeHours) {
-			throw new IllegalArgumentException("warmupTimeHours must be less than simulationTimeHours");
-		}
+		super(dispatchRule, logWriter);
 	}
 
 	// ---------------------------------------------------------------------
 	// Model assembly
 	// ---------------------------------------------------------------------
 
-	private FabModel assembleMiniFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
+	@Override
+	protected String getBenchmarkName() {
+		return "MiniFab";
+	}
+
+	@Override
+	protected double getFlowFactor() {
+		return FLOW_FACTOR;
+	}
+
+	@Override
+	protected Map<Integer, Integer> getPriorityWeights() {
+		return MiniFabProducts.PRIORITY_WEIGHTS;
+	}
+
+	@Override
+	protected FabModel assembleFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
 		final Sink sink = (Sink) model.getSimComponentFactory().createSink(STEP_SINK);
 
 		this.station1 = createStation1(model);

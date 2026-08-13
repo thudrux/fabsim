@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.examples;
+package de.terministic.fabsim.metamodel.benchmarks;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -7,19 +7,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import de.terministic.fabsim.metamodel.benchmarks.minifab.MiniFab;
+import de.terministic.fabsim.metamodel.benchmarks.results.RunResult;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.CriticalRatio;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
 import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
-import de.terministic.fabsim.metamodel.examples.minifab.MiniFab;
-import de.terministic.fabsim.metamodel.examples.results.RunResult;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
-public final class FabDockerApp {
+public final class BenchmarkFabApp {
 
-	private static final List<FabImplementation> FAB_IMPLEMENTATIONS = Arrays.asList(new MiniFabImplementation());
+	private static final List<FabImplementation> FAB_IMPLEMENTATIONS = Arrays.asList(
+			new FabImplementation("minifab", MiniFab::new));
 
 	private static final class CliConfig {
 		private String fabName;
@@ -31,31 +32,30 @@ public final class FabDockerApp {
 		private boolean help;
 	}
 
-	private interface FabImplementation {
-		String getName();
-
-		void run(CliConfig config, AbstractDispatchRule dispatchRule, LocalLogWriter logWriter);
+	private interface FabFactory {
+		BenchmarkFab create(AbstractDispatchRule dispatchRule, LocalLogWriter logWriter);
 	}
 
-	private static final class MiniFabImplementation implements FabImplementation {
+	private static final class FabImplementation {
+		private final String name;
+		private final FabFactory factory;
 
-		@Override
-		public String getName() {
-			return "minifab";
+		private FabImplementation(final String name, final FabFactory factory) {
+			this.name = name;
+			this.factory = factory;
 		}
 
-		@Override
-		public void run(final CliConfig config, final AbstractDispatchRule dispatchRule,
-				final LocalLogWriter logWriter) {
-			final MiniFab miniFab = new MiniFab(dispatchRule, logWriter);
-			final RunResult result = miniFab.run(
-					config.simulationTimeHours, config.runs, config.warmupTimeHours);
-			printFabResult(result);
+		private String getName() {
+			return this.name;
+		}
+
+		private BenchmarkFab create(final AbstractDispatchRule dispatchRule, final LocalLogWriter logWriter) {
+			return this.factory.create(dispatchRule, logWriter);
 		}
 	}
 
 	public static void main(final String[] args) {
-		final FabDockerApp app = new FabDockerApp();
+		final BenchmarkFabApp app = new BenchmarkFabApp();
 		try {
 			final int exitCode = app.run(args);
 			System.exit(exitCode);
@@ -93,7 +93,9 @@ public final class FabDockerApp {
 
 	private void runFab(final CliConfig config, final LocalLogWriter logWriter) {
 		final FabImplementation fabImplementation = findFabImplementation(config.fabName);
-		fabImplementation.run(config, createLocalDispatchRule(config.dispatchRuleName), logWriter);
+		final BenchmarkFab fab = fabImplementation.create(createLocalDispatchRule(config.dispatchRuleName), logWriter);
+		final RunResult result = fab.run(config.simulationTimeHours, config.runs, config.warmupTimeHours);
+		printFabResult(result);
 	}
 
 	private FabImplementation findFabImplementation(final String fabName) {
@@ -292,7 +294,7 @@ public final class FabDockerApp {
 	}
 
 	private static void printUsage() {
-		final String supportedFabNames = new FabDockerApp().supportedFabNames();
+		final String supportedFabNames = new BenchmarkFabApp().supportedFabNames();
 		System.out.println("Usage:");
 		System.out.println(
 				"  java -jar fabsim.jar --fab " + supportedFabNames

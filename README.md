@@ -27,12 +27,12 @@ The repository is organized as a multi-module Maven project:
   simulation interfaces.
 - [`de.terministic.fabsimmetamodel`](de.terministic.fabsimmetamodel/): fab-specific metamodel built on top
   of the core simulator, including components for lots, wafers, tools, routing, setup, batching,
-  dispatching rules, statistics, external dispatch integration, and benchmark examples.
+  dispatching rules, statistics, external dispatch integration, and benchmarks.
 
 ## Supported Benchmarks
 
 Benchmark implementations are located in
-[`examples/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/examples/).
+[`benchmarks/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/benchmarks/).
 
 Currently supported:
 
@@ -172,7 +172,7 @@ jpype.startJVM(
 )
 
 DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
-MiniFab = jpype.JClass("de.terministic.fabsim.metamodel.examples.minifab.MiniFab")
+MiniFab = jpype.JClass("de.terministic.fabsim.metamodel.benchmarks.minifab.MiniFab")
 DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
 
 @JImplements(DispatchProvider)
@@ -209,11 +209,92 @@ flow_factor_std = result.getFlowFactorStdDev()
 
 ## Data Format
 
-The interface between fabsim and an external dispatch service is defined in
-[`external_dispatch.proto`](de.terministic.fabsimmetamodel/src/main/proto/external_dispatch.proto). The same
-schema is also used for local JSONL dispatch logs. Each logged line represents one dispatch decision.
+The interface between fabsim and an external dispatch service follows the schema below. The same schema is
+also used for local JSONL dispatch logs. Each logged line represents one dispatch decision.
 
 *NOTE*: All time values are expressed in milliseconds unless stated otherwise.
+
+```proto
+syntax = "proto3";
+
+service DispatchDecisionService {
+  rpc SelectDispatchCandidate(DispatchDecisionRequest) returns (DispatchDecisionResponse);
+}
+
+message DispatchDecisionRequest {
+  FabStateSnapshot fab_state = 1;
+  repeated FlowItemQueuedWithIDSnapshot candidates = 2;
+}
+
+message DispatchDecisionResponse {
+  int64 selected_flow_item_id = 1;
+}
+
+message LocalDispatchLog {
+  repeated DispatchDecisionLogEntry dispatch_decisions = 1;
+}
+
+message DispatchDecisionLogEntry {
+  FabStateSnapshot fab_state = 1;
+  DispatchDecisionSnapshot dispatch_decision = 2;
+}
+
+message DispatchDecisionSnapshot {
+  FlowItemQueuedSnapshot chosen_flow_item = 1;
+}
+
+message FabStateSnapshot {
+  int64 simulation_time = 1;
+  repeated ToolGroupSnapshot tool_groups = 2;
+  CostSnapshot cost_snapshot = 3;
+}
+
+message CostSnapshot {
+  int64 total_projected_tardiness = 1;
+  int64 work_in_progress = 2;
+}
+
+message ToolGroupSnapshot {
+  string name = 1;
+  bool waiting_for_dispatch = 2;
+  repeated ToolSnapshot tools = 3;
+  repeated FlowItemQueuedSnapshot queued_items = 4;
+  repeated FlowItemInProcessSnapshot in_process_items = 5;
+}
+
+message ToolSnapshot {
+  int64 id = 1;
+  string current_tool_state = 2;
+}
+
+message FlowItemQueuedSnapshot {
+  int64 remaining_cycle_time = 1;
+  int64 processing_time = 2;
+  int64 expected_setup_time = 3;
+  int64 time_since_arrival = 4;
+  int32 priority = 5;
+  int64 lateness = 6;
+  string recipe = 7;
+}
+
+message FlowItemInProcessSnapshot {
+  int64 remaining_cycle_time = 1;
+  int64 processing_time_left = 2;
+  int32 priority = 3;
+  int64 lateness = 4;
+}
+
+message FlowItemQueuedWithIDSnapshot {
+  int64 id = 1;
+  int64 remaining_cycle_time = 2;
+  int64 processing_time = 3;
+  int64 expected_setup_time = 4;
+  int64 time_since_arrival = 5;
+  int32 priority = 6;
+  int64 lateness = 7;
+  string recipe = 8;
+}
+```
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -253,8 +334,8 @@ schema is also used for local JSONL dispatch logs. Each logged line represents o
 ## Development
 
 To develop a new fab environment, start with the benchmark implementations in
-[`examples/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/examples/). A
-typical implementation defines products, routing, tool groups, dispatch behavior, statistics, and a run
+[`benchmarks/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/benchmarks/). 
+A typical implementation defines products, routing, tool groups, dispatch behavior, statistics, and a run
 method similar to `MiniFab`.
 
 Build all modules and run tests:

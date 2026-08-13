@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.examples.minifab;
+package de.terministic.fabsim.metamodel.benchmarks.minifab;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
