@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.benchmarks.minifab;
+package de.terministic.fabsim.benchmarks.minifab;
 
 import java.util.ArrayList;
 import java.util.List;

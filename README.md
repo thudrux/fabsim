@@ -27,12 +27,14 @@ The repository is organized as a multi-module Maven project:
   simulation interfaces.
 - [`de.terministic.fabsimmetamodel`](de.terministic.fabsimmetamodel/): fab-specific metamodel built on top
   of the core simulator, including components for lots, wafers, tools, routing, setup, batching,
-  dispatching rules, statistics, external dispatch integration, and benchmarks.
+  dispatching rules, statistics, and external dispatch integration.
+- [`de.terministic.fabsimbenchmarks`](de.terministic.fabsimbenchmarks/): runnable benchmark implementations,
+  the benchmark CLI entrypoint, and benchmark result aggregation.
 
 ## Supported Benchmarks
 
 Benchmark implementations are located in
-[`benchmarks/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/benchmarks/).
+[`benchmarks/`](de.terministic.fabsimbenchmarks/src/main/java/de/terministic/fabsim/benchmarks/).
 
 Currently supported:
 
@@ -144,7 +146,7 @@ mvn clean package -Dmaven.test.skip=true
 Copy the resulting single jar into your Python project, for example into a `libs/` folder inside that
 project:
 
-- `de.terministic.fabsimmetamodel/target/fabsim.jar`
+- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`
 
 This jar bundles the project classes and runtime dependencies needed by JPype.
 
@@ -166,13 +168,13 @@ jar_dir = python_project_root / "libs"
 jpype.startJVM(
     jpype.getDefaultJVMPath(),
     "--enable-native-access=ALL-UNNAMED",
-    classpath=[
-        str(jar_dir / "fabsim.jar"),
+classpath=[
+        str(jar_dir / "fabsim-benchmarks.jar"),
     ],
 )
 
 DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
-MiniFab = jpype.JClass("de.terministic.fabsim.metamodel.benchmarks.minifab.MiniFab")
+MiniFab = jpype.JClass("de.terministic.fabsim.benchmarks.minifab.MiniFab")
 DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
 
 @JImplements(DispatchProvider)
@@ -334,7 +336,7 @@ message FlowItemQueuedWithIDSnapshot {
 ## Development
 
 To develop a new fab environment, start with the benchmark implementations in
-[`benchmarks/`](de.terministic.fabsimmetamodel/src/main/java/de/terministic/fabsim/metamodel/benchmarks/). 
+[`benchmarks/`](de.terministic.fabsimbenchmarks/src/main/java/de/terministic/fabsim/benchmarks/). 
 A typical implementation defines products, routing, tool groups, dispatch behavior, statistics, and a run
 method similar to `MiniFab`.
 
@@ -352,4 +354,4 @@ mvn clean package
 
 The shaded jar is written to:
 
-- `de.terministic.fabsimmetamodel/target/fabsim.jar`
+- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`

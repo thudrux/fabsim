@@ -12,5 +12,6 @@
 	<modules>
 		<module>de.terministic.fabsimcore</module>
 		<module>de.terministic.fabsimmetamodel</module>
+		<module>de.terministic.fabsimbenchmarks</module>
 	</modules>
 </project>

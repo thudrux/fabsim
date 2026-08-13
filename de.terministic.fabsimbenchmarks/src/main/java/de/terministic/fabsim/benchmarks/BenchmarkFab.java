@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.benchmarks;
+package de.terministic.fabsim.benchmarks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Map;
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.FabSimulationEngine;
-import de.terministic.fabsim.metamodel.benchmarks.results.RunResult;
-import de.terministic.fabsim.metamodel.benchmarks.results.RunResultAggregator;
+import de.terministic.fabsim.benchmarks.results.RunResult;
+import de.terministic.fabsim.benchmarks.results.RunResultAggregator;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;

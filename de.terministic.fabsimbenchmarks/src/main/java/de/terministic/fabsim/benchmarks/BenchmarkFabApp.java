@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.benchmarks;
+package de.terministic.fabsim.benchmarks;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import de.terministic.fabsim.metamodel.benchmarks.minifab.MiniFab;
-import de.terministic.fabsim.metamodel.benchmarks.results.RunResult;
+import de.terministic.fabsim.benchmarks.minifab.MiniFab;
+import de.terministic.fabsim.benchmarks.results.RunResult;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.CriticalRatio;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;
@@ -297,7 +297,7 @@ public final class BenchmarkFabApp {
 		final String supportedFabNames = new BenchmarkFabApp().supportedFabNames();
 		System.out.println("Usage:");
 		System.out.println(
-				"  java -jar fabsim.jar --fab " + supportedFabNames
+				"  java -jar <benchmarks-jar> --fab " + supportedFabNames
 						+ " --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
 	}
 }

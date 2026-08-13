@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.benchmarks.results;
+package de.terministic.fabsim.benchmarks.results;
 
 public final class RunResult {
 

@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.benchmarks.minifab;
+package de.terministic.fabsim.benchmarks.minifab;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import de.terministic.fabsim.core.duration.ExponentialDuration;
 import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.FabModel;
-import de.terministic.fabsim.metamodel.benchmarks.BenchmarkFab;
+import de.terministic.fabsim.benchmarks.BenchmarkFab;
 import de.terministic.fabsim.metamodel.components.LotSource;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.Product;
