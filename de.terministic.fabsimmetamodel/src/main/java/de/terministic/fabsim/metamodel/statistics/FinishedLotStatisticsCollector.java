@@ -1,8 +1,5 @@
 package de.terministic.fabsim.metamodel.statistics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import de.terministic.fabsim.core.ISimEvent;
 import de.terministic.fabsim.core.SimEventListener;
 import de.terministic.fabsim.metamodel.FabModel;
@@ -12,7 +9,6 @@ import de.terministic.fabsim.metamodel.components.Lot;
 public class FinishedLotStatisticsCollector extends SimEventListener {
 
 	private final FabModel fabModel;
-	private final Map<Integer, Integer> priorityWeights;
 	private final long warmupTimeMillis;
 	private long finishedLots;
 	private long tardyLots;
@@ -20,23 +16,18 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 	private long flowFactorSamples;
 	private double flowFactorSum;
 
-	public FinishedLotStatisticsCollector(final FabModel fabModel, final Map<Integer, Integer> priorityWeights) {
-		this(fabModel, priorityWeights, 0L);
+	public FinishedLotStatisticsCollector(final FabModel fabModel) {
+		this(fabModel, 0L);
 	}
 
-	public FinishedLotStatisticsCollector(final FabModel fabModel, final Map<Integer, Integer> priorityWeights,
-			final long warmupTimeMillis) {
+	public FinishedLotStatisticsCollector(final FabModel fabModel, final long warmupTimeMillis) {
 		if (fabModel == null) {
 			throw new IllegalArgumentException("fabModel must not be null");
-		}
-		if (priorityWeights == null) {
-			throw new IllegalArgumentException("priorityWeights must not be null");
 		}
 		if (warmupTimeMillis < 0L) {
 			throw new IllegalArgumentException("warmupTimeMillis must not be negative");
 		}
 		this.fabModel = fabModel;
-		this.priorityWeights = new HashMap<>(priorityWeights);
 		this.warmupTimeMillis = warmupTimeMillis;
 	}
 
@@ -105,10 +96,6 @@ public class FinishedLotStatisticsCollector extends SimEventListener {
 	}
 
 	private int getPriorityWeight(final int priority) {
-		final Integer weight = this.priorityWeights.get(priority);
-		if (weight != null) {
-			return weight;
-		}
-		return 1;
+		return priority;
 	}
 }

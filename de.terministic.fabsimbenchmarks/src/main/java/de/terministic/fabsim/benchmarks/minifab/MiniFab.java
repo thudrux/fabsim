@@ -113,11 +113,6 @@ public class MiniFab extends BenchmarkFab {
 	}
 
 	@Override
-	protected Map<Integer, Integer> getPriorityWeights() {
-		return MiniFabProducts.PRIORITY_WEIGHTS;
-	}
-
-	@Override
 	protected FabModel assembleFabModel(final FabModel model, final AbstractDispatchRule dispatchRule) {
 		final Sink sink = (Sink) model.getSimComponentFactory().createSink(STEP_SINK);
 

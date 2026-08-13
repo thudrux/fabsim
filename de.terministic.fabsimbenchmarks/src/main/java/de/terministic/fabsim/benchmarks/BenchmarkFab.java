@@ -2,7 +2,6 @@ package de.terministic.fabsim.benchmarks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.FabModel;
@@ -115,7 +114,7 @@ public abstract class BenchmarkFab {
 		final long warmupTimeMillis = Math.multiplyExact(warmupTimeHours, HOUR);
 		final long measurementTimeHours = Math.subtractExact(simulationTimeHours, warmupTimeHours);
 		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
-				getPriorityWeights(), warmupTimeMillis);
+				warmupTimeMillis);
 		engine.addListener(finishedLotStatisticsCollector);
 		engine.runSimulation(simulationTimeMillis);
 		return new RunResult(simulationTimeHours, measurementTimeHours,
@@ -128,8 +127,6 @@ public abstract class BenchmarkFab {
 	protected abstract String getBenchmarkName();
 
 	protected abstract double getFlowFactor();
-
-	protected abstract Map<Integer, Integer> getPriorityWeights();
 
 	protected abstract FabModel assembleFabModel(FabModel model, AbstractDispatchRule dispatchRule);
 }
