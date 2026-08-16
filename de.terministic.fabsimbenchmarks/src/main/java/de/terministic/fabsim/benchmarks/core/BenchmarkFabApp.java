@@ -1,4 +1,4 @@
-package de.terministic.fabsim.benchmarks;
+package de.terministic.fabsim.benchmarks.core;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import de.terministic.fabsim.benchmarks.minifab.MiniFab;
-import de.terministic.fabsim.benchmarks.results.RunResult;
+import de.terministic.fabsim.benchmarks.implementations.MiniFab;
+import de.terministic.fabsim.benchmarks.core.results.RunResult;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.CriticalRatio;
 import de.terministic.fabsim.metamodel.dispatchRules.EDD;

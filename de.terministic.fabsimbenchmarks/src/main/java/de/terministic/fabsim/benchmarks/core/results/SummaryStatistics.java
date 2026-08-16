@@ -1,4 +1,4 @@
-package de.terministic.fabsim.benchmarks.results;
+package de.terministic.fabsim.benchmarks.core.results;
 
 final class SummaryStatistics {
 	final double mean;

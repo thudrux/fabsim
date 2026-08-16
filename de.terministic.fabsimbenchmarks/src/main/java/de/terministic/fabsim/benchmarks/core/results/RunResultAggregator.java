@@ -1,4 +1,4 @@
-package de.terministic.fabsim.benchmarks.results;
+package de.terministic.fabsim.benchmarks.core.results;
 
 import java.util.List;
 

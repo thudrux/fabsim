@@ -173,7 +173,7 @@ jpype.startJVM(
 )
 
 DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
-MiniFab = jpype.JClass("de.terministic.fabsim.benchmarks.minifab.MiniFab")
+MiniFab = jpype.JClass("de.terministic.fabsim.benchmarks.implementations.MiniFab")
 DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
 
 @JImplements(DispatchProvider)
