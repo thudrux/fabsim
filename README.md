@@ -13,10 +13,11 @@
 ---
 
 `fabsim` is a Java-based discrete-event simulator for modelling semiconductor fabrication facilities.
-It provides reusable simulation primitives for fab environments and includes out-of-the-box benchmark
-implementations such as MiniFab. For data generation and baseline experiments, fabsim can run predefined
-dispatching rules directly in Docker. For custom dispatching logic, reinforcement learning, or policy
-evaluation, fabsim can delegate dispatch decisions to a Python service through JPype.
+It is primarily intended to be embedded from Python so external dispatching logic, such as custom
+heuristics, optimization routines, or machine learning agents, can drive dispatch decisions through [JPype](https://jpype.readthedocs.io/en/latest/). 
+The project provides reusable simulation primitives for fab environments and includes
+out-of-the-box benchmark implementations such as MiniFab. A Docker-based runner is also available as a
+convenience path for baseline simulations and dispatch-log data generation with predefined local rules.
 
 ## Repository Structure
 
@@ -46,10 +47,81 @@ Currently supported:
 
 fabsim supports two common execution modes:
 
-- Docker execution with predefined local dispatch rules (`random`, `fifo`), useful for
-  baseline simulations and dispatch-log data generation.
-- JPype execution from Python, useful when dispatch decisions should come from an external Python policy,
+- [JPype](https://jpype.readthedocs.io/en/latest/) execution from Python, useful when dispatch decisions should come from an external Python policy,
   such as a reinforcement-learning agent or a custom heuristic.
+- Docker execution with predefined local dispatch rules (`random`, `fifo`), useful as a convenience option
+  for baseline simulations and dispatch-log data generation.
+
+### Build the jar and run via JPype
+
+This setup lets MiniFab delegate dispatch decisions to an external Python-based service through
+[JPype](https://jpype.readthedocs.io/en/latest/). The Java simulation sends each dispatch request to Python,
+and Python returns the selected candidate.
+
+Use Maven from the repository root to build the shaded jar:
+
+```bash
+mvn clean package -Dmaven.test.skip=true
+```
+
+Copy the resulting single jar into your Python project, for example into a `libs/` folder inside that
+project:
+
+- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`
+
+This jar bundles the project classes and runtime dependencies needed by JPype.
+
+The Java side exposes a `DispatchProvider` interface that Python implements through JPype. Java passes a
+`DispatchDecisionRequest` containing `fab_state` and `candidates`, and Python returns a
+`DispatchDecisionResponse` with the selected flow item id. The request methods available inside
+`selectDispatchCandidate` are described in [Dispatch Request API](#dispatch-request-api).
+
+Example flow:
+
+```python
+from pathlib import Path
+
+import jpype
+from jpype import JImplements, JOverride
+
+python_project_root = Path("/path/to/your/python/project")
+jar_dir = python_project_root / "libs"
+jpype.startJVM(
+    jpype.getDefaultJVMPath(),
+    "--enable-native-access=ALL-UNNAMED",
+    classpath=[
+        str(jar_dir / "fabsim-benchmarks.jar"),
+    ],
+)
+
+DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
+MiniFab = jpype.JClass("de.terministic.fabsim.benchmarks.implementations.MiniFab")
+DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
+
+@JImplements(DispatchProvider)
+class Provider:
+    @JOverride
+    def selectDispatchCandidate(self, request):
+        candidates = request.getCandidates()
+        selected = candidates.get(0).getId()
+        return DispatchDecisionResponse.of(selected)
+
+provider = Provider()
+mini_fab = MiniFab(provider)
+simulation_time_hours = 168
+warmup_time_hours = 24
+seed = 123
+
+result = mini_fab.run(
+    simulation_time_hours,
+    warmup_time_hours,
+    seed,
+)
+
+completed_wafers_per_day = result.getCompletedWafersPerDay()
+```
+
+All result methods available on `result` are listed in [Run Result Methods](#run-result-methods).
 
 ### Build the container and run via Docker
 
@@ -60,7 +132,8 @@ docker build -t fabsim .
 ```
 
 Run fabsim in Docker when you want to use predefined dispatch rules and optionally write dispatch logs to
-a mounted host path.
+a mounted host path. This mode is intended as a convenience option for data generation and baseline runs;
+use the JPype flow above when dispatch decisions should come from external Python logic.
 
 The Docker launcher requires selecting a fab implementation with `--fab`; `minifab` is currently the only
 available implementation.
@@ -118,77 +191,6 @@ After the simulation finishes, the launcher prints metrics for:
 - flow factor
 
 These metrics exclude any time spent in the warmup window.
-
-### Build the jar and run via JPype
-
-This setup lets MiniFab delegate dispatch decisions to an external Python-based service through
-[JPype](https://jpype.readthedocs.io/en/latest/). The Java simulation sends each dispatch request to Python,
-and Python returns the selected candidate.
-
-Use Maven from the repository root to build the shaded jar:
-
-```bash
-mvn clean package -Dmaven.test.skip=true
-```
-
-Copy the resulting single jar into your Python project, for example into a `libs/` folder inside that
-project:
-
-- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`
-
-This jar bundles the project classes and runtime dependencies needed by JPype.
-
-The Java side exposes a `DispatchProvider` interface that Python implements through JPype. Java passes a
-`DispatchDecisionRequest` containing `fab_state` and `candidates`, and Python returns a
-`DispatchDecisionResponse` with the selected flow item id. The request methods available inside
-`selectDispatchCandidate` are described in [Dispatch Request API](#dispatch-request-api).
-
-Example flow:
-
-```python
-from pathlib import Path
-
-import jpype
-from jpype import JImplements, JOverride
-
-python_project_root = Path("/path/to/your/python/project")
-jar_dir = python_project_root / "libs"
-jpype.startJVM(
-    jpype.getDefaultJVMPath(),
-    "--enable-native-access=ALL-UNNAMED",
-    classpath=[
-        str(jar_dir / "fabsim-benchmarks.jar"),
-    ],
-)
-
-DispatchProvider = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider")
-MiniFab = jpype.JClass("de.terministic.fabsim.benchmarks.implementations.MiniFab")
-DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse")
-
-@JImplements(DispatchProvider)
-class Provider:
-    @JOverride
-    def selectDispatchCandidate(self, request):
-        candidates = request.getCandidates()
-        selected = candidates.get(0).getId()
-        return DispatchDecisionResponse.of(selected)
-
-provider = Provider()
-seed = 123
-mini_fab = MiniFab(provider)
-simulation_time_hours = 168
-warmup_time_hours = 24
-
-result = mini_fab.run(
-    simulation_time_hours,
-    warmup_time_hours,
-    seed,
-)
-
-completed_wafers_per_day = result.getCompletedWafersPerDay()
-```
-
-All result methods available on `result` are listed in [Run Result Methods](#run-result-methods).
 
 ## Dispatch Log Format
 
