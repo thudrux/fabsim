@@ -46,7 +46,7 @@ Currently supported:
 
 fabsim supports two common execution modes:
 
-- Docker execution with predefined local dispatch rules (`random`, `fifo`, `edd`, `cr`, `srpt`), useful for
+- Docker execution with predefined local dispatch rules (`random`, `fifo`), useful for
   baseline simulations and dispatch-log data generation.
 - JPype execution from Python, useful when dispatch decisions should come from an external Python policy,
   such as a reinforcement-learning agent or a custom heuristic.
@@ -99,7 +99,7 @@ Required arguments:
 - `--fab minifab`
 - `--simulation-time <hours>`
 - `--seed <long>`
-- `--dispatch-rule random|fifo|edd|cr|srpt`
+- `--dispatch-rule random|fifo`
 
 Optional arguments:
 

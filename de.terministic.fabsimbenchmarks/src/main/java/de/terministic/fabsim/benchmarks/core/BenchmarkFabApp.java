@@ -10,11 +10,8 @@ import java.util.Locale;
 import de.terministic.fabsim.benchmarks.implementations.MiniFab;
 import de.terministic.fabsim.benchmarks.core.results.RunResult;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.CriticalRatio;
-import de.terministic.fabsim.metamodel.dispatchRules.EDD;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
-import de.terministic.fabsim.metamodel.dispatchRules.SRPT;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 
 public final class BenchmarkFabApp {
@@ -109,7 +106,7 @@ public final class BenchmarkFabApp {
 
 	private AbstractDispatchRule createLocalDispatchRule(final String dispatchRuleName) {
 		if (dispatchRuleName == null || dispatchRuleName.trim().isEmpty()) {
-			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
+			throw new IllegalArgumentException("--dispatch-rule random|fifo is required");
 		}
 		final String normalizedDispatchRuleName = dispatchRuleName.trim().toLowerCase(Locale.ROOT);
 		if ("random".equals(normalizedDispatchRuleName)) {
@@ -117,15 +114,6 @@ public final class BenchmarkFabApp {
 		}
 		if ("fifo".equals(normalizedDispatchRuleName)) {
 			return new FIFO();
-		}
-		if ("edd".equals(normalizedDispatchRuleName)) {
-			return new EDD();
-		}
-		if ("cr".equals(normalizedDispatchRuleName)) {
-			return new CriticalRatio();
-		}
-		if ("srpt".equals(normalizedDispatchRuleName)) {
-			return new SRPT();
 		}
 		throw new IllegalArgumentException("Unsupported local dispatch rule: " + dispatchRuleName);
 	}
@@ -192,7 +180,7 @@ public final class BenchmarkFabApp {
 			throw new IllegalArgumentException("--seed requires a value");
 		}
 		if (config.dispatchRuleName == null) {
-			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
+			throw new IllegalArgumentException("--dispatch-rule random|fifo is required");
 		}
 	}
 
@@ -271,6 +259,6 @@ public final class BenchmarkFabApp {
 		System.out.println("Usage:");
 		System.out.println(
 				"  java -jar <benchmarks-jar> --fab " + supportedFabNames
-						+ " --simulation-time <hours> [--warmup-time <hours>] --seed <long> --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
+						+ " --simulation-time <hours> [--warmup-time <hours>] --seed <long> --dispatch-rule random|fifo [--log-file <path>]");
 	}
 }
