@@ -69,7 +69,7 @@ public abstract class BenchmarkFab {
 		this.logWriter = logWriter;
 	}
 
-	public final RunResult run(final long simulationTimeHours, final long warmupTimeHours) {
+	public final RunResult run(final long simulationTimeHours, final long warmupTimeHours, final long seed) {
 		if (simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("simulationTimeHours must be a positive number");
 		}
@@ -80,10 +80,10 @@ public abstract class BenchmarkFab {
 			throw new IllegalArgumentException("warmupTimeHours must be less than simulationTimeHours");
 		}
 
-		return runSimulation(createFabModel(), simulationTimeHours, warmupTimeHours);
+		return runSimulation(createFabModel(seed), simulationTimeHours, warmupTimeHours);
 	}
 
-	private FabModel createFabModel() {
+	private FabModel createFabModel(final long seed) {
 		final AbstractDispatchRule effectiveRule;
 		switch (this.dispatchMode) {
 			case EXTERNAL:
@@ -100,7 +100,7 @@ public abstract class BenchmarkFab {
 			default:
 				throw new IllegalStateException(getBenchmarkName() + " must be built before creating a model");
 		}
-		final FabModel fabModel = new FabModel();
+		final FabModel fabModel = new FabModel(seed);
 		return assembleFabModel(fabModel, effectiveRule, createFabSpec(fabModel));
 	}
 

@@ -71,6 +71,7 @@ docker run --rm \
   --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
+  --seed 123 \
   --dispatch-rule fifo
 ```
 
@@ -86,6 +87,7 @@ docker run --rm \
   --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
+  --seed 123 \
   --dispatch-rule fifo \
   --log-file /logs/minifab.jsonl
 ```
@@ -96,6 +98,7 @@ Required arguments:
 
 - `--fab minifab`
 - `--simulation-time <hours>`
+- `--seed <long>`
 - `--dispatch-rule random|fifo|edd|cr|srpt`
 
 Optional arguments:
@@ -103,6 +106,8 @@ Optional arguments:
 - `--warmup-time <hours>`: warmup period excluded from reported metrics.
 - `--log-file <path>`: JSONL dispatch-log output path.
 - `--help`, `-h`: print CLI usage.
+
+**NOTE**: The `--seed` controls benchmark-internal stochastic model inputs, such as generated duration distributions. Dispatching remains outside this seed: for example, `--dispatch-rule random` still makes unseeded random dispatch decisions.
 
 After the simulation finishes, the launcher prints metrics for:
 
@@ -169,6 +174,7 @@ class Provider:
         return DispatchDecisionResponse.of(selected)
 
 provider = Provider()
+seed = 123
 mini_fab = MiniFab(provider)
 simulation_time_hours = 168
 warmup_time_hours = 24
@@ -176,6 +182,7 @@ warmup_time_hours = 24
 result = mini_fab.run(
     simulation_time_hours,
     warmup_time_hours,
+    seed,
 )
 
 completed_wafers_per_day = result.getCompletedWafersPerDay()

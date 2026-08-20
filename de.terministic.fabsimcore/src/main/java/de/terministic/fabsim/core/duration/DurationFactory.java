@@ -8,8 +8,14 @@ import de.terministic.fabsim.core.IModel;
 public class DurationFactory {
 
 	private final TreeMap<Long, ConstantValue> constMap = new TreeMap<>();
+	private final Random random;
 
 	public DurationFactory(final IModel model) {
+		this(model, null);
+	}
+
+	public DurationFactory(final IModel model, final Random random) {
+		this.random = random;
 	}
 
 	public ConstantValue createConstantValueObject(final long duration) {
@@ -23,7 +29,7 @@ public class DurationFactory {
 	}
 
 	public ExponentialDuration createExponentialValueObject(final long mean) {
-		 return new ExponentialDuration(mean, new Random());
+		return new ExponentialDuration(mean, createRandom());
 	}
 
 	public ExponentialDuration createExponentialValueObject(final long mean, Random rand) {
@@ -32,11 +38,18 @@ public class DurationFactory {
 	}
 
 	public UniformDuration createUniformValueObject(final long min, final long max) {
-		return new UniformDuration(min, max, new Random());
+		return new UniformDuration(min, max, createRandom());
 	}
 
 	public UniformDuration createUniformValueObject(final long min, final long max, Random rand) {
 		final UniformDuration result = new UniformDuration(min, max, rand);
 		return result;
+	}
+
+	private Random createRandom() {
+		if (this.random == null) {
+			return new Random();
+		}
+		return new Random(this.random.nextLong());
 	}
 }

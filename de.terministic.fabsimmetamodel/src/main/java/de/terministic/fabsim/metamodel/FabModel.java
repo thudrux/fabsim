@@ -7,6 +7,7 @@ package de.terministic.fabsim.metamodel;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,9 +81,13 @@ public class FabModel implements IModel{
 	private SimulationEngine engine;
 
 	public FabModel() {
+		this(null);
+	}
+
+	public FabModel(final Long seed) {
 		this.setName("FabModel");
 		this.componentFactory = new SimComponentFactory(this);
-		this.durationFactory = new DurationFactory(this);
+		this.durationFactory = seed == null ? new DurationFactory(this) : new DurationFactory(this, new Random(seed));
 		this.components = new LinkedHashMap<>();
 		this.toolGroups = new LinkedHashMap<>();
 		this.elements = new LinkedHashMap<>();

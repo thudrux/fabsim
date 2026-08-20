@@ -28,6 +28,7 @@ public final class BenchmarkFabApp {
 		private long warmupTimeHours = 0L;
 		private String dispatchRuleName;
 		private Path logFile;
+		private Long seed;
 		private boolean help;
 	}
 
@@ -93,7 +94,7 @@ public final class BenchmarkFabApp {
 	private void runFab(final CliConfig config, final LocalLogWriter logWriter) {
 		final FabImplementation fabImplementation = findFabImplementation(config.fabName);
 		final BenchmarkFab fab = fabImplementation.create(createLocalDispatchRule(config.dispatchRuleName), logWriter);
-		final RunResult result = fab.run(config.simulationTimeHours, config.warmupTimeHours);
+		final RunResult result = fab.run(config.simulationTimeHours, config.warmupTimeHours, config.seed);
 		printFabResult(result);
 	}
 
@@ -152,6 +153,10 @@ public final class BenchmarkFabApp {
 				config.warmupTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
+			if ("--seed".equals(arg)) {
+				config.seed = parseRequiredLong(arg, nextValue(args, ++i, arg));
+				continue;
+			}
 			if ("--dispatch-rule".equals(arg)) {
 				config.dispatchRuleName = nextValue(args, ++i, arg);
 				continue;
@@ -182,6 +187,9 @@ public final class BenchmarkFabApp {
 		}
 		if (config.warmupTimeHours >= config.simulationTimeHours) {
 			throw new IllegalArgumentException("--warmup-time must be less than --simulation-time");
+		}
+		if (config.seed == null) {
+			throw new IllegalArgumentException("--seed requires a value");
 		}
 		if (config.dispatchRuleName == null) {
 			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
@@ -263,6 +271,6 @@ public final class BenchmarkFabApp {
 		System.out.println("Usage:");
 		System.out.println(
 				"  java -jar <benchmarks-jar> --fab " + supportedFabNames
-						+ " --simulation-time <hours> [--warmup-time <hours>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
+						+ " --simulation-time <hours> [--warmup-time <hours>] --seed <long> --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
 	}
 }
