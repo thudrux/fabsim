@@ -103,9 +103,7 @@ DispatchDecisionResponse = jpype.JClass("de.terministic.fabsim.metamodel.externa
 class Provider:
     @JOverride
     def selectDispatchCandidate(self, request):
-        candidates = request.getCandidates()
-        selected = candidates.get(0).getId()
-        return DispatchDecisionResponse.of(selected)
+        return DispatchDecisionResponse.of(request.getCandidates().get(0).getId())
 
 provider = Provider()
 mini_fab = MiniFab(provider)
@@ -235,33 +233,6 @@ Example line:
 ```
 
 ## Dispatch Request API
-
-Inside a JPype `selectDispatchCandidate(self, request)` implementation, the `request` object provides the
-same fab-state shape as the log format plus candidate IDs needed to return a decision.
-
-```python
-@JImplements(DispatchProvider)
-class Provider:
-    @JOverride
-    def selectDispatchCandidate(self, request):
-        fab_state = request.getFabState()
-        cost = fab_state.getCostSnapshot()
-        wip = cost.getWorkInProgress()
-
-        for i in range(fab_state.getToolGroups().size()):
-            tool_group = fab_state.getToolGroups().get(i)
-            if tool_group.getWaitingForDispatch():
-                queue_length = tool_group.getQueuedItems().size()
-
-        candidates = request.getCandidates()
-        selected = candidates.get(0)
-        for i in range(1, candidates.size()):
-            candidate = candidates.get(i)
-            if candidate.getProcessingTime() < selected.getProcessingTime():
-                selected = candidate
-
-        return DispatchDecisionResponse.of(selected.getId())
-```
 
 | Java object | Methods |
 | --- | --- |
