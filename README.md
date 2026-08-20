@@ -186,8 +186,6 @@ After the simulation finishes, the launcher prints metrics for:
 
 - completed wafers per day
 - tardiness per wafer in minutes
-- completed wafers
-- tardy wafers
 - flow factor
 
 These metrics exclude any time spent in the warmup window.
@@ -279,9 +277,9 @@ class Provider:
 `getCandidates()`, `getToolGroups()`, `getTools()`, `getQueuedItems()`, and `getInProcessItems()` return
 Java lists. From Python, use `.size()` and `.get(index)` or JPype's Java collection iteration support.
 
-## Run Result Methods
+## Run Statistics Methods
 
-`MiniFab.run(...)` returns a single-run `RunResult`. External callers should orchestrate repeated runs
+`MiniFab.run(...)` returns single-run `BenchmarkFabStatistics`. External callers should orchestrate repeated runs
 and aggregate statistics outside the Java benchmark.
 
 | Method | Description |
@@ -289,8 +287,6 @@ and aggregate statistics outside the Java benchmark.
 | `getSimulationTimeHours()` | Simulation time in hours. |
 | `getCompletedWafersPerDay()` | Completed wafers per day after warmup. |
 | `getTardinessPerWaferMinutes()` | Tardiness per wafer in minutes after warmup. |
-| `getCompletedWafers()` | Completed wafers after warmup. |
-| `getTardyWafers()` | Tardy wafers after warmup. |
 | `getFlowFactor()` | Flow factor after warmup. |
 
 ## Development

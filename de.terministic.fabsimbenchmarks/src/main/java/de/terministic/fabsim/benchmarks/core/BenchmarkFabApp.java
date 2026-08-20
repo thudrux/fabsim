@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 
 import de.terministic.fabsim.benchmarks.implementations.MiniFab;
-import de.terministic.fabsim.benchmarks.core.results.RunResult;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
@@ -91,7 +90,7 @@ public final class BenchmarkFabApp {
 	private void runFab(final CliConfig config, final LocalLogWriter logWriter) {
 		final FabImplementation fabImplementation = findFabImplementation(config.fabName);
 		final BenchmarkFab fab = fabImplementation.create(createLocalDispatchRule(config.dispatchRuleName), logWriter);
-		final RunResult result = fab.run(config.simulationTimeHours, config.warmupTimeHours, config.seed);
+		final BenchmarkFabStatistics result = fab.run(config.simulationTimeHours, config.warmupTimeHours, config.seed);
 		printFabResult(result);
 	}
 
@@ -227,11 +226,9 @@ public final class BenchmarkFabApp {
 		return names.toString();
 	}
 
-	private static void printFabResult(final RunResult result) {
+	private static void printFabResult(final BenchmarkFabStatistics result) {
 		System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
 		System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));
-		System.out.println("Completed wafers: " + result.getCompletedWafers());
-		System.out.println("Tardy wafers: " + result.getTardyWafers());
 		System.out.println("Flow factor: " + formatDecimal(result.getFlowFactor()));
 	}
 

@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.benchmarks.core.results.RunResult;
 import de.terministic.fabsim.benchmarks.core.setup.SetupManager;
 import de.terministic.fabsim.benchmarks.core.specs.BreakdownSpec;
 import de.terministic.fabsim.benchmarks.core.specs.FabSpec;
@@ -28,7 +27,6 @@ import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
 import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
 import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
-import de.terministic.fabsim.metamodel.statistics.FinishedLotStatisticsCollector;
 
 public abstract class BenchmarkFab {
 	public static final long SECOND = 1000L;
@@ -68,7 +66,7 @@ public abstract class BenchmarkFab {
 		this.logWriter = logWriter;
 	}
 
-	public final RunResult run(final long simulationTimeHours, final long warmupTimeHours, final long seed) {
+	public final BenchmarkFabStatistics run(final long simulationTimeHours, final long warmupTimeHours, final long seed) {
 		if (simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("simulationTimeHours must be a positive number");
 		}
@@ -103,22 +101,18 @@ public abstract class BenchmarkFab {
 		return assembleFabModel(fabModel, effectiveRule, createFabSpec(fabModel));
 	}
 
-	private RunResult runSimulation(final FabModel model, final long simulationTimeHours,
+	private BenchmarkFabStatistics runSimulation(final FabModel model, final long simulationTimeHours,
 			final long warmupTimeHours) {
 		final SimulationEngine engine = new FabSimulationEngine();
 		engine.init(model);
 		final long simulationTimeMillis = Math.multiplyExact(simulationTimeHours, HOUR);
 		final long warmupTimeMillis = Math.multiplyExact(warmupTimeHours, HOUR);
 		final long measurementTimeHours = Math.subtractExact(simulationTimeHours, warmupTimeHours);
-		final FinishedLotStatisticsCollector finishedLotStatisticsCollector = new FinishedLotStatisticsCollector(model,
+		final BenchmarkFabStatistics statistics = new BenchmarkFabStatistics(simulationTimeHours, measurementTimeHours,
 				warmupTimeMillis);
-		engine.addListener(finishedLotStatisticsCollector);
+		engine.addListener(statistics);
 		engine.runSimulation(simulationTimeMillis);
-		return new RunResult(simulationTimeHours, measurementTimeHours,
-				finishedLotStatisticsCollector.getFinishedWafers(),
-				finishedLotStatisticsCollector.getTardyWafers(),
-				finishedLotStatisticsCollector.getTardinessPerWaferMinutes(),
-				finishedLotStatisticsCollector.getFlowFactorMean());
+		return statistics;
 	}
 
 	private FabModel assembleFabModel(final FabModel model, final AbstractDispatchRule dispatchRule,
