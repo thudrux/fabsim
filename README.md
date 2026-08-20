@@ -14,7 +14,8 @@
 
 `fabsim` is a Java-based discrete-event simulator for modelling semiconductor fabrication facilities.
 It is primarily intended to be embedded from Python so external dispatching logic, such as custom
-heuristics, optimization routines, or machine learning agents, can drive dispatch decisions through [JPype](https://jpype.readthedocs.io/en/latest/). 
+heuristics, optimization routines, or machine learning agents, can drive dispatch decisions through 
+[JPype](https://jpype.readthedocs.io/en/latest/). 
 The project provides reusable simulation primitives for fab environments and includes
 out-of-the-box benchmark implementations such as MiniFab. A Docker-based runner is also available as a
 convenience path for baseline simulations and dispatch-log data generation with predefined local rules.
@@ -293,8 +294,6 @@ and aggregate statistics outside the Java benchmark.
 
 To develop a new fab environment, start with the benchmark implementations in
 [`benchmarks/`](de.terministic.fabsimbenchmarks/src/main/java/de/terministic/fabsim/benchmarks/). 
-A typical implementation defines products, routing, tool groups, dispatch behavior, statistics, and a run
-method similar to `MiniFab`.
 
 Build all modules and run tests:
 
