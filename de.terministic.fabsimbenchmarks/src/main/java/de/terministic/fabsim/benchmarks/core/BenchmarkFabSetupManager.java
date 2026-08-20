@@ -1,4 +1,4 @@
-package de.terministic.fabsim.benchmarks.core.setup;
+package de.terministic.fabsim.benchmarks.core;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,10 +13,10 @@ import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
-public final class SetupManager {
+public final class BenchmarkFabSetupManager {
 	private final Map<String, Map<String, SetupState>> setupStates;
 
-	public SetupManager(final FabModel model, final FabSpec fabSpec,
+	public BenchmarkFabSetupManager(final FabModel model, final FabSpec fabSpec,
 			final Map<String, ToolGroup> toolGroups) {
 		final List<RouteStepSetupContext> contexts = getRouteStepSetupContexts(fabSpec);
 		this.setupStates = createSetupStates(model, contexts, toolGroups);

@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.benchmarks.core.setup.SetupManager;
 import de.terministic.fabsim.benchmarks.core.specs.BreakdownSpec;
 import de.terministic.fabsim.benchmarks.core.specs.FabSpec;
 import de.terministic.fabsim.benchmarks.core.specs.MaintenanceSpec;
@@ -120,7 +119,7 @@ public abstract class BenchmarkFab {
 		final Sink sink = (Sink) model.getSimComponentFactory().createSink(fabSpec.getSinkName());
 		final Map<String, ToolGroup> toolGroups = createToolGroups(model, dispatchRule, fabSpec);
 		final Map<String, ToolGroupSpec> toolGroupSpecs = getToolGroupSpecs(fabSpec);
-		final SetupManager setupManager = new SetupManager(model, fabSpec, toolGroups);
+		final BenchmarkFabSetupManager setupManager = new BenchmarkFabSetupManager(model, fabSpec, toolGroups);
 		for (final ProductSpec productSpec : fabSpec.getProducts()) {
 			createProductLine(model, productSpec, sink, toolGroups, toolGroupSpecs, setupManager, fabSpec);
 		}
@@ -180,7 +179,7 @@ public abstract class BenchmarkFab {
 	protected LotSource createProductLine(final FabModel model, final ProductSpec productSpec,
 			final Sink sink, final Map<String, ToolGroup> toolGroups,
 			final Map<String, ToolGroupSpec> toolGroupSpecs,
-			final SetupManager setupManager, final FabSpec fabSpec) {
+			final BenchmarkFabSetupManager setupManager, final FabSpec fabSpec) {
 		final Recipe recipe = createRecipe(model, productSpec, toolGroups, toolGroupSpecs, setupManager);
 		addSinkStep(model, sink, recipe);
 		final Product product = createProduct(model, productSpec, recipe);
@@ -192,7 +191,7 @@ public abstract class BenchmarkFab {
 
 	protected Recipe createRecipe(final FabModel model, final ProductSpec productSpec,
 			final Map<String, ToolGroup> toolGroups, final Map<String, ToolGroupSpec> toolGroupSpecs,
-			final SetupManager setupManager) {
+			final BenchmarkFabSetupManager setupManager) {
 		final Recipe recipe = model.getSimComponentFactory().createRecipe(getRecipeName(productSpec));
 		final List<RouteStepSpec> steps = productSpec.getRoute().getSteps();
 		for (int stepIndex = 0; stepIndex < steps.size(); stepIndex++) {
@@ -207,7 +206,7 @@ public abstract class BenchmarkFab {
 	protected ProcessStep createRouteStep(final FabModel model, final Recipe recipe,
 			final ProductSpec productSpec, final RouteStepSpec stepSpec, final int stepIndex,
 			final ToolGroup toolGroup, final ToolGroupSpec toolGroupSpec,
-			final SetupManager setupManager) {
+			final BenchmarkFabSetupManager setupManager) {
 		validateStepToolGroupCompatibility(stepSpec, toolGroup);
 		final BatchDetails batchDetails = createBatchDetails(model, productSpec, stepSpec, stepIndex, toolGroup);
 		return model.getSimComponentFactory().createProcessStepAndAddToRecipe(
