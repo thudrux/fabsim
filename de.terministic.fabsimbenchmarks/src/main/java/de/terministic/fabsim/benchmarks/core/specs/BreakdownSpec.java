@@ -2,11 +2,11 @@ package de.terministic.fabsim.benchmarks.core.specs;
 
 import de.terministic.fabsim.core.duration.IValue;
 
-public final class BenchmarkBreakdownSpec {
+public final class BreakdownSpec {
 	private final IValue timeToFailureDistribution;
 	private final IValue timeToRepairDistribution;
 
-	public BenchmarkBreakdownSpec(final IValue timeToFailureDistribution, final IValue timeToRepairDistribution) {
+	public BreakdownSpec(final IValue timeToFailureDistribution, final IValue timeToRepairDistribution) {
 		if (timeToFailureDistribution == null) {
 			throw new IllegalArgumentException("timeToFailureDistribution must not be null");
 		}

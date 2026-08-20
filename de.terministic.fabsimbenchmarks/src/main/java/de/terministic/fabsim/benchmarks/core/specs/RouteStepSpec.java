@@ -1,22 +1,41 @@
 package de.terministic.fabsim.benchmarks.core.specs;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 
-public final class BenchmarkRouteStepSpec {
+public final class RouteStepSpec {
 	private final String toolGroupName;
 	private final ProcessType processingUnit;
 	private final IValue processingTimeDistribution;
 	private final Integer batchMinimum;
 	private final Integer batchMaximum;
+	private final String setupStateName;
+	private final List<SetupTimeSpec> setupTimeSpecs;
 
-	public BenchmarkRouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
+	public RouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
 			final IValue processingTimeDistribution) {
-		this(toolGroupName, processingUnit, processingTimeDistribution, null, null);
+		this(toolGroupName, processingUnit, processingTimeDistribution, (Integer) null, (Integer) null);
 	}
 
-	public BenchmarkRouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
+	public RouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
 			final IValue processingTimeDistribution, final Integer batchMinimum, final Integer batchMaximum) {
+		this(toolGroupName, processingUnit, processingTimeDistribution, batchMinimum, batchMaximum, null,
+				Collections.<SetupTimeSpec>emptyList());
+	}
+
+	public RouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
+			final IValue processingTimeDistribution, final String setupStateName,
+			final List<SetupTimeSpec> setupTimeSpecs) {
+		this(toolGroupName, processingUnit, processingTimeDistribution, null, null, setupStateName, setupTimeSpecs);
+	}
+
+	public RouteStepSpec(final String toolGroupName, final ProcessType processingUnit,
+			final IValue processingTimeDistribution, final Integer batchMinimum, final Integer batchMaximum,
+			final String setupStateName, final List<SetupTimeSpec> setupTimeSpecs) {
 		if (toolGroupName == null || toolGroupName.trim().isEmpty()) {
 			throw new IllegalArgumentException("toolGroupName must not be blank");
 		}
@@ -32,6 +51,30 @@ public final class BenchmarkRouteStepSpec {
 		this.processingTimeDistribution = processingTimeDistribution;
 		this.batchMinimum = batchMinimum;
 		this.batchMaximum = batchMaximum;
+		this.setupStateName = normalizeSetupStateName(setupStateName);
+		this.setupTimeSpecs = copySetupTimeSpecs(setupTimeSpecs);
+	}
+
+	private static String normalizeSetupStateName(final String setupStateName) {
+		if (setupStateName == null || setupStateName.trim().isEmpty()) {
+			return null;
+		}
+		return setupStateName.trim();
+	}
+
+	private static List<SetupTimeSpec> copySetupTimeSpecs(
+			final List<SetupTimeSpec> setupTimeSpecs) {
+		if (setupTimeSpecs == null || setupTimeSpecs.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final ArrayList<SetupTimeSpec> copy = new ArrayList<>(setupTimeSpecs.size());
+		for (final SetupTimeSpec setupTimeSpec : setupTimeSpecs) {
+			if (setupTimeSpec == null) {
+				throw new IllegalArgumentException("setupTimeSpecs must not contain null entries");
+			}
+			copy.add(setupTimeSpec);
+		}
+		return Collections.unmodifiableList(copy);
 	}
 
 	private static void validateBatchConfiguration(final ProcessType processingUnit, final Integer batchMinimum,
@@ -40,10 +83,10 @@ public final class BenchmarkRouteStepSpec {
 			if (batchMinimum == null || batchMaximum == null) {
 				throw new IllegalArgumentException("batchMinimum and batchMaximum are required for BATCH steps");
 			}
-			if (batchMinimum.intValue() <= 0) {
+			if (batchMinimum <= 0) {
 				throw new IllegalArgumentException("batchMinimum must be greater than 0");
 			}
-			if (batchMinimum.intValue() > batchMaximum.intValue()) {
+			if (batchMinimum > batchMaximum) {
 				throw new IllegalArgumentException("batchMinimum must be smaller or equal to batchMaximum");
 			}
 			return;
@@ -71,5 +114,13 @@ public final class BenchmarkRouteStepSpec {
 
 	public Integer getBatchMaximum() {
 		return this.batchMaximum;
+	}
+
+	public String getSetupStateName() {
+		return this.setupStateName;
+	}
+
+	public List<SetupTimeSpec> getSetupTimeSpecs() {
+		return this.setupTimeSpecs;
 	}
 }

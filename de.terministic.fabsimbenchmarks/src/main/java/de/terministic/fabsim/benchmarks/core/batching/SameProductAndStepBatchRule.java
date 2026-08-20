@@ -1,4 +1,4 @@
-package de.terministic.fabsim.benchmarks.core.batchrules;
+package de.terministic.fabsim.benchmarks.core.batching;
 
 import java.util.ArrayList;
 import java.util.List;

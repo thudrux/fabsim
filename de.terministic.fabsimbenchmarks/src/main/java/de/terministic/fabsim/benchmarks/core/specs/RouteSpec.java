@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public final class BenchmarkRouteSpec {
-	private final List<BenchmarkRouteStepSpec> steps;
+public final class RouteSpec {
+	private final List<RouteStepSpec> steps;
 
-	public BenchmarkRouteSpec(final List<BenchmarkRouteStepSpec> steps) {
+	public RouteSpec(final List<RouteStepSpec> steps) {
 		if (steps == null || steps.isEmpty()) {
 			throw new IllegalArgumentException("steps must not be empty");
 		}
-		final ArrayList<BenchmarkRouteStepSpec> copy = new ArrayList<>(steps.size());
-		for (final BenchmarkRouteStepSpec step : steps) {
+		final ArrayList<RouteStepSpec> copy = new ArrayList<>(steps.size());
+		for (final RouteStepSpec step : steps) {
 			if (step == null) {
 				throw new IllegalArgumentException("steps must not contain null entries");
 			}
@@ -22,11 +22,11 @@ public final class BenchmarkRouteSpec {
 		this.steps = Collections.unmodifiableList(copy);
 	}
 
-	public static BenchmarkRouteSpec of(final BenchmarkRouteStepSpec... steps) {
-		return new BenchmarkRouteSpec(Arrays.asList(steps));
+	public static RouteSpec of(final RouteStepSpec... steps) {
+		return new RouteSpec(Arrays.asList(steps));
 	}
 
-	public List<BenchmarkRouteStepSpec> getSteps() {
+	public List<RouteStepSpec> getSteps() {
 		return this.steps;
 	}
 }

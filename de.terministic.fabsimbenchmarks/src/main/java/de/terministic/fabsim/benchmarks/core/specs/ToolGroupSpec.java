@@ -2,23 +2,23 @@ package de.terministic.fabsim.benchmarks.core.specs;
 
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 
-public final class BenchmarkToolGroupSpec {
+public final class ToolGroupSpec {
 	private final String name;
 	private final int numberOfTools;
 	private final ProcessingType processingType;
 	private final long loadTime;
 	private final long unloadTime;
-	private final BenchmarkMaintenanceSpec maintenance;
-	private final BenchmarkBreakdownSpec breakdown;
+	private final MaintenanceSpec maintenance;
+	private final BreakdownSpec breakdown;
 
-	public BenchmarkToolGroupSpec(final String name, final int numberOfTools, final ProcessingType processingType,
-			final long loadTime, final long unloadTime, final BenchmarkMaintenanceSpec maintenance) {
+	public ToolGroupSpec(final String name, final int numberOfTools, final ProcessingType processingType,
+			final long loadTime, final long unloadTime, final MaintenanceSpec maintenance) {
 		this(name, numberOfTools, processingType, loadTime, unloadTime, maintenance, null);
 	}
 
-	public BenchmarkToolGroupSpec(final String name, final int numberOfTools, final ProcessingType processingType,
-			final long loadTime, final long unloadTime, final BenchmarkMaintenanceSpec maintenance,
-			final BenchmarkBreakdownSpec breakdown) {
+	public ToolGroupSpec(final String name, final int numberOfTools, final ProcessingType processingType,
+			final long loadTime, final long unloadTime, final MaintenanceSpec maintenance,
+			final BreakdownSpec breakdown) {
 		if (name == null || name.trim().isEmpty()) {
 			throw new IllegalArgumentException("name must not be blank");
 		}
@@ -66,11 +66,11 @@ public final class BenchmarkToolGroupSpec {
 		return this.unloadTime;
 	}
 
-	public BenchmarkMaintenanceSpec getMaintenance() {
+	public MaintenanceSpec getMaintenance() {
 		return this.maintenance;
 	}
 
-	public BenchmarkBreakdownSpec getBreakdown() {
+	public BreakdownSpec getBreakdown() {
 		return this.breakdown;
 	}
 }

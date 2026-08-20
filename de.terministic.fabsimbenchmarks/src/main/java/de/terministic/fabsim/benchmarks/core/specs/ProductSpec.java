@@ -2,15 +2,15 @@ package de.terministic.fabsim.benchmarks.core.specs;
 
 import de.terministic.fabsim.core.duration.IValue;
 
-public final class BenchmarkProductSpec {
+public final class ProductSpec {
 	private final String name;
 	private final int priority;
 	private final IValue releaseDistribution;
 	private final long dueDateLeadTime;
-	private final BenchmarkRouteSpec route;
+	private final RouteSpec route;
 
-	public BenchmarkProductSpec(final String name, final int priority, final IValue releaseDistribution,
-			final long dueDateLeadTime, final BenchmarkRouteSpec route) {
+	public ProductSpec(final String name, final int priority, final IValue releaseDistribution,
+			final long dueDateLeadTime, final RouteSpec route) {
 		if (name == null || name.trim().isEmpty()) {
 			throw new IllegalArgumentException("name must not be blank");
 		}
@@ -43,7 +43,7 @@ public final class BenchmarkProductSpec {
 		return this.dueDateLeadTime;
 	}
 
-	public BenchmarkRouteSpec getRoute() {
+	public RouteSpec getRoute() {
 		return this.route;
 	}
 }
