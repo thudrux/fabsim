@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.terministic.fabsim.benchmarks.core.batching.SameProductAndStepBatchRule;
 import de.terministic.fabsim.benchmarks.core.results.RunResult;
 import de.terministic.fabsim.benchmarks.core.setup.SetupManager;
 import de.terministic.fabsim.benchmarks.core.specs.BreakdownSpec;
@@ -160,9 +159,6 @@ public abstract class BenchmarkFab {
 		final ToolGroup toolGroup = (ToolGroup) model.getSimComponentFactory().createToolGroup(
 				toolGroupSpec.getName(), toolGroupSpec.getNumberOfTools(), toolGroupSpec.getProcessingType());
 		toolGroup.setDispatchRule(dispatchRule);
-		if (toolGroupSpec.getProcessingType() == ProcessingType.BATCH) {
-			toolGroup.setBatchRule(new SameProductAndStepBatchRule(model));
-		}
 		createPredictiveMaintenance(model, toolGroup, toolGroupSpec);
 		createBreakdown(model, toolGroup, toolGroupSpec);
 		return toolGroup;
@@ -263,7 +259,7 @@ public abstract class BenchmarkFab {
 		return productSpec.getName() + "_Step" + (stepIndex + 1);
 	}
 
-	protected String getBatchDetailsName(final ProductSpec productSpec,
+	protected final String getBatchDetailsName(final ProductSpec productSpec,
 			final RouteStepSpec stepSpec, final int stepIndex) {
 		return productSpec.getName() + "_Step" + (stepIndex + 1) + "_Batch";
 	}
