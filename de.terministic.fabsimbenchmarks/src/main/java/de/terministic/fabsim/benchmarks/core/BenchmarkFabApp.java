@@ -26,7 +26,6 @@ public final class BenchmarkFabApp {
 		private String fabName;
 		private long simulationTimeHours = -1L;
 		private long warmupTimeHours = 0L;
-		private int runs = 1;
 		private String dispatchRuleName;
 		private Path logFile;
 		private boolean help;
@@ -94,7 +93,7 @@ public final class BenchmarkFabApp {
 	private void runFab(final CliConfig config, final LocalLogWriter logWriter) {
 		final FabImplementation fabImplementation = findFabImplementation(config.fabName);
 		final BenchmarkFab fab = fabImplementation.create(createLocalDispatchRule(config.dispatchRuleName), logWriter);
-		final RunResult result = fab.run(config.simulationTimeHours, config.runs, config.warmupTimeHours);
+		final RunResult result = fab.run(config.simulationTimeHours, config.warmupTimeHours);
 		printFabResult(result);
 	}
 
@@ -153,10 +152,6 @@ public final class BenchmarkFabApp {
 				config.warmupTimeHours = parseRequiredLong(arg, nextValue(args, ++i, arg));
 				continue;
 			}
-			if ("--runs".equals(arg)) {
-				config.runs = parseRequiredInt(arg, nextValue(args, ++i, arg));
-				continue;
-			}
 			if ("--dispatch-rule".equals(arg)) {
 				config.dispatchRuleName = nextValue(args, ++i, arg);
 				continue;
@@ -191,12 +186,6 @@ public final class BenchmarkFabApp {
 		if (config.dispatchRuleName == null) {
 			throw new IllegalArgumentException("--dispatch-rule random|fifo|edd|cr|srpt is required");
 		}
-		if (config.runs <= 0) {
-			throw new IllegalArgumentException("--runs must be a positive number");
-		}
-		if (config.runs > 1 && config.logFile != null) {
-			throw new IllegalArgumentException("--log-file is only supported when --runs is 1");
-		}
 	}
 
 	private String normalizeFabName(final String fabName) {
@@ -209,14 +198,6 @@ public final class BenchmarkFabApp {
 	private long parseRequiredLong(final String optionName, final String value) {
 		try {
 			return Long.parseLong(value);
-		} catch (final NumberFormatException ex) {
-			throw new IllegalArgumentException(optionName + " requires a numeric value");
-		}
-	}
-
-	private int parseRequiredInt(final String optionName, final String value) {
-		try {
-			return Integer.parseInt(value);
 		} catch (final NumberFormatException ex) {
 			throw new IllegalArgumentException(optionName + " requires a numeric value");
 		}
@@ -251,27 +232,11 @@ public final class BenchmarkFabApp {
 	}
 
 	private static void printFabResult(final RunResult result) {
-		if (result.getRuns() == 1L) {
-			System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
-			System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));
-			System.out.println("Completed wafers: " + result.getCompletedWafers());
-			System.out.println("Tardy wafers: " + result.getTardyWafers());
-			System.out.println("Flow factor: " + formatDecimal(result.getFlowFactor()));
-			return;
-		}
-
-		System.out.println("Completed wafers per day: mean="
-				+ formatDecimal(result.getCompletedWafersPerDayMean()) + ", std="
-				+ formatDecimal(result.getCompletedWafersPerDayStdDev()));
-		System.out.println("Tardiness per wafer: mean="
-				+ formatMinutes(result.getTardinessPerWaferMinutesMean()) + ", std="
-				+ formatMinutes(result.getTardinessPerWaferMinutesStdDev()));
-		System.out.println("Completed wafers: mean=" + formatDecimal(result.getCompletedWafersMean()) + ", std="
-				+ formatDecimal(result.getCompletedWafersStdDev()));
-		System.out.println("Tardy wafers: mean=" + formatDecimal(result.getTardyWafersMean()) + ", std="
-				+ formatDecimal(result.getTardyWafersStdDev()));
-		System.out.println("Flow factor: mean=" + formatDecimal(result.getFlowFactorMean()) + ", std="
-				+ formatDecimal(result.getFlowFactorStdDev()));
+		System.out.println("Completed wafers per day: " + formatDecimal(result.getCompletedWafersPerDay()));
+		System.out.println("Tardiness per wafer: " + formatMinutes(result.getTardinessPerWaferMinutes()));
+		System.out.println("Completed wafers: " + result.getCompletedWafers());
+		System.out.println("Tardy wafers: " + result.getTardyWafers());
+		System.out.println("Flow factor: " + formatDecimal(result.getFlowFactor()));
 	}
 
 	private static String formatDecimal(final double value) {
@@ -298,6 +263,6 @@ public final class BenchmarkFabApp {
 		System.out.println("Usage:");
 		System.out.println(
 				"  java -jar <benchmarks-jar> --fab " + supportedFabNames
-						+ " --simulation-time <hours> [--warmup-time <hours>] [--runs <n>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
+						+ " --simulation-time <hours> [--warmup-time <hours>] --dispatch-rule random|fifo|edd|cr|srpt [--log-file <path>]");
 	}
 }

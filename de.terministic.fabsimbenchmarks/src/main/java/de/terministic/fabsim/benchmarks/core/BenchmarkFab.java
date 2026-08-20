@@ -1,13 +1,11 @@
 package de.terministic.fabsim.benchmarks.core;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.terministic.fabsim.benchmarks.core.batching.SameProductAndStepBatchRule;
 import de.terministic.fabsim.benchmarks.core.results.RunResult;
-import de.terministic.fabsim.benchmarks.core.results.RunResultAggregator;
 import de.terministic.fabsim.benchmarks.core.setup.SetupManager;
 import de.terministic.fabsim.benchmarks.core.specs.BreakdownSpec;
 import de.terministic.fabsim.benchmarks.core.specs.FabSpec;
@@ -40,7 +38,6 @@ public abstract class BenchmarkFab {
 	protected static final String STEP_SINK = "Sink";
 	protected static final int LOT_SIZE = 25;
 
-	private FabModel model;
 	private DispatchMode dispatchMode;
 	private AbstractDispatchRule dispatchRule;
 	private DispatchProvider dispatchProvider;
@@ -59,7 +56,6 @@ public abstract class BenchmarkFab {
 		this.dispatchProvider = provider;
 		this.dispatchRule = null;
 		this.logWriter = null;
-		this.model = createFabModel();
 	}
 
 	protected BenchmarkFab(final AbstractDispatchRule dispatchRule,
@@ -71,19 +67,9 @@ public abstract class BenchmarkFab {
 		this.dispatchRule = dispatchRule;
 		this.dispatchProvider = null;
 		this.logWriter = logWriter;
-		this.model = createFabModel();
 	}
 
-	public final RunResult run(final long simulationTimeHours, final int runs, final long warmupTimeHours) {
-		if (runs <= 0) {
-			throw new IllegalArgumentException("runs must be a positive number");
-		}
-		if (this.model == null) {
-			throw new IllegalStateException(getBenchmarkName() + " must be built before running the simulation");
-		}
-		if (runs > 1 && (this.logWriter != null || this.dispatchRule instanceof LoggingDispatchRule)) {
-			throw new IllegalArgumentException("Logging is only supported for a single " + getBenchmarkName() + " run");
-		}
+	public final RunResult run(final long simulationTimeHours, final long warmupTimeHours) {
 		if (simulationTimeHours <= 0L) {
 			throw new IllegalArgumentException("simulationTimeHours must be a positive number");
 		}
@@ -94,16 +80,7 @@ public abstract class BenchmarkFab {
 			throw new IllegalArgumentException("warmupTimeHours must be less than simulationTimeHours");
 		}
 
-		final List<RunResult> runResults = new ArrayList<>(runs);
-		if (runs == 1) {
-			runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
-		} else {
-			for (int run = 0; run < runs; run++) {
-				this.model = createFabModel();
-				runResults.add(runSimulation(this.model, simulationTimeHours, warmupTimeHours));
-			}
-		}
-		return RunResultAggregator.aggregate(runs, simulationTimeHours, runResults);
+		return runSimulation(createFabModel(), simulationTimeHours, warmupTimeHours);
 	}
 
 	private FabModel createFabModel() {

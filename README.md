@@ -74,21 +74,8 @@ docker run --rm \
   --dispatch-rule fifo
 ```
 
-To run multiple simulations, pass `--runs <n>`:
-
-```bash
-docker run --rm \
-  fabsim \
-  --fab minifab \
-  --simulation-time 168 \
-  --warmup-time 24 \
-  --runs 20 \
-  --dispatch-rule fifo
-```
-
 To write the dispatch log to disk in the format described in
 [Dispatch Log Format](#dispatch-log-format), mount a host directory and pass `--log-file`.
-Logging is only supported for a single run:
 
 ```bash
 mkdir -p logs
@@ -99,7 +86,6 @@ docker run --rm \
   --fab minifab \
   --simulation-time 168 \
   --warmup-time 24 \
-  --runs 1 \
   --dispatch-rule fifo \
   --log-file /logs/minifab.jsonl
 ```
@@ -115,12 +101,10 @@ Required arguments:
 Optional arguments:
 
 - `--warmup-time <hours>`: warmup period excluded from reported metrics.
-- `--runs <n>`: number of independent simulation runs. Defaults to `1`.
-- `--log-file <path>`: JSONL dispatch-log output path. Only supported when `--runs 1`.
+- `--log-file <path>`: JSONL dispatch-log output path.
 - `--help`, `-h`: print CLI usage.
 
-After the simulation finishes, the launcher prints either single-run metrics or aggregated mean/std
-summaries for:
+After the simulation finishes, the launcher prints metrics for:
 
 - completed wafers per day
 - tardiness per wafer in minutes
@@ -188,15 +172,13 @@ provider = Provider()
 mini_fab = MiniFab(provider)
 simulation_time_hours = 168
 warmup_time_hours = 24
-run_count = 100
 
 result = mini_fab.run(
     simulation_time_hours,
-    run_count,
     warmup_time_hours,
 )
 
-completed_wafers_per_day_mean = result.getCompletedWafersPerDayMean()
+completed_wafers_per_day = result.getCompletedWafersPerDay()
 ```
 
 All result methods available on `result` are listed in [Run Result Methods](#run-result-methods).
@@ -290,29 +272,17 @@ Java lists. From Python, use `.size()` and `.get(index)` or JPype's Java collect
 
 ## Run Result Methods
 
-`MiniFab.run(...)` returns a `RunResult`. For multi-run simulations, use the mean and standard-deviation
-methods. The methods without `Mean`/`StdDev` are single-run aliases or rounded aggregate values.
+`MiniFab.run(...)` returns a single-run `RunResult`. External callers should orchestrate repeated runs
+and aggregate statistics outside the Java benchmark.
 
 | Method | Description |
 | --- | --- |
-| `getRuns()` | Number of simulation runs included in the result. |
-| `getSimulationTimeHours()` | Rounded mean simulation time in hours. |
-| `getSimulationTimeHoursMean()` | Mean simulation time in hours. |
-| `getCompletedWafersPerDay()` | Alias for `getCompletedWafersPerDayMean()`. |
-| `getCompletedWafersPerDayMean()` | Mean completed wafers per day after warmup. |
-| `getCompletedWafersPerDayStdDev()` | Standard deviation of completed wafers per day after warmup. |
-| `getTardinessPerWaferMinutes()` | Alias for `getTardinessPerWaferMinutesMean()`. |
-| `getTardinessPerWaferMinutesMean()` | Mean tardiness per wafer in minutes after warmup. |
-| `getTardinessPerWaferMinutesStdDev()` | Standard deviation of tardiness per wafer in minutes after warmup. |
-| `getCompletedWafers()` | Rounded mean completed wafers after warmup. |
-| `getCompletedWafersMean()` | Mean completed wafers after warmup. |
-| `getCompletedWafersStdDev()` | Standard deviation of completed wafers after warmup. |
-| `getTardyWafers()` | Rounded mean tardy wafers after warmup. |
-| `getTardyWafersMean()` | Mean tardy wafers after warmup. |
-| `getTardyWafersStdDev()` | Standard deviation of tardy wafers after warmup. |
-| `getFlowFactor()` | Alias for `getFlowFactorMean()`. |
-| `getFlowFactorMean()` | Mean flow factor after warmup. |
-| `getFlowFactorStdDev()` | Standard deviation of flow factor after warmup. |
+| `getSimulationTimeHours()` | Simulation time in hours. |
+| `getCompletedWafersPerDay()` | Completed wafers per day after warmup. |
+| `getTardinessPerWaferMinutes()` | Tardiness per wafer in minutes after warmup. |
+| `getCompletedWafers()` | Completed wafers after warmup. |
+| `getTardyWafers()` | Tardy wafers after warmup. |
+| `getFlowFactor()` | Flow factor after warmup. |
 
 ## Development
 
