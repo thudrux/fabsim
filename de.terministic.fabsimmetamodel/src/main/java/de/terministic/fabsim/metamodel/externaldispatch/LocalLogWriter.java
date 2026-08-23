@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.logging;
+package de.terministic.fabsim.metamodel.externaldispatch;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.CostSnapshot;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FabStateSnapshot;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FlowItemInProcessSnapshot;

@@ -23,9 +23,9 @@ import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchRules.LoggingDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
-import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
-import de.terministic.fabsim.metamodel.logging.LoggingDispatchRule;
+import de.terministic.fabsim.metamodel.externaldispatch.LocalLogWriter;
 
 public abstract class BenchmarkFab {
 	public static final long SECOND = 1000L;

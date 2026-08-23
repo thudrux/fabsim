@@ -18,7 +18,7 @@ import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
-import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
+import de.terministic.fabsim.metamodel.externaldispatch.LocalLogWriter;
 
 public class MiniFab extends BenchmarkFab {
 	public MiniFab(final DispatchProvider provider) {

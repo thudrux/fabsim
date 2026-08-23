@@ -11,7 +11,7 @@ import de.terministic.fabsim.benchmarks.implementations.MiniFab;
 import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
 import de.terministic.fabsim.metamodel.dispatchRules.Random;
-import de.terministic.fabsim.metamodel.logging.LocalLogWriter;
+import de.terministic.fabsim.metamodel.externaldispatch.LocalLogWriter;
 
 public final class BenchmarkFabApp {
 
