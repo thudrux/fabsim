@@ -202,7 +202,7 @@ All time values are in milliseconds unless stated otherwise.
 | `fab_state.simulation_time` | integer | Current simulation timestamp. |
 | `fab_state.tool_groups` | array | Snapshot of every tool group in the fab. |
 | `fab_state.cost_snapshot` | object | Aggregate cost and WIP snapshot. |
-| `fab_state.cost_snapshot.total_projected_tardiness` | integer | Projected wafer-level tardiness, in minutes, over queued and in-process work. |
+| `fab_state.cost_snapshot.total_projected_tardiness` | integer | Projected wafer-level tardiness, in milliseconds, over queued and in-process work. |
 | `fab_state.cost_snapshot.work_in_progress` | integer | Current wafer-level work in progress. |
 | `fab_state.tool_groups[].name` | string | Tool-group name. |
 | `fab_state.tool_groups[].waiting_for_dispatch` | boolean | Whether this is the tool group currently requesting a dispatch decision. |
@@ -233,6 +233,11 @@ Example line:
 ```
 
 ## Dispatch Request API
+
+Snapshot classes are top-level types in
+`de.terministic.fabsim.metamodel.externaldispatch.snapshots`.
+
+All time values are in milliseconds unless stated otherwise.
 
 | Java object | Methods |
 | --- | --- |

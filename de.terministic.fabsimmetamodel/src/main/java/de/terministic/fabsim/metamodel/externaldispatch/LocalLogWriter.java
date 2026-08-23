@@ -9,12 +9,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.CostSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FabStateSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FlowItemInProcessSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.FlowItemQueuedSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.ToolGroupSnapshot;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest.ToolSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.CostSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.FabStateSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.FlowItemInProcessSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.FlowItemQueuedSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.ToolGroupSnapshot;
+import de.terministic.fabsim.metamodel.externaldispatch.snapshots.ToolSnapshot;
 
 public final class LocalLogWriter implements AutoCloseable {
 
@@ -47,8 +47,8 @@ public final class LocalLogWriter implements AutoCloseable {
 		if (this.closed) {
 			throw new IllegalStateException("Dispatch decision log writer has already been closed for " + this.logFile);
 		}
-		final FlowItemQueuedSnapshot chosenFlowItem = DispatchDecisionRequest.FlowItemQueuedSnapshot
-				.capture(selectedFlowItem, request.getSimulationTime(), request.getProjectedCycleTimeFactor());
+		final FlowItemQueuedSnapshot chosenFlowItem = FlowItemQueuedSnapshot.capture(selectedFlowItem,
+				request.getSimulationTime(), request.getProjectedCycleTimeFactor());
 		try {
 			this.writer.write(toJson(request.getFabState(), chosenFlowItem));
 			this.writer.write('\n');
@@ -111,7 +111,8 @@ public final class LocalLogWriter implements AutoCloseable {
 
 	private void appendCostSnapshot(final StringBuilder builder, final CostSnapshot costSnapshot) {
 		builder.append('{');
-		builder.append("\"total_projected_tardiness\":").append(costSnapshot.getTotalProjectedTardiness()).append(',');
+		builder.append("\"total_projected_tardiness\":")
+				.append(costSnapshot.getTotalProjectedTardiness()).append(',');
 		builder.append("\"work_in_progress\":").append(costSnapshot.getWorkInProgress());
 		builder.append('}');
 	}
