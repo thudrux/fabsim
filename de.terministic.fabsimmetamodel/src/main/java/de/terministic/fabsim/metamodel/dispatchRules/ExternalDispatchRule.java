@@ -18,21 +18,21 @@ public class ExternalDispatchRule extends AbstractDispatchRule {
 
 	private final FIFO fallbackRule = new FIFO();
 	private final DispatchProvider provider;
-	private final double projectedCycleTimeFactor;
+	private final double leadTimeFactor;
 
 	public ExternalDispatchRule(final String name, final DispatchProvider provider,
-			final double projectedCycleTimeFactor) {
+			final double leadTimeFactor) {
 		super(name == null ? "ExternalDispatchRule" : name);
 		if (provider == null) {
 			throw new IllegalArgumentException("provider must not be null");
 		}
-		DispatchDecisionRequest.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+		DispatchDecisionRequest.validateLeadTimeFactor(leadTimeFactor);
 		this.provider = provider;
-		this.projectedCycleTimeFactor = projectedCycleTimeFactor;
+		this.leadTimeFactor = leadTimeFactor;
 	}
 
-	public ExternalDispatchRule(final DispatchProvider provider, final double projectedCycleTimeFactor) {
-		this("ExternalDispatchRule", provider, projectedCycleTimeFactor);
+	public ExternalDispatchRule(final DispatchProvider provider, final double leadTimeFactor) {
+		this("ExternalDispatchRule", provider, leadTimeFactor);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ExternalDispatchRule extends AbstractDispatchRule {
 			return this.fallbackRule.getBestItem(items);
 		}
 		final DispatchDecisionRequest request = DispatchDecisionRequest.capture(tg.getFabModel(), tg, tool, items,
-				this.projectedCycleTimeFactor);
+				this.leadTimeFactor);
 		final DispatchDecisionResponse response = this.provider.selectDispatchCandidate(request);
 		if (response == null) {
 			throw new ExternalDispatchException("External dispatch provider returned no decision for tool group "

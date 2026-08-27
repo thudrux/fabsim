@@ -21,10 +21,10 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	}
 
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final ToolGroup toolGroup,
-			final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item,
-				projectedCycleTimeFactor),
+				leadTimeFactor),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(toolGroup, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
@@ -34,10 +34,10 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	}
 
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-			final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item,
-				projectedCycleTimeFactor),
+				leadTimeFactor),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(tool, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
@@ -47,10 +47,10 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	}
 
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final long currentTime,
-			final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item,
-				projectedCycleTimeFactor),
+				leadTimeFactor),
 				SnapshotCalculations.calculateExpectedProcessingTime(item), 0L,
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
 				SnapshotCalculations.calculatePriority(item),

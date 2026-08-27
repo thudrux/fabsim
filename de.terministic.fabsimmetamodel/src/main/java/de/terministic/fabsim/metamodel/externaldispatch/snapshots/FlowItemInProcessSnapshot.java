@@ -15,14 +15,14 @@ public final class FlowItemInProcessSnapshot extends FlowItemSnapshotBase {
 	}
 
 	public static FlowItemInProcessSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-			final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		final long processingTimeLeft = tool.getToolStateMachine().getProcessingTimeLeft(tool);
 		if (processingTimeLeft < 0L) {
 			return null;
 		}
 		return new FlowItemInProcessSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item,
-				processingTimeLeft, projectedCycleTimeFactor),
+				processingTimeLeft, leadTimeFactor),
 				processingTimeLeft,
 				SnapshotCalculations.calculatePriority(item),
 				SnapshotCalculations.calculateLateness(item, currentTime));

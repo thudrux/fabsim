@@ -201,7 +201,7 @@ class BenchmarkFabAssemblyTest {
 		}
 
 		@Override
-		protected double getFlowFactor() {
+		protected double getLeadTimeFactor() {
 			return 1.0d;
 		}
 

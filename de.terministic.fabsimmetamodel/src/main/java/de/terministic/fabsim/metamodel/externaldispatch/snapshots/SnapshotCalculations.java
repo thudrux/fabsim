@@ -30,7 +30,7 @@ final class SnapshotCalculations {
 	}
 
 	static long calculateRemainingCycleTime(final AbstractFlowItem item,
-			final double projectedCycleTimeFactor) {
+			final double leadTimeFactor) {
 		if (item == null || item.getRecipe() == null) {
 			return 0L;
 		}
@@ -41,7 +41,7 @@ final class SnapshotCalculations {
 			}
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
-				totalRemainingCycleTime += calculateRemainingCycleTime(child, projectedCycleTimeFactor);
+				totalRemainingCycleTime += calculateRemainingCycleTime(child, leadTimeFactor);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -51,13 +51,13 @@ final class SnapshotCalculations {
 		}
 		long remainingProcessTime = 0L;
 		for (int i = currentStepNumber; i < item.getRecipe().size(); i++) {
-			remainingProcessTime += calculateStepCycleTime(item.getRecipe().get(i));
+			remainingProcessTime += calculateNominalStepDuration(item.getRecipe().get(i));
 		}
-		return Math.round(remainingProcessTime * projectedCycleTimeFactor);
+		return Math.round(remainingProcessTime * leadTimeFactor);
 	}
 
 	static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft,
-			final double projectedCycleTimeFactor) {
+			final double leadTimeFactor) {
 		if (item == null || item.getRecipe() == null) {
 			return Math.max(0L, processingTimeLeft);
 		}
@@ -69,7 +69,7 @@ final class SnapshotCalculations {
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
 				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft,
-						projectedCycleTimeFactor);
+						leadTimeFactor);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -79,13 +79,13 @@ final class SnapshotCalculations {
 		}
 		long futureProcessTime = 0L;
 		for (int i = currentStepNumber + 1; i < item.getRecipe().size(); i++) {
-			futureProcessTime += calculateStepCycleTime(item.getRecipe().get(i));
+			futureProcessTime += calculateNominalStepDuration(item.getRecipe().get(i));
 		}
-		return Math.round((processingTimeLeft + futureProcessTime) * projectedCycleTimeFactor);
+		return Math.round((processingTimeLeft + futureProcessTime) * leadTimeFactor);
 	}
 
 	static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime,
-			final double projectedCycleTimeFactor) {
+			final double leadTimeFactor) {
 		if (item == null) {
 			return 0L;
 		}
@@ -96,12 +96,12 @@ final class SnapshotCalculations {
 			}
 			long total = 0L;
 			for (final AbstractFlowItem lot : batch.getItems()) {
-				total += calculateWaferLevelProjectedTardiness(lot, currentTime, projectedCycleTimeFactor);
+				total += calculateWaferLevelProjectedTardiness(lot, currentTime, leadTimeFactor);
 			}
 			return total;
 		}
 		return item.getSize() * (calculateLateness(item, currentTime)
-				+ calculateRemainingCycleTime(item, projectedCycleTimeFactor));
+				+ calculateRemainingCycleTime(item, leadTimeFactor));
 	}
 
 	static long calculateWaferLevelWorkInProgress(final AbstractFlowItem item) {
@@ -231,12 +231,12 @@ final class SnapshotCalculations {
 		return 0L;
 	}
 
-	private static long calculateStepCycleTime(final ProcessStep step) {
+	private static long calculateNominalStepDuration(final ProcessStep step) {
 		return Math.max(0L, step.getLoadTime()) + Math.max(0L, step.getAvgDuration())
 				+ Math.max(0L, step.getUnloadTime());
 	}
 
-	static void validateProjectedCycleTimeFactor(final double projectedCycleTimeFactor) {
-		DispatchDecisionRequest.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+	static void validateLeadTimeFactor(final double leadTimeFactor) {
+		DispatchDecisionRequest.validateLeadTimeFactor(leadTimeFactor);
 	}
 }

@@ -16,38 +16,38 @@ public final class DispatchDecisionRequest {
 
 	private final FabStateSnapshot fabState;
 	private final List<FlowItemQueuedWithIDSnapshot> candidates;
-	private final double projectedCycleTimeFactor;
+	private final double leadTimeFactor;
 
 	private DispatchDecisionRequest(final FabStateSnapshot fabState,
-			final List<FlowItemQueuedWithIDSnapshot> candidates, final double projectedCycleTimeFactor) {
+			final List<FlowItemQueuedWithIDSnapshot> candidates, final double leadTimeFactor) {
 		this.fabState = fabState;
 		this.candidates = candidates;
-		this.projectedCycleTimeFactor = projectedCycleTimeFactor;
+		this.leadTimeFactor = leadTimeFactor;
 	}
 
 	public static DispatchDecisionRequest capture(final FabModel model, final AbstractToolGroup toolGroup,
 			final AbstractTool tool, final Collection<AbstractFlowItem> candidates,
-			final double projectedCycleTimeFactor) {
-		validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final double leadTimeFactor) {
+		validateLeadTimeFactor(leadTimeFactor);
 		final long simulationTime = model == null || model.getSimulationEngine() == null ? 0L
 				: model.getSimulationEngine().getTime();
 		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime,
-				projectedCycleTimeFactor);
+				leadTimeFactor);
 		final List<FlowItemQueuedWithIDSnapshot> candidateSnapshots = new ArrayList<>();
 		if (candidates != null) {
 			for (final AbstractFlowItem item : candidates) {
 				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime,
-						projectedCycleTimeFactor));
+						leadTimeFactor));
 			}
 		}
 		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots),
-				projectedCycleTimeFactor);
+				leadTimeFactor);
 	}
 
-	public static void validateProjectedCycleTimeFactor(final double projectedCycleTimeFactor) {
-		if (Double.isNaN(projectedCycleTimeFactor) || Double.isInfinite(projectedCycleTimeFactor)
-				|| projectedCycleTimeFactor <= 0.0d) {
-			throw new IllegalArgumentException("projectedCycleTimeFactor must be a positive finite value");
+	public static void validateLeadTimeFactor(final double leadTimeFactor) {
+		if (Double.isNaN(leadTimeFactor) || Double.isInfinite(leadTimeFactor)
+				|| leadTimeFactor <= 0.0d) {
+			throw new IllegalArgumentException("leadTimeFactor must be a positive finite value");
 		}
 	}
 
@@ -63,7 +63,7 @@ public final class DispatchDecisionRequest {
 		return this.fabState == null ? 0L : this.fabState.getSimulationTime();
 	}
 
-	public double getProjectedCycleTimeFactor() {
-		return this.projectedCycleTimeFactor;
+	public double getLeadTimeFactor() {
+		return this.leadTimeFactor;
 	}
 }

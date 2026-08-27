@@ -15,10 +15,10 @@ public final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 	}
 
 	public static FlowItemQueuedWithIDSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
-			final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		return new FlowItemQueuedWithIDSnapshot(item.getId(),
-				SnapshotCalculations.calculateRemainingCycleTime(item, projectedCycleTimeFactor),
+				SnapshotCalculations.calculateRemainingCycleTime(item, leadTimeFactor),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(tool, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),

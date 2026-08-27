@@ -20,8 +20,8 @@ public final class FabStateSnapshot {
 	}
 
 	public static FabStateSnapshot capture(final FabModel model, final AbstractToolGroup selectedToolGroup,
-			final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		final List<ToolGroupSnapshot> toolGroups = new ArrayList<>();
 		long totalProjectedTardiness = 0L;
 		long workInProgress = 0L;
@@ -30,7 +30,7 @@ public final class FabStateSnapshot {
 				final boolean waitingForDispatch = selectedToolGroup != null
 						&& groupBase.getId() == selectedToolGroup.getId();
 				final ToolGroupSnapshot toolGroup = ToolGroupSnapshot.capture(groupBase, waitingForDispatch,
-						currentTime, projectedCycleTimeFactor);
+						currentTime, leadTimeFactor);
 				toolGroups.add(toolGroup);
 				totalProjectedTardiness += toolGroup.getTotalProjectedTardiness();
 				workInProgress += toolGroup.getWorkInProgress();

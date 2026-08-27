@@ -31,13 +31,13 @@ public final class ToolGroupSnapshot {
 	}
 
 	public static ToolGroupSnapshot capture(final AbstractToolGroup toolGroupBase,
-			final boolean waitingForDispatch, final long currentTime, final double projectedCycleTimeFactor) {
-		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
+			final boolean waitingForDispatch, final long currentTime, final double leadTimeFactor) {
+		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
 		final ToolGroup toolGroup = (ToolGroup) toolGroupBase;
 		final List<FlowItemQueuedSnapshot> queuedItems = new ArrayList<>();
 		for (final AbstractFlowItem item : toolGroup.getQueue()) {
 			queuedItems.add(FlowItemQueuedSnapshot.capture(item, toolGroup, currentTime,
-					projectedCycleTimeFactor));
+					leadTimeFactor));
 		}
 		final Map<AbstractTool, AbstractFlowItem> itemByTool = new LinkedHashMap<>();
 		for (final Map.Entry<AbstractFlowItem, AbstractTool> entry : toolGroup.getInProcessMap().entrySet()) {
@@ -47,17 +47,17 @@ public final class ToolGroupSnapshot {
 		for (final AbstractTool tool : toolGroup.getTools().values()) {
 			final AbstractFlowItem item = itemByTool.get(tool);
 			final FlowItemInProcessSnapshot inProcessItem = item == null ? null
-					: FlowItemInProcessSnapshot.capture(item, tool, currentTime, projectedCycleTimeFactor);
+					: FlowItemInProcessSnapshot.capture(item, tool, currentTime, leadTimeFactor);
 			tools.add(ToolSnapshot.capture(tool, inProcessItem));
 		}
 		long totalProjectedTardiness = 0L;
 		for (final AbstractFlowItem item : toolGroup.getQueue()) {
 			totalProjectedTardiness += SnapshotCalculations.calculateWaferLevelProjectedTardiness(item,
-					currentTime, projectedCycleTimeFactor);
+					currentTime, leadTimeFactor);
 		}
 		for (final AbstractFlowItem item : itemByTool.values()) {
 			totalProjectedTardiness += SnapshotCalculations.calculateWaferLevelProjectedTardiness(item,
-					currentTime, projectedCycleTimeFactor);
+					currentTime, leadTimeFactor);
 		}
 		long workInProgress = 0L;
 		for (final AbstractFlowItem item : toolGroup.getQueue()) {
