@@ -20,9 +20,6 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	/** The dispatch rule. */
 	protected AbstractDispatchRule dispatchRule;
 
-	/** The fab model. */
-	protected FabModel fabModel;
-
 	/** The tg controller. */
 	protected AbstractToolGroupController tgController;
 
@@ -44,7 +41,6 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 */
 	public AbstractToolGroup(FabModel model, final String name, final AbstractToolGroupController tgController) {
 		super(model, name);
-		this.fabModel = model;
 		this.tgController = tgController;
 	}
 
@@ -83,7 +79,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 * @return the fab model
 	 */
 	public FabModel getFabModel() {
-		return this.fabModel;
+		return (FabModel) getModel();
 	}
 
 	/**
