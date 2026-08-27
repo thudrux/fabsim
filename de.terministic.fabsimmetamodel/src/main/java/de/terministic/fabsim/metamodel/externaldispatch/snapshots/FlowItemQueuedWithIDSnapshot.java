@@ -7,9 +7,9 @@ public final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 	private final long id;
 
 	FlowItemQueuedWithIDSnapshot(final long id, final long remainingCycleTime,
-			final long processingTime, final long expectedSetupTime, final long timeSinceArrival,
+			final long expectedProcessingTime, final long expectedSetupTime, final long timeSinceArrival,
 			final int priority, final long lateness, final String recipe) {
-		super(remainingCycleTime, processingTime, expectedSetupTime, timeSinceArrival, priority, lateness,
+		super(remainingCycleTime, expectedProcessingTime, expectedSetupTime, timeSinceArrival, priority, lateness,
 				recipe);
 		this.id = id;
 	}
@@ -19,7 +19,7 @@ public final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 		return new FlowItemQueuedWithIDSnapshot(item.getId(),
 				SnapshotCalculations.calculateRemainingCycleTime(item, projectedCycleTimeFactor),
-				SnapshotCalculations.calculateProcessingTime(item),
+				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(tool, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
 				SnapshotCalculations.calculatePriority(item),

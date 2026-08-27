@@ -18,7 +18,7 @@ final class SnapshotCalculations {
 	private SnapshotCalculations() {
 	}
 
-	static long calculateProcessingTime(final AbstractFlowItem item) {
+	static long calculateExpectedProcessingTime(final AbstractFlowItem item) {
 		if (item == null || item.getRecipe() == null) {
 			return 0L;
 		}

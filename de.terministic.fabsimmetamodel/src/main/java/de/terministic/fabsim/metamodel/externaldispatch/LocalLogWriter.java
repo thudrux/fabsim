@@ -173,7 +173,7 @@ public final class LocalLogWriter implements AutoCloseable {
 	private void appendFlowItemQueued(final StringBuilder builder, final FlowItemQueuedSnapshot item) {
 		builder.append('{');
 		builder.append("\"remaining_cycle_time\":").append(item.getRemainingCycleTime()).append(',');
-		builder.append("\"processing_time\":").append(item.getProcessingTime()).append(',');
+		builder.append("\"expected_processing_time\":").append(item.getExpectedProcessingTime()).append(',');
 		builder.append("\"expected_setup_time\":").append(item.getExpectedSetupTime()).append(',');
 		builder.append("\"time_since_arrival\":").append(item.getTimeSinceArrival()).append(',');
 		builder.append("\"priority\":").append(item.getPriority()).append(',');

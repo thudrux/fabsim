@@ -39,7 +39,7 @@ public class ExternalDispatchRuleTest {
 		Assertions.assertEquals(fixture.firstItem.getId(), provider.request.getCandidates().get(0).getId());
 		Assertions.assertEquals(fixture.secondItem.getId(), provider.request.getCandidates().get(1).getId());
 		Assertions.assertEquals("Recipe", provider.request.getCandidates().get(0).getRecipe());
-		Assertions.assertEquals(10L, provider.request.getCandidates().get(0).getProcessingTime());
+		Assertions.assertEquals(10L, provider.request.getCandidates().get(0).getExpectedProcessingTime());
 		Assertions.assertEquals(20L, provider.request.getCandidates().get(0).getRemainingCycleTime());
 		Assertions.assertEquals(7L, provider.request.getCandidates().get(0).getExpectedSetupTime());
 		Assertions.assertEquals(1, provider.request.getFabState().getToolGroups().size());
