@@ -22,7 +22,7 @@ public class AbstractToolStateMachine {
 		throw new NotYetImplementedException();
 	}
 
-	public long getRemainingProcessTime(final AbstractTool abstractTool) {
+	public long getProcessingTimeLeft(final AbstractTool abstractTool) {
 		// TODO Auto-generated method stub
 		throw new NotYetImplementedException();
 	}
