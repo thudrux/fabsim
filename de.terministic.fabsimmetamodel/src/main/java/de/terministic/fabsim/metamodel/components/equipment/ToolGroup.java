@@ -15,6 +15,7 @@ import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
+import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.ToolAndItem;
@@ -260,7 +261,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			final AbstractTool tool = toolAndItem.getTool();
 			final AbstractFlowItem item = toolAndItem.getItem();
 			item.getTimeStamps(item.getCurrentStepNumber()).setStartProcessingTime(this.tgController.getTime());
-			this.queue.remove(item);
+			removeStartedItemFromQueue(item);
 			this.busyTools.add((Tool) tool);
 			this.standbyTools.remove((Tool) tool);
 			this.inProcessMap.put(item, tool);
@@ -268,6 +269,16 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			item.unscheduleMaxQueueTimeEvents();
 			sendFlowItemToResource(item, tool);
 
+		}
+	}
+
+	private void removeStartedItemFromQueue(final AbstractFlowItem item) {
+		this.queue.remove(item);
+
+		if (item instanceof Batch) {
+			for (final AbstractFlowItem batchItem : ((Batch) item).getItems()) {
+				this.queue.remove(batchItem);
+			}
 		}
 	}
 
