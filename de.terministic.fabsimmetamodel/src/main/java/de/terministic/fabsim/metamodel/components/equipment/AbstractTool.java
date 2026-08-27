@@ -108,8 +108,8 @@ public abstract class AbstractTool extends AbstractResource {
 		return this.tgController;
 	}
 
-	public AbstractToolStateMachine getToolStateMachine() {
-		return this.toolStateMachine;
+	public long getProcessingTimeLeft() {
+		return this.toolStateMachine.getProcessingTimeLeft(this);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public final class FlowItemInProcessSnapshot extends FlowItemSnapshotBase {
 	public static FlowItemInProcessSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
 			final long currentTime, final double leadTimeFactor) {
 		SnapshotCalculations.validateLeadTimeFactor(leadTimeFactor);
-		final long processingTimeLeft = tool.getToolStateMachine().getProcessingTimeLeft(tool);
+		final long processingTimeLeft = tool.getProcessingTimeLeft();
 		if (processingTimeLeft < 0L) {
 			return null;
 		}
