@@ -126,9 +126,6 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append(',');
 		builder.append("\"queued_items\":");
 		appendQueuedItems(builder, toolGroup.getQueuedItems());
-		builder.append(',');
-		builder.append("\"in_process_items\":");
-		appendInProcessItems(builder, toolGroup.getInProcessItems());
 		builder.append('}');
 	}
 
@@ -141,7 +138,9 @@ public final class LocalLogWriter implements AutoCloseable {
 			final ToolSnapshot tool = tools.get(i);
 			builder.append('{');
 			builder.append("\"id\":").append(tool.getId()).append(',');
-			builder.append("\"current_tool_state\":").append(quote(tool.getCurrentToolState()));
+			builder.append("\"current_tool_state\":").append(quote(tool.getCurrentToolState())).append(',');
+			builder.append("\"in_process_item\":");
+			appendInProcessItem(builder, tool.getInProcessItem());
 			builder.append('}');
 		}
 		builder.append(']');
@@ -158,21 +157,17 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append(']');
 	}
 
-	private void appendInProcessItems(final StringBuilder builder, final List<FlowItemInProcessSnapshot> items) {
-		builder.append('[');
-		for (int i = 0; i < items.size(); i++) {
-			if (i > 0) {
-				builder.append(',');
-			}
-			final FlowItemInProcessSnapshot item = items.get(i);
-			builder.append('{');
-			builder.append("\"remaining_cycle_time\":").append(item.getRemainingCycleTime()).append(',');
-			builder.append("\"processing_time_left\":").append(item.getProcessingTimeLeft()).append(',');
-			builder.append("\"priority\":").append(item.getPriority()).append(',');
-			builder.append("\"lateness\":").append(item.getLateness());
-			builder.append('}');
+	private void appendInProcessItem(final StringBuilder builder, final FlowItemInProcessSnapshot item) {
+		if (item == null) {
+			builder.append("null");
+			return;
 		}
-		builder.append(']');
+		builder.append('{');
+		builder.append("\"remaining_cycle_time\":").append(item.getRemainingCycleTime()).append(',');
+		builder.append("\"processing_time_left\":").append(item.getProcessingTimeLeft()).append(',');
+		builder.append("\"priority\":").append(item.getPriority()).append(',');
+		builder.append("\"lateness\":").append(item.getLateness());
+		builder.append('}');
 	}
 
 	private void appendFlowItemQueued(final StringBuilder builder, final FlowItemQueuedSnapshot item) {

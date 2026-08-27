@@ -16,19 +16,16 @@ public final class ToolGroupSnapshot {
 	private final boolean waitingForDispatch;
 	private final List<ToolSnapshot> tools;
 	private final List<FlowItemQueuedSnapshot> queuedItems;
-	private final List<FlowItemInProcessSnapshot> inProcessItems;
 	private final long totalProjectedTardiness;
 	private final long workInProgress;
 
 	ToolGroupSnapshot(final String name, final boolean waitingForDispatch, final List<ToolSnapshot> tools,
-			final List<FlowItemQueuedSnapshot> queuedItems,
-			final List<FlowItemInProcessSnapshot> inProcessItems, final long totalProjectedTardiness,
+			final List<FlowItemQueuedSnapshot> queuedItems, final long totalProjectedTardiness,
 			final long workInProgress) {
 		this.name = name;
 		this.waitingForDispatch = waitingForDispatch;
 		this.tools = tools;
 		this.queuedItems = queuedItems;
-		this.inProcessItems = inProcessItems;
 		this.totalProjectedTardiness = totalProjectedTardiness;
 		this.workInProgress = workInProgress;
 	}
@@ -37,26 +34,21 @@ public final class ToolGroupSnapshot {
 			final boolean waitingForDispatch, final long currentTime, final double projectedCycleTimeFactor) {
 		SnapshotCalculations.validateProjectedCycleTimeFactor(projectedCycleTimeFactor);
 		final ToolGroup toolGroup = (ToolGroup) toolGroupBase;
-		final List<ToolSnapshot> tools = new ArrayList<>();
-		for (final AbstractTool tool : toolGroup.getTools().values()) {
-			tools.add(ToolSnapshot.capture(tool));
-		}
 		final List<FlowItemQueuedSnapshot> queuedItems = new ArrayList<>();
 		for (final AbstractFlowItem item : toolGroup.getQueue()) {
 			queuedItems.add(FlowItemQueuedSnapshot.capture(item, toolGroup, currentTime,
 					projectedCycleTimeFactor));
 		}
-		final List<FlowItemInProcessSnapshot> inProcessItems = new ArrayList<>();
 		final Map<AbstractTool, AbstractFlowItem> itemByTool = new LinkedHashMap<>();
 		for (final Map.Entry<AbstractFlowItem, AbstractTool> entry : toolGroup.getInProcessMap().entrySet()) {
 			itemByTool.putIfAbsent(entry.getValue(), entry.getKey());
 		}
+		final List<ToolSnapshot> tools = new ArrayList<>();
 		for (final AbstractTool tool : toolGroup.getTools().values()) {
 			final AbstractFlowItem item = itemByTool.get(tool);
-			if (item != null) {
-				inProcessItems.add(FlowItemInProcessSnapshot.capture(item, tool, currentTime,
-						projectedCycleTimeFactor));
-			}
+			final FlowItemInProcessSnapshot inProcessItem = item == null ? null
+					: FlowItemInProcessSnapshot.capture(item, tool, currentTime, projectedCycleTimeFactor);
+			tools.add(ToolSnapshot.capture(tool, inProcessItem));
 		}
 		long totalProjectedTardiness = 0L;
 		for (final AbstractFlowItem item : toolGroup.getQueue()) {
@@ -76,7 +68,7 @@ public final class ToolGroupSnapshot {
 		}
 		return new ToolGroupSnapshot(toolGroup.getName(), waitingForDispatch,
 				Collections.unmodifiableList(tools), Collections.unmodifiableList(queuedItems),
-				Collections.unmodifiableList(inProcessItems), totalProjectedTardiness, workInProgress);
+				totalProjectedTardiness, workInProgress);
 	}
 
 	public String getName() {
@@ -93,10 +85,6 @@ public final class ToolGroupSnapshot {
 
 	public List<FlowItemQueuedSnapshot> getQueuedItems() {
 		return this.queuedItems;
-	}
-
-	public List<FlowItemInProcessSnapshot> getInProcessItems() {
-		return this.inProcessItems;
 	}
 
 	long getTotalProjectedTardiness() {

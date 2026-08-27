@@ -208,7 +208,12 @@ All time values are in milliseconds unless stated otherwise.
 | `fab_state.tool_groups[].waiting_for_dispatch` | boolean | Whether this is the tool group currently requesting a dispatch decision. |
 | `fab_state.tool_groups[].tools` | array | Tools belonging to the tool group. |
 | `fab_state.tool_groups[].tools[].id` | integer | Tool identifier. |
-| `fab_state.tool_groups[].tools[].current_tool_state` | string | Current tool state, such as `STANDBY`, `SETUP`, `PROCESSING`, `MAINTENANCE`, or `BREAKDOWN`. |
+| `fab_state.tool_groups[].tools[].current_tool_state` | string | Current tool state, such as `PR`, `SB_NO_MATERIAL`, `SB_NO_OPERATOR`, `SD_SETUP`, `SD_MAINT`, or `UD`. |
+| `fab_state.tool_groups[].tools[].in_process_item` | object or null | Item currently being processed by this tool, or `null` if the tool is not actively processing an item. |
+| `fab_state.tool_groups[].tools[].in_process_item.remaining_cycle_time` | integer | Projected remaining cycle time. |
+| `fab_state.tool_groups[].tools[].in_process_item.processing_time_left` | integer | Remaining processing time on this tool. Uses `0` only for true zero remaining processing time; non-processing tools have `in_process_item: null`. |
+| `fab_state.tool_groups[].tools[].in_process_item.priority` | integer | Item priority. |
+| `fab_state.tool_groups[].tools[].in_process_item.lateness` | integer | Current lateness relative to the item's due-date target. |
 | `fab_state.tool_groups[].queued_items` | array | Items waiting in the tool-group queue. |
 | `fab_state.tool_groups[].queued_items[].remaining_cycle_time` | integer | Projected remaining cycle time. |
 | `fab_state.tool_groups[].queued_items[].processing_time` | integer | Processing time required at the current operation. |
@@ -217,11 +222,6 @@ All time values are in milliseconds unless stated otherwise.
 | `fab_state.tool_groups[].queued_items[].priority` | integer | Item priority. |
 | `fab_state.tool_groups[].queued_items[].lateness` | integer | Current lateness relative to the item's due-date target. |
 | `fab_state.tool_groups[].queued_items[].recipe` | string | Recipe required for the current operation. |
-| `fab_state.tool_groups[].in_process_items` | array | Items currently being processed by the tool group. |
-| `fab_state.tool_groups[].in_process_items[].remaining_cycle_time` | integer | Projected remaining cycle time. |
-| `fab_state.tool_groups[].in_process_items[].processing_time_left` | integer | Remaining processing time on the current tool. |
-| `fab_state.tool_groups[].in_process_items[].priority` | integer | Item priority. |
-| `fab_state.tool_groups[].in_process_items[].lateness` | integer | Current lateness relative to the item's due-date target. |
 | `dispatch_decision` | object | Decision recorded by the selected dispatch rule. |
 | `dispatch_decision.chosen_flow_item` | object | Snapshot of the selected queued item. |
 | `dispatch_decision.chosen_flow_item.*` | mixed | Same fields as a queued item in `fab_state.tool_groups[].queued_items[]`. |
@@ -229,7 +229,7 @@ All time values are in milliseconds unless stated otherwise.
 Example line:
 
 ```json
-{"fab_state":{"simulation_time":86400000,"tool_groups":[],"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":0}},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
+{"fab_state":{"simulation_time":86400000,"tool_groups":[{"name":"Toolgroup","waiting_for_dispatch":true,"tools":[{"id":1,"current_tool_state":"PR","in_process_item":{"remaining_cycle_time":90000,"processing_time_left":30000,"priority":0,"lateness":0}},{"id":2,"current_tool_state":"SB_NO_MATERIAL","in_process_item":null}],"queued_items":[{"remaining_cycle_time":120000,"processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}]}],"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":25}},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
 ```
 
 ## Dispatch Request API
@@ -244,15 +244,16 @@ All time values are in milliseconds unless stated otherwise.
 | `DispatchDecisionRequest` | `getFabState()`, `getCandidates()`, `getSimulationTime()`, `getProjectedCycleTimeFactor()` |
 | `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()`, `getCostSnapshot()` |
 | `CostSnapshot` | `getTotalProjectedTardiness()`, `getWorkInProgress()` |
-| `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()`, `getInProcessItems()` |
-| `ToolSnapshot` | `getId()`, `getCurrentToolState()` |
+| `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()` |
+| `ToolSnapshot` | `getId()`, `getCurrentToolState()`, `getInProcessItem()` |
 | `FlowItemQueuedSnapshot` | `getRemainingCycleTime()`, `getProcessingTime()`, `getExpectedSetupTime()`, `getTimeSinceArrival()`, `getPriority()`, `getLateness()`, `getRecipe()` |
 | `FlowItemInProcessSnapshot` | `getRemainingCycleTime()`, `getProcessingTimeLeft()`, `getPriority()`, `getLateness()` |
 | `FlowItemQueuedWithIDSnapshot` | `getId()` plus all `FlowItemQueuedSnapshot` methods |
 | `DispatchDecisionResponse` | `of(selected_flow_item_id)`, `getSelectedFlowItemId()` |
 
-`getCandidates()`, `getToolGroups()`, `getTools()`, `getQueuedItems()`, and `getInProcessItems()` return
-Java lists. From Python, use `.size()` and `.get(index)` or JPype's Java collection iteration support.
+`getCandidates()`, `getToolGroups()`, `getTools()`, and `getQueuedItems()` return Java lists. From Python,
+use `.size()` and `.get(index)` or JPype's Java collection iteration support. `ToolSnapshot.getInProcessItem()`
+returns either a `FlowItemInProcessSnapshot` or `null`.
 
 ## Run Statistics Methods
 
