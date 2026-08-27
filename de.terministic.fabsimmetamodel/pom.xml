@@ -7,7 +7,7 @@
 
 	<groupId>de.terministic.fabsim</groupId>
 	<artifactId>metamodel</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>de.terministic.fabsim.metamodel</name>
 	<!-- FIXME change it to the project's website -->
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>de.terministic.fabsim</groupId>
 			<artifactId>core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 
 	</dependencies>

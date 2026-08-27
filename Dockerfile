@@ -16,6 +16,6 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-COPY --from=build /workspace/de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar /app/fabsim.jar
+COPY --from=build /workspace/de.terministic.fabsimbenchmarks/target/fabsim-1.0.0.jar /app/fabsim.jar
 
 ENTRYPOINT ["java", "-jar", "/app/fabsim.jar"]

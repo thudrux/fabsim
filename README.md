@@ -68,7 +68,7 @@ mvn clean package -Dmaven.test.skip=true
 Copy the resulting single jar into your Python project, for example into a `libs/` folder inside that
 project:
 
-- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`
+- `de.terministic.fabsimbenchmarks/target/fabsim-1.0.0.jar`
 
 This jar bundles the project classes and runtime dependencies needed by JPype.
 
@@ -91,7 +91,7 @@ jpype.startJVM(
     jpype.getDefaultJVMPath(),
     "--enable-native-access=ALL-UNNAMED",
     classpath=[
-        str(jar_dir / "fabsim-benchmarks.jar"),
+        str(jar_dir / "fabsim-1.0.0.jar"),
     ],
 )
 
@@ -286,4 +286,4 @@ mvn clean package
 
 The shaded jar is written to:
 
-- `de.terministic.fabsimbenchmarks/target/fabsim-benchmarks.jar`
+- `de.terministic.fabsimbenchmarks/target/fabsim-1.0.0.jar`

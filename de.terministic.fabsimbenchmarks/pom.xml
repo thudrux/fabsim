@@ -7,7 +7,7 @@
 
 	<groupId>de.terministic.fabsim</groupId>
 	<artifactId>benchmarks</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>de.terministic.fabsim.benchmarks</name>
 	<url>http://www.example.com</url>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>de.terministic.fabsim</groupId>
 			<artifactId>metamodel</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -45,7 +45,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<finalName>fabsim-benchmarks</finalName>
+							<finalName>fabsim-${project.version}</finalName>
 							<shadedArtifactAttached>false</shadedArtifactAttached>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 							<filters>
