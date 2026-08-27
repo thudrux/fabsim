@@ -329,12 +329,6 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			this.queue.add(flowItem);
 		}
 		this.tgController.addNewItem(flowItem, this);
-		for (final AbstractResource tool : getToolList()) {
-			if (this.standbyTools.contains(tool)) {
-				final ToolAndItem toolAndItem = this.tgController.selectToolAndItem(this, (Tool) tool);
-				startFlowItemOnTool(toolAndItem);
-			}
-		}
 	}
 
 	@Override
