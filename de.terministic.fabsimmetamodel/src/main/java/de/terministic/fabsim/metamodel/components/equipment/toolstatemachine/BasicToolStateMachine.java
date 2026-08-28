@@ -430,7 +430,6 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 
 	public void updateStateAndStartNewStateWithEvent(final AbstractTool tool, final AbstractSimEvent event,
 			final AbstractToolState newState) {
-		// this.logger.trace("[{}] new state is {}", tool.getTime(), newState);
 		if (newState != null) {
 			tool.setCurrentToolState(newState.getSemiE10State(tool));
 			this.currentStateMap.put(tool, newState);
@@ -449,17 +448,17 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 
 	public void updateStateAndStartNewStateWithItem(final AbstractTool tool, final AbstractFlowItem item,
 			final AbstractToolState newState) {
-		if (tool.getName().equals("ToolGroup_3")) {
-			this.logger.trace("[{}] new state is {}", tool.getTime(), newState);
-		}
 		if (newState != null) {
-			this.currentStateMap.put(tool, newState);
-			newState.enterState(tool, item);
-			tool.setCurrentToolState(newState.getSemiE10State(tool));
 			if (this.queuedEvents.get(tool).isEmpty()) {
 				this.logger.trace("There are no stored events");
+				this.currentStateMap.put(tool, newState);
+				newState.enterState(tool, item);
+				tool.setCurrentToolState(newState.getSemiE10State(tool));
+
 			} else {
-				this.logger.trace("There are  stored events {}", this.queuedEvents.get(tool));
+				this.logger.trace("There are stored events {}", this.queuedEvents.get(tool));
+				this.currentStateMap.put(tool, newState);
+				tool.setCurrentToolState(newState.getSemiE10State(tool));
 				resolveStoredEvent(tool);
 			}
 		}
