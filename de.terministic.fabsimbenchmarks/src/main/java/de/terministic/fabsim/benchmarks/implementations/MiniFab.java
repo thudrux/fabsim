@@ -12,7 +12,6 @@ import de.terministic.fabsim.benchmarks.core.specs.RouteSpec;
 import de.terministic.fabsim.benchmarks.core.specs.RouteStepSpec;
 import de.terministic.fabsim.benchmarks.core.specs.SetupTimeSpec;
 import de.terministic.fabsim.benchmarks.core.specs.ToolGroupSpec;
-import de.terministic.fabsim.core.duration.IValue;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
@@ -37,7 +36,7 @@ public class MiniFab extends BenchmarkFab {
 
 	@Override
 	protected double getLeadTimeFactor() {
-		return 2.5;
+		return 2.0;
 	}
 
 	@Override
@@ -68,60 +67,58 @@ public class MiniFab extends BenchmarkFab {
 				Arrays.asList(
 						new ProductSpec("Pa", 1,
 								model.getValueObjectFactory().createExponentialValueObject(225L * MINUTE),
-								Math.round((225L * MINUTE + 18L * MINUTE + 70L * MINUTE + 34L * MINUTE
-										+ 255L * MINUTE + 16L * MINUTE) * leadTimeFactor),
+								Math.round(838L * MINUTE * leadTimeFactor),
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 225L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 18L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(18L * MINUTE)),
 										station3Step(model, "Pa", 3, 70L * MINUTE),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 34L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(34L * MINUTE)),
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 255L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(255L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										station3Step(model, "Pa", 6, 16L * MINUTE))),
 						new ProductSpec("Pb", 1,
 								model.getValueObjectFactory().createExponentialValueObject(381L * MINUTE),
-								Math.round((225L * MINUTE + 30L * MINUTE + 55L * MINUTE + 50L * MINUTE
-										+ 255L * MINUTE + 10L * MINUTE) * leadTimeFactor),
+								Math.round(845L * MINUTE * leadTimeFactor),
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 225L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 30L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(30L * MINUTE)),
 										station3Step(model, "Pb", 3, 55L * MINUTE),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 50L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(50L * MINUTE)),
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 255L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(255L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										station3Step(model, "Pb", 6, 10L * MINUTE))),
 						new ProductSpec("TW", 1,
 								model.getValueObjectFactory().createExponentialValueObject(4567L * MINUTE),
-								Math.round((225L * MINUTE + 42L * MINUTE + 40L * MINUTE + 66L * MINUTE
-										+ 255L * MINUTE + 4L * MINUTE) * leadTimeFactor),
+								Math.round(852L * MINUTE * leadTimeFactor),
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 225L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 42L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(42L * MINUTE)),
 										station3Step(model, "TW", 3, 40L * MINUTE),
 										new RouteStepSpec("Station2", ProcessType.LOT,
-												processingTime(model, 66L * MINUTE)),
+												model.getValueObjectFactory().createConstantValueObject(66L * MINUTE)),
 										new RouteStepSpec("Station1", ProcessType.BATCH,
-												processingTime(model, 255L * MINUTE),
+												model.getValueObjectFactory().createConstantValueObject(255L * MINUTE),
 												LOT_SIZE * 3, LOT_SIZE * 3),
 										station3Step(model, "TW", 6, 4L * MINUTE)))));
 	}
 
 	private RouteStepSpec station3Step(final FabModel model, final String productName,
 			final int routeStepIndex, final long meanProcessingTime) {
-		return new RouteStepSpec("Station3", ProcessType.LOT, processingTime(model, meanProcessingTime),
+		return new RouteStepSpec("Station3", ProcessType.LOT,
+				model.getValueObjectFactory().createConstantValueObject(meanProcessingTime),
 				station3SetupState(productName, routeStepIndex), station3SetupTimes(productName, routeStepIndex));
 	}
 
@@ -144,11 +141,5 @@ public class MiniFab extends BenchmarkFab {
 
 	private String station3SetupState(final String productName, final int routeStepIndex) {
 		return productName + "_S" + routeStepIndex;
-	}
-
-	private IValue processingTime(final FabModel model, final long meanProcessingTime) {
-		final long variation = Math.round(meanProcessingTime * 0.15);
-		return model.getValueObjectFactory().createUniformValueObject(
-				meanProcessingTime - variation, meanProcessingTime + variation);
 	}
 }
