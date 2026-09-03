@@ -201,11 +201,6 @@ class BenchmarkFabAssemblyTest {
 		}
 
 		@Override
-		protected double getLeadTimeFactor() {
-			return 1.0d;
-		}
-
-		@Override
 		protected FabSpec createFabSpec(final FabModel model) {
 			return this.fabSpec;
 		}

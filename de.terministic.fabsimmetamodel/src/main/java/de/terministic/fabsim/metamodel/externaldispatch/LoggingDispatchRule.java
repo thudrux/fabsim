@@ -13,10 +13,8 @@ public class LoggingDispatchRule extends AbstractDispatchRule {
 
 	private final AbstractDispatchRule delegate;
 	private final LocalLogWriter logWriter;
-	private final double leadTimeFactor;
 
-	public LoggingDispatchRule(final AbstractDispatchRule delegate, final LocalLogWriter logWriter,
-			final double leadTimeFactor) {
+	public LoggingDispatchRule(final AbstractDispatchRule delegate, final LocalLogWriter logWriter) {
 		super(delegate == null ? "LoggingDispatchRule" : delegate.getName());
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate must not be null");
@@ -24,10 +22,8 @@ public class LoggingDispatchRule extends AbstractDispatchRule {
 		if (logWriter == null) {
 			throw new IllegalArgumentException("logWriter must not be null");
 		}
-		DispatchDecisionRequest.validateLeadTimeFactor(leadTimeFactor);
 		this.delegate = delegate;
 		this.logWriter = logWriter;
-		this.leadTimeFactor = leadTimeFactor;
 	}
 
 	public LocalLogWriter getLogWriter() {
@@ -46,8 +42,7 @@ public class LoggingDispatchRule extends AbstractDispatchRule {
 			return this.delegate.getBestItem(items, tg, tool);
 		}
 		final DispatchDecisionRequest request = tg == null || tool == null ? null
-				: DispatchDecisionRequest.capture(tg.getFabModel(), tg, tool, new ArrayList<>(items),
-						this.leadTimeFactor);
+				: DispatchDecisionRequest.capture(tg.getFabModel(), tg, tool, new ArrayList<>(items));
 		final AbstractFlowItem selectedItem = this.delegate.getBestItem(items, tg, tool);
 		if (request != null && selectedItem != null) {
 			this.logWriter.append(request, selectedItem);

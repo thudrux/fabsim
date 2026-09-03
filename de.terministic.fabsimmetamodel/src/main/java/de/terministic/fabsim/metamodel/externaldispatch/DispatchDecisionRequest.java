@@ -16,39 +16,25 @@ public final class DispatchDecisionRequest {
 
 	private final FabStateSnapshot fabState;
 	private final List<FlowItemQueuedWithIDSnapshot> candidates;
-	private final double leadTimeFactor;
 
 	private DispatchDecisionRequest(final FabStateSnapshot fabState,
-			final List<FlowItemQueuedWithIDSnapshot> candidates, final double leadTimeFactor) {
+			final List<FlowItemQueuedWithIDSnapshot> candidates) {
 		this.fabState = fabState;
 		this.candidates = candidates;
-		this.leadTimeFactor = leadTimeFactor;
 	}
 
 	public static DispatchDecisionRequest capture(final FabModel model, final AbstractToolGroup toolGroup,
-			final AbstractTool tool, final Collection<AbstractFlowItem> candidates,
-			final double leadTimeFactor) {
-		validateLeadTimeFactor(leadTimeFactor);
+			final AbstractTool tool, final Collection<AbstractFlowItem> candidates) {
 		final long simulationTime = model == null || model.getSimulationEngine() == null ? 0L
 				: model.getSimulationEngine().getTime();
-		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime,
-				leadTimeFactor);
+		final FabStateSnapshot fabState = FabStateSnapshot.capture(model, toolGroup, simulationTime);
 		final List<FlowItemQueuedWithIDSnapshot> candidateSnapshots = new ArrayList<>();
 		if (candidates != null) {
 			for (final AbstractFlowItem item : candidates) {
-				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime,
-						leadTimeFactor));
+				candidateSnapshots.add(FlowItemQueuedWithIDSnapshot.capture(item, tool, simulationTime));
 			}
 		}
-		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots),
-				leadTimeFactor);
-	}
-
-	public static void validateLeadTimeFactor(final double leadTimeFactor) {
-		if (Double.isNaN(leadTimeFactor) || Double.isInfinite(leadTimeFactor)
-				|| leadTimeFactor <= 0.0d) {
-			throw new IllegalArgumentException("leadTimeFactor must be a positive finite value");
-		}
+		return new DispatchDecisionRequest(fabState, Collections.unmodifiableList(candidateSnapshots));
 	}
 
 	public FabStateSnapshot getFabState() {
@@ -63,7 +49,4 @@ public final class DispatchDecisionRequest {
 		return this.fabState == null ? 0L : this.fabState.getSimulationTime();
 	}
 
-	public double getLeadTimeFactor() {
-		return this.leadTimeFactor;
-	}
 }

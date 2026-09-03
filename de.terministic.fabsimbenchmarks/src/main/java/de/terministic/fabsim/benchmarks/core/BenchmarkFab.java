@@ -84,13 +84,13 @@ public abstract class BenchmarkFab {
 		switch (this.dispatchMode) {
 			case EXTERNAL:
 				effectiveRule = new ExternalDispatchRule(getBenchmarkName() + "ExternalDispatch",
-						this.dispatchProvider, getLeadTimeFactor());
+						this.dispatchProvider);
 				break;
 			case LOCAL:
 				if (this.dispatchRule instanceof LoggingDispatchRule || this.logWriter == null) {
 					effectiveRule = this.dispatchRule;
 				} else {
-					effectiveRule = new LoggingDispatchRule(this.dispatchRule, this.logWriter, getLeadTimeFactor());
+					effectiveRule = new LoggingDispatchRule(this.dispatchRule, this.logWriter);
 				}
 				break;
 			default:
@@ -293,8 +293,6 @@ public abstract class BenchmarkFab {
 	}
 
 	protected abstract String getBenchmarkName();
-
-	protected abstract double getLeadTimeFactor();
 
 	protected abstract FabSpec createFabSpec(FabModel model);
 }

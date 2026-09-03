@@ -241,7 +241,7 @@ All time values are in milliseconds unless stated otherwise.
 
 | Java object | Methods |
 | --- | --- |
-| `DispatchDecisionRequest` | `getFabState()`, `getCandidates()`, `getSimulationTime()`, `getLeadTimeFactor()` |
+| `DispatchDecisionRequest` | `getFabState()`, `getCandidates()`, `getSimulationTime()` |
 | `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()`, `getCostSnapshot()` |
 | `CostSnapshot` | `getTotalProjectedTardiness()`, `getWorkInProgress()` |
 | `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()` |

@@ -29,7 +29,7 @@ public class ExternalDispatchRuleTest {
 	public void selectsItemChosenByExternalProvider() {
 		TestFixture fixture = createFixture();
 		RecordingProvider provider = new RecordingProvider(fixture.secondItem.getId());
-		ExternalDispatchRule rule = new ExternalDispatchRule("External", provider, 2.0d);
+		ExternalDispatchRule rule = new ExternalDispatchRule("External", provider);
 
 		AbstractFlowItem selected = rule.getBestItem(fixture.items, fixture.toolGroup, fixture.tool);
 
@@ -56,7 +56,7 @@ public class ExternalDispatchRuleTest {
 		ArrayList<AbstractFlowItem> items = new ArrayList<AbstractFlowItem>();
 		items.add(batch);
 		RecordingProvider provider = new RecordingProvider(batch.getId());
-		ExternalDispatchRule rule = new ExternalDispatchRule(provider, 1.0d);
+		ExternalDispatchRule rule = new ExternalDispatchRule(provider);
 
 		AbstractFlowItem selected = rule.getBestItem(items, fixture.toolGroup, fixture.tool);
 
@@ -67,7 +67,7 @@ public class ExternalDispatchRuleTest {
 	@Test
 	public void rejectsMissingProviderDecision() {
 		TestFixture fixture = createFixture();
-		ExternalDispatchRule rule = new ExternalDispatchRule(request -> null, 1.0d);
+		ExternalDispatchRule rule = new ExternalDispatchRule(request -> null);
 
 		Assertions.assertThrows(ExternalDispatchException.class,
 				() -> rule.getBestItem(fixture.items, fixture.toolGroup, fixture.tool));
@@ -76,7 +76,7 @@ public class ExternalDispatchRuleTest {
 	@Test
 	public void rejectsUnknownFlowItemIdFromProvider() {
 		TestFixture fixture = createFixture();
-		ExternalDispatchRule rule = new ExternalDispatchRule(request -> DispatchDecisionResponse.of(-1L), 1.0d);
+		ExternalDispatchRule rule = new ExternalDispatchRule(request -> DispatchDecisionResponse.of(-1L));
 
 		Assertions.assertThrows(ExternalDispatchException.class,
 				() -> rule.getBestItem(fixture.items, fixture.toolGroup, fixture.tool));
@@ -84,9 +84,7 @@ public class ExternalDispatchRuleTest {
 
 	@Test
 	public void validatesConstructorArguments() {
-		Assertions.assertThrows(IllegalArgumentException.class, () -> new ExternalDispatchRule(null, 1.0d));
-		Assertions.assertThrows(IllegalArgumentException.class,
-				() -> new ExternalDispatchRule(request -> DispatchDecisionResponse.of(1L), 0.0d));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> new ExternalDispatchRule(null));
 	}
 
 	private TestFixture createFixture() {
@@ -108,9 +106,9 @@ public class ExternalDispatchRuleTest {
 				ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 
-		Lot firstItem = new Lot(model, product, 1, 1, 50L);
+		Lot firstItem = new Lot(model, product, 1, 1, 20L);
 		firstItem.getTimeStampMap().put(0, timeStamps(0L));
-		Lot secondItem = new Lot(model, product, 1, 2, 50L);
+		Lot secondItem = new Lot(model, product, 1, 2, 20L);
 		secondItem.getTimeStampMap().put(0, timeStamps(5L));
 
 		ArrayList<AbstractFlowItem> items = new ArrayList<AbstractFlowItem>();

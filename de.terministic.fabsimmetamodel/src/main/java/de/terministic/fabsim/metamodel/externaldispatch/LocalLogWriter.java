@@ -48,7 +48,7 @@ public final class LocalLogWriter implements AutoCloseable {
 			throw new IllegalStateException("Dispatch decision log writer has already been closed for " + this.logFile);
 		}
 		final FlowItemQueuedSnapshot chosenFlowItem = FlowItemQueuedSnapshot.capture(selectedFlowItem,
-				request.getSimulationTime(), request.getLeadTimeFactor());
+				request.getSimulationTime());
 		try {
 			this.writer.write(toJson(request.getFabState(), chosenFlowItem));
 			this.writer.write('\n');

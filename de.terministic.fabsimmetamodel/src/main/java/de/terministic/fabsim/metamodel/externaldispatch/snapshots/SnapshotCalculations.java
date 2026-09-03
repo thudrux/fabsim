@@ -11,7 +11,6 @@ import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
-import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
 
 final class SnapshotCalculations {
 
@@ -29,8 +28,7 @@ final class SnapshotCalculations {
 		return Math.max(0L, item.getRecipe().get(currentStepNumber).getAvgDuration());
 	}
 
-	static long calculateRemainingCycleTime(final AbstractFlowItem item,
-			final double leadTimeFactor) {
+	static long calculateRemainingCycleTime(final AbstractFlowItem item) {
 		if (item == null || item.getRecipe() == null) {
 			return 0L;
 		}
@@ -41,7 +39,7 @@ final class SnapshotCalculations {
 			}
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
-				totalRemainingCycleTime += calculateRemainingCycleTime(child, leadTimeFactor);
+				totalRemainingCycleTime += calculateRemainingCycleTime(child);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -53,11 +51,10 @@ final class SnapshotCalculations {
 		for (int i = currentStepNumber; i < item.getRecipe().size(); i++) {
 			remainingProcessTime += calculateNominalStepDuration(item.getRecipe().get(i));
 		}
-		return Math.round(remainingProcessTime * leadTimeFactor);
+		return calculateLeadTimeAdjustedRemainingCycleTime(item, remainingProcessTime);
 	}
 
-	static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft,
-			final double leadTimeFactor) {
+	static long calculateRemainingCycleTime(final AbstractFlowItem item, final long processingTimeLeft) {
 		if (item == null || item.getRecipe() == null) {
 			return Math.max(0L, processingTimeLeft);
 		}
@@ -68,8 +65,7 @@ final class SnapshotCalculations {
 			}
 			long totalRemainingCycleTime = 0L;
 			for (final AbstractFlowItem child : batch.getItems()) {
-				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft,
-						leadTimeFactor);
+				totalRemainingCycleTime += calculateRemainingCycleTime(child, processingTimeLeft);
 			}
 			return Math.round(totalRemainingCycleTime / (double) batch.getItems().size());
 		}
@@ -81,11 +77,10 @@ final class SnapshotCalculations {
 		for (int i = currentStepNumber + 1; i < item.getRecipe().size(); i++) {
 			futureProcessTime += calculateNominalStepDuration(item.getRecipe().get(i));
 		}
-		return Math.round((processingTimeLeft + futureProcessTime) * leadTimeFactor);
+		return calculateLeadTimeAdjustedRemainingCycleTime(item, processingTimeLeft + futureProcessTime);
 	}
 
-	static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime,
-			final double leadTimeFactor) {
+	static long calculateWaferLevelProjectedTardiness(final AbstractFlowItem item, final long currentTime) {
 		if (item == null) {
 			return 0L;
 		}
@@ -96,12 +91,12 @@ final class SnapshotCalculations {
 			}
 			long total = 0L;
 			for (final AbstractFlowItem lot : batch.getItems()) {
-				total += calculateWaferLevelProjectedTardiness(lot, currentTime, leadTimeFactor);
+				total += calculateWaferLevelProjectedTardiness(lot, currentTime);
 			}
 			return total;
 		}
 		return item.getSize() * (calculateLateness(item, currentTime)
-				+ calculateRemainingCycleTime(item, leadTimeFactor));
+				+ calculateRemainingCycleTime(item));
 	}
 
 	static long calculateWaferLevelWorkInProgress(final AbstractFlowItem item) {
@@ -236,7 +231,38 @@ final class SnapshotCalculations {
 				+ Math.max(0L, step.getUnloadTime());
 	}
 
-	static void validateLeadTimeFactor(final double leadTimeFactor) {
-		DispatchDecisionRequest.validateLeadTimeFactor(leadTimeFactor);
+	private static long calculateLeadTimeAdjustedRemainingCycleTime(final AbstractFlowItem item,
+			final long remainingProcessTime) {
+		final long boundedRemainingProcessTime = Math.max(0L, remainingProcessTime);
+		final double leadTimeRatio = calculateLeadTimeRatio(item);
+		return Math.round(boundedRemainingProcessTime * leadTimeRatio);
+	}
+
+	private static double calculateLeadTimeRatio(final AbstractFlowItem item) {
+		final long totalProcessTime = calculateTotalNominalProcessTime(item);
+		if (totalProcessTime <= 0L || !(item instanceof Lot)) {
+			return 1.0d;
+		}
+		final Lot lot = (Lot) item;
+		final long dueDate = lot.getDueDate();
+		if (dueDate == Long.MAX_VALUE) {
+			return 1.0d;
+		}
+		final long dueDateLeadTime = Math.max(0L, dueDate - lot.getCreationTime());
+		if (dueDateLeadTime <= 0L) {
+			return 1.0d;
+		}
+		return dueDateLeadTime / (double) totalProcessTime;
+	}
+
+	private static long calculateTotalNominalProcessTime(final AbstractFlowItem item) {
+		if (item == null || item.getRecipe() == null) {
+			return 0L;
+		}
+		long totalProcessTime = 0L;
+		for (int i = 0; i < item.getRecipe().size(); i++) {
+			totalProcessTime += calculateNominalStepDuration(item.getRecipe().get(i));
+		}
+		return totalProcessTime;
 	}
 }

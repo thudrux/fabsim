@@ -35,13 +35,7 @@ public class MiniFab extends BenchmarkFab {
 	}
 
 	@Override
-	protected double getLeadTimeFactor() {
-		return 2.0;
-	}
-
-	@Override
 	protected FabSpec createFabSpec(final FabModel model) {
-		final double leadTimeFactor = getLeadTimeFactor();
 		return new FabSpec(STEP_SINK, LOT_SIZE, false,
 				Arrays.asList(
 						new ToolGroupSpec("Station1", 2, ProcessingType.BATCH,
@@ -67,7 +61,7 @@ public class MiniFab extends BenchmarkFab {
 				Arrays.asList(
 						new ProductSpec("Pa", 1,
 								model.getValueObjectFactory().createExponentialValueObject(225L * MINUTE),
-								Math.round(838L * MINUTE * leadTimeFactor),
+								1676L * MINUTE,
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
 												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
@@ -83,7 +77,7 @@ public class MiniFab extends BenchmarkFab {
 										station3Step(model, "Pa", 6, 16L * MINUTE))),
 						new ProductSpec("Pb", 1,
 								model.getValueObjectFactory().createExponentialValueObject(381L * MINUTE),
-								Math.round(845L * MINUTE * leadTimeFactor),
+								1690L * MINUTE,
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
 												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
@@ -99,7 +93,7 @@ public class MiniFab extends BenchmarkFab {
 										station3Step(model, "Pb", 6, 10L * MINUTE))),
 						new ProductSpec("TW", 1,
 								model.getValueObjectFactory().createExponentialValueObject(4567L * MINUTE),
-								Math.round(852L * MINUTE * leadTimeFactor),
+								1704L * MINUTE,
 								RouteSpec.of(
 										new RouteStepSpec("Station1", ProcessType.BATCH,
 												model.getValueObjectFactory().createConstantValueObject(225L * MINUTE),
