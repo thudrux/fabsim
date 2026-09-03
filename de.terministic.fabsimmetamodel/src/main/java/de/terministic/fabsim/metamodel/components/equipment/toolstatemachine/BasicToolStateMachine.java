@@ -458,10 +458,11 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 			} else {
 				this.logger.trace("There are stored events {}", this.queuedEvents.get(tool));
 				this.currentStateMap.put(tool, newState);
-				tool.setCurrentToolState(newState.getSemiE10State(tool));
+				tool.setCurrentToolState(newState.enterState(tool, item));
 				resolveStoredEvent(tool);
 			}
 		}
+
 	}
 
 }
