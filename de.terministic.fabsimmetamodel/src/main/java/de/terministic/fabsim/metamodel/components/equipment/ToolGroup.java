@@ -325,10 +325,22 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			return;
 		}
 		this.logger.warn("Flow item {} was rejected by {}; re-queueing it", flowItem, event.getComponent());
-		if (!this.queue.contains(flowItem)) {
-			this.queue.add(flowItem);
+		this.inProcessMap.remove(flowItem);
+		for (final AbstractFlowItem itemToRequeue : itemsToRequeueAfterRejectedTransfer(flowItem)) {
+			if (!this.queue.contains(itemToRequeue)) {
+				this.queue.add(itemToRequeue);
+				this.tgController.addNewItem(itemToRequeue, this);
+			}
 		}
-		this.tgController.addNewItem(flowItem, this);
+	}
+
+	private List<AbstractFlowItem> itemsToRequeueAfterRejectedTransfer(final AbstractFlowItem flowItem) {
+		if (flowItem instanceof Batch) {
+			return ((Batch) flowItem).getItems();
+		}
+		final List<AbstractFlowItem> result = new ArrayList<>();
+		result.add(flowItem);
+		return result;
 	}
 
 	@Override
