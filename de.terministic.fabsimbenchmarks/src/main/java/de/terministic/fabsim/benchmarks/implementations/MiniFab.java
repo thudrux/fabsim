@@ -46,14 +46,14 @@ public class MiniFab extends BenchmarkFab {
 				Arrays.asList(
 						new ToolGroupSpec("Station1", 2, ProcessingType.BATCH,
 								20L * MINUTE, 40L * MINUTE,
-								new MaintenanceSpec(1440L * MINUTE,
-										model.getValueObjectFactory().createConstantValueObject(
-												75L * MINUTE))),
+								new MaintenanceSpec(
+										model.getValueObjectFactory().createExponentialValueObject(1440L * MINUTE),
+										model.getValueObjectFactory().createConstantValueObject(75L * MINUTE))),
 						new ToolGroupSpec("Station2", 2, ProcessingType.LOT,
 								15L * MINUTE, 15L * MINUTE,
-								new MaintenanceSpec(720L * MINUTE,
-										model.getValueObjectFactory().createConstantValueObject(
-												120L * MINUTE)),
+								new MaintenanceSpec(
+										model.getValueObjectFactory().createExponentialValueObject(720L * MINUTE),
+										model.getValueObjectFactory().createConstantValueObject(120L * MINUTE)),
 								new BreakdownSpec(
 										model.getValueObjectFactory().createUniformValueObject(
 												1440L * MINUTE, 4560L * MINUTE),
@@ -61,9 +61,9 @@ public class MiniFab extends BenchmarkFab {
 												360L * MINUTE, 480L * MINUTE))),
 						new ToolGroupSpec("Station3", 1, ProcessingType.LOT,
 								10L * MINUTE, 10L * MINUTE,
-								new MaintenanceSpec(720L * MINUTE,
-										model.getValueObjectFactory().createConstantValueObject(
-												30L * MINUTE)))),
+								new MaintenanceSpec(
+										model.getValueObjectFactory().createExponentialValueObject(720L * MINUTE),
+										model.getValueObjectFactory().createConstantValueObject(30L * MINUTE)))),
 				Arrays.asList(
 						new ProductSpec("Pa", 1,
 								model.getValueObjectFactory().createExponentialValueObject(225L * MINUTE),

@@ -162,7 +162,7 @@ public abstract class BenchmarkFab {
 		final MaintenanceSpec maintenance = toolGroupSpec.getMaintenance();
 		model.getSimComponentFactory().createSimulationTimeBasedMaintenanceAndAddToToolGroup(
 				toolGroupSpec.getName() + "_PredictiveMaintenance", maintenance.getDurationDistribution(),
-				model.getValueObjectFactory().createConstantValueObject(maintenance.getInterval()), toolGroup);
+				maintenance.getIntervalDistribution(), toolGroup);
 	}
 
 	private void createBreakdown(final FabModel model, final ToolGroup toolGroup,

@@ -101,7 +101,7 @@ class BenchmarkFabSetupManagerTest {
 
 	private static ToolGroupSpec toolGroupSpec(final FabModel model, final String name) {
 		return new ToolGroupSpec(name, 1, ProcessingType.LOT, 0L, 0L,
-				new MaintenanceSpec(1L, value(model, 0L)));
+				new MaintenanceSpec(value(model, 1L), value(model, 0L)));
 	}
 
 	private static RouteStepSpec setupStep(final FabModel model, final String toolGroupName,

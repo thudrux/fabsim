@@ -90,7 +90,7 @@ class SpecContractTest {
 
 	private static ToolGroupSpec toolGroupSpec(final FabModel model) {
 		return new ToolGroupSpec("ToolGroup", 1, ProcessingType.LOT, 0L, 0L,
-				new MaintenanceSpec(1L, value(model, 0L)));
+				new MaintenanceSpec(value(model, 1L), value(model, 0L)));
 	}
 
 	private static RouteStepSpec routeStep(final FabModel model) {
