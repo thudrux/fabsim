@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.dispatchRules;
+package de.terministic.fabsim.metamodel.dispatchrules;
 
 import java.util.ArrayList;
 

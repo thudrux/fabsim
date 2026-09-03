@@ -31,8 +31,8 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroupCon
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroupController;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
 
 public class FabModel implements IModel{
 	private String name;

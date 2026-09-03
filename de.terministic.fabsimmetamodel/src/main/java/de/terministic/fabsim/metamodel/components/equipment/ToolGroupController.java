@@ -13,8 +13,8 @@ import de.terministic.fabsim.metamodel.components.ToolAndItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem.FlowItemType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.MaxWaitingTimeInQueueEvent;
 import de.terministic.fabsim.metamodel.FabModel;
 
 public class ToolGroupController extends AbstractToolGroupController {

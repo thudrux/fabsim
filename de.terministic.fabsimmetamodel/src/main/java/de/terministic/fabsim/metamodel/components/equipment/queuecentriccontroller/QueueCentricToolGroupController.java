@@ -16,8 +16,8 @@ import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.MaxWaitingTimeInQueueEvent;
 
 public class QueueCentricToolGroupController extends AbstractToolGroupController {
 

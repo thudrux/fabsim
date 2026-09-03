@@ -7,7 +7,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 public class LoggingDispatchRule extends AbstractDispatchRule {
 

@@ -13,7 +13,7 @@ import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AbstractSetupStrategy;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 public abstract class AbstractHomogeneousResourceGroup extends AbstractToolGroup {
 	/**

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 /**
  * The Class AbstractToolGroup.

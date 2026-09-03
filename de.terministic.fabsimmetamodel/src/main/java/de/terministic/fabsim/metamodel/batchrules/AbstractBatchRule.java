@@ -6,7 +6,7 @@ import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractModelElement;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Batch;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 public abstract class AbstractBatchRule extends AbstractModelElement {
 

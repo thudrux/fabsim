@@ -19,7 +19,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.SimTimeBasedMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AllAllowedSetupStrategy;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.BasicToolStateMachine;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
 import de.terministic.fabsim.metamodel.statistics.ToolStateChangeLog;
 import de.terministic.fabsim.metamodel.statistics.ToolStateLogEntry;
 

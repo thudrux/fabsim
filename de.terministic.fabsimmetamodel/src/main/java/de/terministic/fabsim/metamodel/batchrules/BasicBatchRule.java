@@ -10,7 +10,7 @@ import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.Recipe;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 public class BasicBatchRule extends AbstractBatchRule {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());

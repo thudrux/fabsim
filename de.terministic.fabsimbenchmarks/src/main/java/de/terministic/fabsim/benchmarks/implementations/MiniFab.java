@@ -15,7 +15,7 @@ import de.terministic.fabsim.benchmarks.core.specs.ToolGroupSpec;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.ProcessStep.ProcessType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;
 import de.terministic.fabsim.metamodel.externaldispatch.LocalLogWriter;
 

@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Locale;
 
 import de.terministic.fabsim.benchmarks.implementations.MiniFab;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
-import de.terministic.fabsim.metamodel.dispatchRules.Random;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.Random;
 import de.terministic.fabsim.metamodel.externaldispatch.LocalLogWriter;
 
 public final class BenchmarkFabApp {

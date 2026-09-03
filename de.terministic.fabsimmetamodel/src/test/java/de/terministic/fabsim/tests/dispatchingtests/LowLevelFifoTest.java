@@ -13,7 +13,7 @@ import de.terministic.fabsim.metamodel.components.BasicFlowItem;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
 
 public class LowLevelFifoTest {
 	FIFO fifo;

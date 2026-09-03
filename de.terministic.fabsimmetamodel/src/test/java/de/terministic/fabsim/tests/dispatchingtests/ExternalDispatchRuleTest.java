@@ -17,7 +17,7 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousR
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
-import de.terministic.fabsim.metamodel.dispatchRules.ExternalDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.ExternalDispatchRule;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionRequest;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchDecisionResponse;
 import de.terministic.fabsim.metamodel.externaldispatch.DispatchProvider;

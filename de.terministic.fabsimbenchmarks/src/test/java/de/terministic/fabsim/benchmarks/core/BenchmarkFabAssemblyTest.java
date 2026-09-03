@@ -24,7 +24,7 @@ import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.Sink;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
 
 class BenchmarkFabAssemblyTest {
 
