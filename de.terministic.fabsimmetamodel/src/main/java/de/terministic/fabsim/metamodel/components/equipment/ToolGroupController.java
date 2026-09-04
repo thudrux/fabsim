@@ -13,8 +13,8 @@ import de.terministic.fabsim.metamodel.components.ToolAndItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.AbstractFlowItem.FlowItemType;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractHomogeneousResourceGroup.ProcessingType;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.MaxWaitingTimeInQueueEvent;
 import de.terministic.fabsim.metamodel.FabModel;
 
 public class ToolGroupController extends AbstractToolGroupController {
@@ -193,7 +193,7 @@ public class ToolGroupController extends AbstractToolGroupController {
 		possibleItems = (ArrayList<AbstractFlowItem>) tg.getSetupStrategy().filterValidItems(tool, possibleItems);
 //		this.logger.debug("setup filter done {}", possibleItems);
 		if (possibleItems.size() > 0) {
-			final AbstractFlowItem item = drule.getBestItem(possibleItems);
+			final AbstractFlowItem item = drule.getBestItem(possibleItems, tg, tool);
 //			this.logger.debug("selected item: {}", possibleItems);
 			removeItemFromItemMap(item, tg);
 			result = new ToolAndItem(tool, item);

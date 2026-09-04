@@ -1,4 +1,4 @@
-package de.terministic.fabsim.metamodel.dispatchRules;
+package de.terministic.fabsim.metamodel.dispatchrules;
 
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;

@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.metamodel.components.Lot;
-import de.terministic.fabsim.metamodel.components.ToolAndItem;
+import de.terministic.fabsim.core.SimulationEngine;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.NotYetImplementedException;
-import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.metamodel.components.Batch;
+import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
+import de.terministic.fabsim.metamodel.components.Lot;
+import de.terministic.fabsim.metamodel.components.ToolAndItem;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
 import de.terministic.fabsim.metamodel.components.equipment.setup.AbstractSetupStrategy;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -260,7 +261,7 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			final AbstractTool tool = toolAndItem.getTool();
 			final AbstractFlowItem item = toolAndItem.getItem();
 			item.getTimeStamps(item.getCurrentStepNumber()).setStartProcessingTime(this.tgController.getTime());
-			this.queue.remove(item);
+			removeStartedItemFromQueue(item);
 			this.busyTools.add((Tool) tool);
 			this.standbyTools.remove((Tool) tool);
 			this.inProcessMap.put(item, tool);
@@ -268,6 +269,16 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 			item.unscheduleMaxQueueTimeEvents();
 			sendFlowItemToResource(item, tool);
 
+		}
+	}
+
+	private void removeStartedItemFromQueue(final AbstractFlowItem item) {
+		this.queue.remove(item);
+
+		if (item instanceof Batch) {
+			for (final AbstractFlowItem batchItem : ((Batch) item).getItems()) {
+				this.queue.remove(batchItem);
+			}
 		}
 	}
 
@@ -305,6 +316,31 @@ public class ToolGroup extends AbstractHomogeneousResourceGroup {
 				startFlowItemOnTool(toolAndItem);
 			}
 		}
+	}
+
+	@Override
+	public void onRejectedFlowItemTransfer(final FlowItemArrivalEvent event) {
+		final AbstractFlowItem flowItem = (AbstractFlowItem) event.getFlowItem();
+		if (flowItem == null) {
+			return;
+		}
+		this.logger.warn("Flow item {} was rejected by {}; re-queueing it", flowItem, event.getComponent());
+		this.inProcessMap.remove(flowItem);
+		for (final AbstractFlowItem itemToRequeue : itemsToRequeueAfterRejectedTransfer(flowItem)) {
+			if (!this.queue.contains(itemToRequeue)) {
+				this.queue.add(itemToRequeue);
+				this.tgController.addNewItem(itemToRequeue, this);
+			}
+		}
+	}
+
+	private List<AbstractFlowItem> itemsToRequeueAfterRejectedTransfer(final AbstractFlowItem flowItem) {
+		if (flowItem instanceof Batch) {
+			return ((Batch) flowItem).getItems();
+		}
+		final List<AbstractFlowItem> result = new ArrayList<>();
+		result.add(flowItem);
+		return result;
 	}
 
 	@Override

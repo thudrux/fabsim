@@ -10,7 +10,7 @@ import java.util.Map;
 
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.SimEventListener;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
 
 /**
  * The Class AbstractToolGroup.
@@ -19,9 +19,6 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 
 	/** The dispatch rule. */
 	protected AbstractDispatchRule dispatchRule;
-
-	/** The fab model. */
-	protected FabModel fabModel;
 
 	/** The tg controller. */
 	protected AbstractToolGroupController tgController;
@@ -82,7 +79,7 @@ public abstract class AbstractToolGroup extends AbstractResourceGroup {
 	 * @return the fab model
 	 */
 	public FabModel getFabModel() {
-		return this.fabModel;
+		return (FabModel) getModel();
 	}
 
 	/**

@@ -218,7 +218,7 @@ public class ProcessStep extends AbstractFixedModelElement {
 
 	public long getAvgDuration() {
 		if (processType == ProcessType.WAFER) {
-			return this.avgContainerSize * this.duration.getValue();
+			return this.avgContainerSize * this.duration.getAvgValue();
 		}
 
 		return duration.getAvgValue();

@@ -1,7 +1,9 @@
-package de.terministic.fabsim.metamodel.dispatchRules;
+package de.terministic.fabsim.metamodel.dispatchrules;
 
 import java.util.ArrayList;
 
+import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
+import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.BatchDetails;
 import de.terministic.fabsim.metamodel.components.equipment.queuecentriccontroller.IFlowItemQueue;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
@@ -16,6 +18,10 @@ public abstract class AbstractDispatchRule {
 
 	public abstract AbstractFlowItem getBestItem(ArrayList<AbstractFlowItem> items);
 
+	public AbstractFlowItem getBestItem(ArrayList<AbstractFlowItem> items, AbstractToolGroup tg, AbstractTool tool){
+		return this.getBestItem(items);
+	}
+
 	public String getName() {
 		return this.name;
 	}
@@ -25,6 +31,9 @@ public abstract class AbstractDispatchRule {
 	}
 
 	public abstract ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items);
+	public ArrayList<AbstractFlowItem> sortWithDispatchRule(ArrayList<AbstractFlowItem> items, AbstractToolGroup tg, AbstractTool tool){
+		return this.sortWithDispatchRule(items);
+	}
 
 	public abstract ArrayList<AbstractFlowItem> addItemToList(AbstractFlowItem item, ArrayList<AbstractFlowItem> items);
 

@@ -117,6 +117,23 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 		return this.currentStateMap.get(tool).getStateDetails();
 	}
 
+	@Override
+	public long getProcessingTimeLeft(final AbstractTool abstractTool) {
+		final AbstractToolState currentState = this.currentStateMap.get(abstractTool);
+		if (!(currentState instanceof ProcessingToolState)) {
+			return -1L;
+		}
+		final ProcessStateDetails details = currentState.getStateDetails().get(abstractTool);
+		if (details == null) {
+			return -1L;
+		}
+		final AbstractSimEvent endEvent = details.getEndEvent();
+		final long timeLeft = endEvent == null
+				? details.getRemainingProcessTime()
+				: endEvent.getEventTime() - abstractTool.getTime();
+		return Math.max(0L, timeLeft);
+	}
+
 	public Set<AbstractToolState> getStates() {
 		return this.states;
 	}
@@ -413,7 +430,6 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 
 	public void updateStateAndStartNewStateWithEvent(final AbstractTool tool, final AbstractSimEvent event,
 			final AbstractToolState newState) {
-		// this.logger.trace("[{}] new state is {}", tool.getTime(), newState);
 		if (newState != null) {
 			tool.setCurrentToolState(newState.getSemiE10State(tool));
 			this.currentStateMap.put(tool, newState);
@@ -432,22 +448,21 @@ public class BasicToolStateMachine extends AbstractToolStateMachine {
 
 	public void updateStateAndStartNewStateWithItem(final AbstractTool tool, final AbstractFlowItem item,
 			final AbstractToolState newState) {
-		if (tool.getName().equals("ToolGroup_3")) {
-			this.logger.trace("[{}] new state is {}", tool.getTime(), newState);
-		}
 		if (newState != null) {
 			if (this.queuedEvents.get(tool).isEmpty()) {
 				this.logger.trace("There are no stored events");
 				this.currentStateMap.put(tool, newState);
 				newState.enterState(tool, item);
 				tool.setCurrentToolState(newState.getSemiE10State(tool));
+
 			} else {
-				this.logger.trace("There are  stored events {}", this.queuedEvents.get(tool));
-				tool.setCurrentToolState(newState.getSemiE10State(tool));
+				this.logger.trace("There are stored events {}", this.queuedEvents.get(tool));
 				this.currentStateMap.put(tool, newState);
+				tool.setCurrentToolState(newState.enterState(tool, item));
 				resolveStoredEvent(tool);
 			}
 		}
+
 	}
 
 }

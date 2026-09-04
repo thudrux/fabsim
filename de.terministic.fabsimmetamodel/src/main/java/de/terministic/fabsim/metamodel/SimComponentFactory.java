@@ -191,13 +191,20 @@ public class SimComponentFactory {
 	public ProcessStep createProcessStepAndAddToRecipe(final String name, final AbstractComponent component,
 			final AbstractOperatorGroup operatorGroup, final long loadTime, final long duration, final long unloadTime,
 			final BatchDetails batchDetails, final SetupState setupState, ProcessType type, final Recipe recipe) {
+		return createProcessStepAndAddToRecipe(name, component, operatorGroup, loadTime,
+				this.model.getValueObjectFactory().createConstantValueObject(duration), unloadTime, batchDetails,
+				setupState, type, recipe);
+	}
+
+	public ProcessStep createProcessStepAndAddToRecipe(final String name, final AbstractComponent component,
+			final AbstractOperatorGroup operatorGroup, final long loadTime, final IValue duration, final long unloadTime,
+			final BatchDetails batchDetails, final SetupState setupState, ProcessType type, final Recipe recipe) {
 		this.logger.trace("OperatorGroup needed for step {} is {}", name, operatorGroup);
 		final ConstantValue loadObj = this.model.getValueObjectFactory().createConstantValueObject(loadTime);
-		final ConstantValue durObj = this.model.getValueObjectFactory().createConstantValueObject(duration);
 		final ConstantValue unloadObj = this.model.getValueObjectFactory()
 				.createConstantValueObject(unloadTime);
 
-		final ProcessStep step = new ProcessStep(model, name, component, operatorGroup, loadObj, durObj, unloadObj,
+		final ProcessStep step = new ProcessStep(model, name, component, operatorGroup, loadObj, duration, unloadObj,
 				batchDetails, setupState, type);
 		recipe.add(step);
 		return step;

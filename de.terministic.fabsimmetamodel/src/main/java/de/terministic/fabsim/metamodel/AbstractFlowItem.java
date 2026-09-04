@@ -10,7 +10,7 @@ import de.terministic.fabsim.metamodel.components.ProcessStep;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
-import de.terministic.fabsim.metamodel.dispatchRules.MaxWaitingTimeInQueueEvent;
+import de.terministic.fabsim.metamodel.dispatchrules.MaxWaitingTimeInQueueEvent;
 
 public abstract class AbstractFlowItem extends AbstractModelElement implements IFlowItem {
 

@@ -1,7 +1,7 @@
 package de.terministic.fabsim.metamodel.components.equipment.breakdown;
 
-import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.core.SimulationEngine;
+import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 
 public interface IBreakdown {

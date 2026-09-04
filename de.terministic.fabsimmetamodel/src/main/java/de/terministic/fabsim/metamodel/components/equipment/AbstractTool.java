@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
-import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
+import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.FabModel;
 import de.terministic.fabsim.metamodel.OperatorDemand;
+import de.terministic.fabsim.metamodel.components.FlowItemArrivalEvent;
 import de.terministic.fabsim.metamodel.components.equipment.dedication.Dedication;
 import de.terministic.fabsim.metamodel.components.equipment.dedication.DedicationDetails;
 import de.terministic.fabsim.metamodel.components.equipment.toolstatemachine.AbstractToolStateMachine;
@@ -106,6 +106,10 @@ public abstract class AbstractTool extends AbstractResource {
 
 	public AbstractToolGroupController getTGController() {
 		return this.tgController;
+	}
+
+	public long getProcessingTimeLeft() {
+		return this.toolStateMachine.getProcessingTimeLeft(this);
 	}
 
 	@Override

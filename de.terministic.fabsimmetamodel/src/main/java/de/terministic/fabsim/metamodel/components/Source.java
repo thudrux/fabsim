@@ -22,6 +22,8 @@ public class Source extends AbstractSource {
 	protected HashSet<CreationEvent> outstandingEvents = new HashSet<>();
 	private int releaseSize = 1;
 	protected int lotSize = 1;
+	private int defaultPriority = 1;
+	private long dueDateLeadTime = Long.MAX_VALUE;
 
 	public Source(FabModel model, final String name) {
 		super(model, name);
@@ -62,6 +64,10 @@ public class Source extends AbstractSource {
 		return this.interArrivalTime;
 	}
 
+	public int getLotSize() {
+		return this.lotSize;
+	}
+
 	public String getProductName() {
 		return this.product.getName();
 	}
@@ -73,6 +79,14 @@ public class Source extends AbstractSource {
 
 	public int getReleaseSize() {
 		return this.releaseSize;
+	}
+
+	protected int getDefaultPriority() {
+		return this.defaultPriority;
+	}
+
+	protected long getDueDateLeadTime() {
+		return this.dueDateLeadTime;
 	}
 
 	@Override
@@ -101,6 +115,14 @@ public class Source extends AbstractSource {
 
 	}
 
+	public void setDefaultPriority(final int defaultPriority) {
+		this.defaultPriority = defaultPriority;
+	}
+
+	public void setDueDateLeadTime(final long dueDateLeadTime) {
+		this.dueDateLeadTime = dueDateLeadTime;
+	}
+
 	public void setProduct(final Product product) {
 		this.product = product;
 	}
@@ -111,6 +133,17 @@ public class Source extends AbstractSource {
 
 	public void setReleaseSize(final int releaseSize) {
 		this.releaseSize = releaseSize;
+	}
+
+	protected long resolveDueDate(final long creationTime) {
+		if (this.dueDateLeadTime == Long.MAX_VALUE) {
+			return Long.MAX_VALUE;
+		}
+		try {
+			return Math.addExact(creationTime, this.dueDateLeadTime);
+		} catch (final ArithmeticException ex) {
+			return Long.MAX_VALUE;
+		}
 	}
 
 	@Override

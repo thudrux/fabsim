@@ -7,7 +7,7 @@
 
 	<groupId>de.terministic.fabsim</groupId>
 	<artifactId>metamodel</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>de.terministic.fabsim.metamodel</name>
 	<!-- FIXME change it to the project's website -->
@@ -26,12 +26,19 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.5.2</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>de.terministic.fabsim</groupId>
 			<artifactId>core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>

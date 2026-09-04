@@ -7,6 +7,7 @@ package de.terministic.fabsim.metamodel;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +24,15 @@ import de.terministic.fabsim.metamodel.components.BasicRouting;
 import de.terministic.fabsim.metamodel.components.Controller;
 import de.terministic.fabsim.metamodel.components.Product;
 import de.terministic.fabsim.metamodel.components.Recipe;
+import de.terministic.fabsim.metamodel.components.Source;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractResource;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroupController;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroupController;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
-import de.terministic.fabsim.metamodel.dispatchRules.AbstractDispatchRule;
-import de.terministic.fabsim.metamodel.dispatchRules.FIFO;
+import de.terministic.fabsim.metamodel.dispatchrules.AbstractDispatchRule;
+import de.terministic.fabsim.metamodel.dispatchrules.FIFO;
 
 public class FabModel implements IModel{
 	private String name;
@@ -79,9 +81,13 @@ public class FabModel implements IModel{
 	private SimulationEngine engine;
 
 	public FabModel() {
+		this(null);
+	}
+
+	public FabModel(final Long seed) {
 		this.setName("FabModel");
 		this.componentFactory = new SimComponentFactory(this);
-		this.durationFactory = new DurationFactory(this);
+		this.durationFactory = seed == null ? new DurationFactory(this) : new DurationFactory(this, new Random(seed));
 		this.components = new LinkedHashMap<>();
 		this.toolGroups = new LinkedHashMap<>();
 		this.elements = new LinkedHashMap<>();
@@ -251,6 +257,21 @@ public class FabModel implements IModel{
 		return this.sources;
 	}
 
+	public int getLotSize() {
+		if (this.sources.isEmpty()) {
+			return 1;
+		}
+
+		final int lotSize = getLotSize(this.sources.get(0));
+		for (final AbstractSource source : this.sources) {
+			final int sourceLotSize = getLotSize(source);
+			if (sourceLotSize != lotSize) {
+				throw new IllegalStateException("FabModel contains sources with different lot sizes");
+			}
+		}
+		return lotSize;
+	}
+
 	public AbstractToolGroupController getToolGroupController() {
 		return this.tgController;
 	}
@@ -309,6 +330,13 @@ public class FabModel implements IModel{
 
 	public void setToolGroups(final LinkedHashMap<Long, AbstractToolGroup> toolGroups) {
 		this.toolGroups = toolGroups;
+	}
+
+	private int getLotSize(final AbstractSource source) {
+		if (source instanceof Source) {
+			return ((Source) source).getLotSize();
+		}
+		throw new IllegalStateException("FabModel source does not expose a lot size: " + source.getClass().getName());
 	}
 
 	public void setupForSimulation(final SimulationEngine engine) {

@@ -3,12 +3,15 @@ package de.terministic.fabsim.metamodel.components.equipment.toolstatemachine;
 import java.util.ArrayList;
 
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
+import de.terministic.fabsim.metamodel.components.equipment.MaintenanceTriggeredEvent;
 import de.terministic.fabsim.metamodel.components.equipment.SemiE10EquipmentState;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.breakdown.IBreakdown;
 import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.core.AbstractSimEvent;
 import de.terministic.fabsim.metamodel.FabModel;
+import de.terministic.fabsim.metamodel.components.equipment.maintenance.IMaintenance;
+import de.terministic.fabsim.core.ISimEvent;
 
 public class SetupToolState extends AbstractToolState {
 
@@ -64,6 +67,11 @@ public class SetupToolState extends AbstractToolState {
 	}
 
 	@Override
+	public AbstractToolState onMaintenanceTriggered(final AbstractTool tool, final IMaintenance maint) {
+		return null;
+	}
+
+	@Override
 	public AbstractToolState onSetupFinished(final AbstractTool tool, final AbstractFlowItem item) {
 		tool.setCurrentSetupState(item.getCurrentStep().getSetupDetails());
 		getStateDetails().remove(tool);
@@ -78,6 +86,11 @@ public class SetupToolState extends AbstractToolState {
 	public SemiE10EquipmentState resumeState(final AbstractTool tool, final ArrayList<AbstractSimEvent> storedEvents) {
 		getStateDetails().get(tool).resume();
 		return SemiE10EquipmentState.SD_SETUP;
+	}
+
+	@Override
+	public boolean needsEventForLater(final ISimEvent event) {
+		return event instanceof MaintenanceTriggeredEvent;
 	}
 
 	public void setBreakdownToolState(final BreakdownToolState ud) {
