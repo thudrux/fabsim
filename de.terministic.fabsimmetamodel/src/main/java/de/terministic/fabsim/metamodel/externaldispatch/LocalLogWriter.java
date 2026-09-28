@@ -50,7 +50,7 @@ public final class LocalLogWriter implements AutoCloseable {
 		final FlowItemQueuedSnapshot chosenFlowItem = FlowItemQueuedSnapshot.capture(selectedFlowItem,
 				request.getSimulationTime());
 		try {
-			this.writer.write(toJson(request.getFabState(), chosenFlowItem));
+			this.writer.write(toJson(request, chosenFlowItem));
 			this.writer.write('\n');
 		} catch (final IOException ex) {
 			throw new IllegalStateException("Failed to write dispatch decision log to " + this.logFile, ex);
@@ -71,14 +71,14 @@ public final class LocalLogWriter implements AutoCloseable {
 		}
 	}
 
-	private String toJson(final FabStateSnapshot fabState, final FlowItemQueuedSnapshot chosenFlowItem) {
+	private String toJson(final DispatchDecisionRequest request, final FlowItemQueuedSnapshot chosenFlowItem) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append('{');
 		builder.append("\"fab_state\":");
-		appendFabState(builder, fabState);
+		appendFabState(builder, request.getFabState());
 		builder.append(',');
 		builder.append("\"cost_snapshot\":");
-		appendCostSnapshot(builder, fabState.getCostSnapshot());
+		appendCostSnapshot(builder, CostSnapshot.capture(request.getFabState().getToolGroups()));
 		builder.append(',');
 		builder.append("\"dispatch_decision\":");
 		appendDispatchDecision(builder, chosenFlowItem);

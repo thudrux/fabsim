@@ -10,20 +10,15 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractToolGroup;
 public final class FabStateSnapshot {
 	private final long simulationTime;
 	private final List<ToolGroupSnapshot> toolGroups;
-	private final CostSnapshot costSnapshot;
 
-	FabStateSnapshot(final long simulationTime, final List<ToolGroupSnapshot> toolGroups,
-			final CostSnapshot costSnapshot) {
+	FabStateSnapshot(final long simulationTime, final List<ToolGroupSnapshot> toolGroups) {
 		this.simulationTime = simulationTime;
 		this.toolGroups = toolGroups;
-		this.costSnapshot = costSnapshot;
 	}
 
 	public static FabStateSnapshot capture(final FabModel model, final AbstractToolGroup selectedToolGroup,
 			final long currentTime) {
 		final List<ToolGroupSnapshot> toolGroups = new ArrayList<>();
-		long totalProjectedTardiness = 0L;
-		long workInProgress = 0L;
 		if (model != null) {
 			for (final AbstractToolGroup groupBase : model.getToolGroups().values()) {
 				final boolean waitingForDispatch = selectedToolGroup != null
@@ -31,12 +26,9 @@ public final class FabStateSnapshot {
 				final ToolGroupSnapshot toolGroup = ToolGroupSnapshot.capture(groupBase, waitingForDispatch,
 						currentTime);
 				toolGroups.add(toolGroup);
-				totalProjectedTardiness += toolGroup.getTotalProjectedTardiness();
-				workInProgress += toolGroup.getWorkInProgress();
 			}
 		}
-		return new FabStateSnapshot(currentTime, Collections.unmodifiableList(toolGroups),
-				new CostSnapshot(totalProjectedTardiness, workInProgress));
+		return new FabStateSnapshot(currentTime, Collections.unmodifiableList(toolGroups));
 	}
 
 	public long getSimulationTime() {
@@ -45,9 +37,5 @@ public final class FabStateSnapshot {
 
 	public List<ToolGroupSnapshot> getToolGroups() {
 		return this.toolGroups;
-	}
-
-	public CostSnapshot getCostSnapshot() {
-		return this.costSnapshot;
 	}
 }

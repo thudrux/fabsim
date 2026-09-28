@@ -242,8 +242,7 @@ All time values are in milliseconds unless stated otherwise.
 | Java object | Methods |
 | --- | --- |
 | `DispatchDecisionRequest` | `getFabState()`, `getCandidates()`, `getSimulationTime()` |
-| `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()`, `getCostSnapshot()` |
-| `CostSnapshot` | `getTotalProjectedTardiness()`, `getWorkInProgress()` |
+| `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()` |
 | `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()` |
 | `ToolSnapshot` | `getId()`, `getCurrentToolState()`, `getInProcessItem()` |
 | `FlowItemQueuedSnapshot` | `getRemainingCycleTime()`, `getExpectedProcessingTime()`, `getExpectedSetupTime()`, `getTimeSinceArrival()`, `getPriority()`, `getLateness()`, `getRecipe()` |
