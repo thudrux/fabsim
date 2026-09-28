@@ -201,9 +201,9 @@ All time values are in milliseconds unless stated otherwise.
 | `fab_state` | object | Fab snapshot before the dispatch decision. |
 | `fab_state.simulation_time` | integer | Current simulation timestamp. |
 | `fab_state.tool_groups` | array | Snapshot of every tool group in the fab. |
-| `fab_state.cost_snapshot` | object | Aggregate cost and WIP snapshot. |
-| `fab_state.cost_snapshot.total_projected_tardiness` | integer | Projected wafer-level tardiness, in milliseconds, over queued and in-process work. |
-| `fab_state.cost_snapshot.work_in_progress` | integer | Current wafer-level work in progress. |
+| `cost_snapshot` | object | Aggregate cost and WIP snapshot. |
+| `cost_snapshot.total_projected_tardiness` | integer | Projected wafer-level tardiness, in milliseconds, over queued and in-process work. |
+| `cost_snapshot.work_in_progress` | integer | Current wafer-level work in progress. |
 | `fab_state.tool_groups[].name` | string | Tool-group name. |
 | `fab_state.tool_groups[].waiting_for_dispatch` | boolean | Whether this is the tool group currently requesting a dispatch decision. |
 | `fab_state.tool_groups[].tools` | array | Tools belonging to the tool group. |
@@ -229,7 +229,7 @@ All time values are in milliseconds unless stated otherwise.
 Example line:
 
 ```json
-{"fab_state":{"simulation_time":86400000,"tool_groups":[{"name":"Toolgroup","waiting_for_dispatch":true,"tools":[{"id":1,"current_tool_state":"PR","in_process_item":{"remaining_cycle_time":90000,"processing_time_left":30000,"priority":0,"lateness":0}},{"id":2,"current_tool_state":"SB_NO_MATERIAL","in_process_item":null}],"queued_items":[{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}]}],"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":25}},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
+{"fab_state":{"simulation_time":86400000,"tool_groups":[{"name":"Toolgroup","waiting_for_dispatch":true,"tools":[{"id":1,"current_tool_state":"PR","in_process_item":{"remaining_cycle_time":90000,"processing_time_left":30000,"priority":0,"lateness":0}},{"id":2,"current_tool_state":"SB_NO_MATERIAL","in_process_item":null}],"queued_items":[{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}]}]},"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":25},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
 ```
 
 ## Dispatch Request API

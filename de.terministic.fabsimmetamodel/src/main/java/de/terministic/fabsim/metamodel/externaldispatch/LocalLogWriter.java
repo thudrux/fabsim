@@ -77,6 +77,9 @@ public final class LocalLogWriter implements AutoCloseable {
 		builder.append("\"fab_state\":");
 		appendFabState(builder, fabState);
 		builder.append(',');
+		builder.append("\"cost_snapshot\":");
+		appendCostSnapshot(builder, fabState.getCostSnapshot());
+		builder.append(',');
 		builder.append("\"dispatch_decision\":");
 		appendDispatchDecision(builder, chosenFlowItem);
 		builder.append('}');
@@ -103,9 +106,6 @@ public final class LocalLogWriter implements AutoCloseable {
 			appendToolGroup(builder, toolGroups.get(i));
 		}
 		builder.append(']');
-		builder.append(',');
-		builder.append("\"cost_snapshot\":");
-		appendCostSnapshot(builder, fabState.getCostSnapshot());
 		builder.append('}');
 	}
 
