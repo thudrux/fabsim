@@ -95,7 +95,7 @@ final class SnapshotCalculations {
 			}
 			return total;
 		}
-		return item.getSize() * (calculateLateness(item, currentTime)
+		return item.getSize() * Math.max(0L, calculateLateness(item, currentTime)
 				+ calculateRemainingCycleTime(item));
 	}
 
