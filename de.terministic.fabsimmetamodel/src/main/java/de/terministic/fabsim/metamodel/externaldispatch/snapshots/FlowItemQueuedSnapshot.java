@@ -6,15 +6,17 @@ import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
 
 public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	private final long remainingCycleTime;
+	private final long remainingProcessingTime;
 	private final long expectedProcessingTime;
 	private final long expectedSetupTime;
 	private final long timeSinceArrival;
 
-	FlowItemQueuedSnapshot(final long remainingCycleTime, final long expectedProcessingTime,
-			final long expectedSetupTime, final long timeSinceArrival, final int priority,
-			final long lateness, final String recipe) {
+	FlowItemQueuedSnapshot(final long remainingCycleTime, final long remainingProcessingTime,
+			final long expectedProcessingTime, final long expectedSetupTime, final long timeSinceArrival,
+			final int priority, final long lateness, final String recipe) {
 		super(priority, lateness, recipe);
 		this.remainingCycleTime = remainingCycleTime;
+		this.remainingProcessingTime = remainingProcessingTime;
 		this.expectedProcessingTime = expectedProcessingTime;
 		this.expectedSetupTime = expectedSetupTime;
 		this.timeSinceArrival = timeSinceArrival;
@@ -23,6 +25,7 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final ToolGroup toolGroup,
 			final long currentTime) {
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item),
+				SnapshotCalculations.calculateRemainingProcessingTime(item),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(toolGroup, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
@@ -34,6 +37,7 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final AbstractTool tool,
 			final long currentTime) {
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item),
+				SnapshotCalculations.calculateRemainingProcessingTime(item),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(tool, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
@@ -44,6 +48,7 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 
 	public static FlowItemQueuedSnapshot capture(final AbstractFlowItem item, final long currentTime) {
 		return new FlowItemQueuedSnapshot(SnapshotCalculations.calculateRemainingCycleTime(item),
+				SnapshotCalculations.calculateRemainingProcessingTime(item),
 				SnapshotCalculations.calculateExpectedProcessingTime(item), 0L,
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),
 				SnapshotCalculations.calculatePriority(item),
@@ -53,6 +58,10 @@ public class FlowItemQueuedSnapshot extends FlowItemSnapshotBase {
 
 	public long getRemainingCycleTime() {
 		return this.remainingCycleTime;
+	}
+
+	public long getRemainingProcessingTime() {
+		return this.remainingProcessingTime;
 	}
 
 	public long getExpectedProcessingTime() {

@@ -6,11 +6,11 @@ import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 public final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 	private final long id;
 
-	FlowItemQueuedWithIDSnapshot(final long id, final long remainingCycleTime,
+	FlowItemQueuedWithIDSnapshot(final long id, final long remainingCycleTime, final long remainingProcessingTime,
 			final long expectedProcessingTime, final long expectedSetupTime, final long timeSinceArrival,
 			final int priority, final long lateness, final String recipe) {
-		super(remainingCycleTime, expectedProcessingTime, expectedSetupTime, timeSinceArrival, priority, lateness,
-				recipe);
+		super(remainingCycleTime, remainingProcessingTime, expectedProcessingTime, expectedSetupTime,
+				timeSinceArrival, priority, lateness, recipe);
 		this.id = id;
 	}
 
@@ -18,6 +18,7 @@ public final class FlowItemQueuedWithIDSnapshot extends FlowItemQueuedSnapshot {
 			final long currentTime) {
 		return new FlowItemQueuedWithIDSnapshot(item.getId(),
 				SnapshotCalculations.calculateRemainingCycleTime(item),
+				SnapshotCalculations.calculateRemainingProcessingTime(item),
 				SnapshotCalculations.calculateExpectedProcessingTime(item),
 				SnapshotCalculations.calculateExpectedSetupTime(tool, item),
 				SnapshotCalculations.calculateTimeSinceArrival(item, currentTime),

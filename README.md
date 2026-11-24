@@ -215,6 +215,7 @@ All time values are in milliseconds unless stated otherwise.
 | `fab_state.tool_groups[].tools[].in_process_item.priority` | integer | Item priority. |
 | `fab_state.tool_groups[].tools[].in_process_item.lateness` | integer | Current lateness relative to the item's due-date target. |
 | `fab_state.tool_groups[].queued_items` | array | Items waiting in the tool-group queue. |
+| `fab_state.tool_groups[].queued_items[].remaining_processing_time` | integer | Sum of mean processing times from the current step onward, excluding setup, loading, and unloading. For batches, the rounded mean across member lots. |
 | `fab_state.tool_groups[].queued_items[].remaining_cycle_time` | integer | Projected remaining cycle time. |
 | `fab_state.tool_groups[].queued_items[].expected_processing_time` | integer | Expected processing time required at the current operation. |
 | `fab_state.tool_groups[].queued_items[].expected_setup_time` | integer | Expected setup time before processing can start. |
@@ -229,7 +230,7 @@ All time values are in milliseconds unless stated otherwise.
 Example line:
 
 ```json
-{"fab_state":{"simulation_time":86400000,"tool_groups":[{"name":"Toolgroup","waiting_for_dispatch":true,"tools":[{"id":1,"current_tool_state":"PR","in_process_item":{"remaining_cycle_time":90000,"processing_time_left":30000,"priority":0,"lateness":0}},{"id":2,"current_tool_state":"SB_NO_MATERIAL","in_process_item":null}],"queued_items":[{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}]}]},"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":25},"dispatch_decision":{"chosen_flow_item":{"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
+{"fab_state":{"simulation_time":86400000,"tool_groups":[{"name":"Toolgroup","waiting_for_dispatch":true,"tools":[{"id":1,"current_tool_state":"PR","in_process_item":{"remaining_cycle_time":90000,"processing_time_left":30000,"priority":0,"lateness":0}},{"id":2,"current_tool_state":"SB_NO_MATERIAL","in_process_item":null}],"queued_items":[{"remaining_processing_time":90000,"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}]}]},"cost_snapshot":{"total_projected_tardiness":0,"work_in_progress":25},"dispatch_decision":{"chosen_flow_item":{"remaining_processing_time":90000,"remaining_cycle_time":120000,"expected_processing_time":60000,"expected_setup_time":0,"time_since_arrival":30000,"priority":0,"lateness":0,"recipe":"recipe-a"}}}
 ```
 
 ## Dispatch Request API
@@ -245,7 +246,7 @@ All time values are in milliseconds unless stated otherwise.
 | `FabStateSnapshot` | `getSimulationTime()`, `getToolGroups()` |
 | `ToolGroupSnapshot` | `getName()`, `getWaitingForDispatch()`, `getTools()`, `getQueuedItems()` |
 | `ToolSnapshot` | `getId()`, `getCurrentToolState()`, `getInProcessItem()` |
-| `FlowItemQueuedSnapshot` | `getRemainingCycleTime()`, `getExpectedProcessingTime()`, `getExpectedSetupTime()`, `getTimeSinceArrival()`, `getPriority()`, `getLateness()`, `getRecipe()` |
+| `FlowItemQueuedSnapshot` | `getRemainingCycleTime()`, `getRemainingProcessingTime()`, `getExpectedProcessingTime()`, `getExpectedSetupTime()`, `getTimeSinceArrival()`, `getPriority()`, `getLateness()`, `getRecipe()` |
 | `FlowItemInProcessSnapshot` | `getRemainingCycleTime()`, `getProcessingTimeLeft()`, `getPriority()`, `getLateness()` |
 | `FlowItemQueuedWithIDSnapshot` | `getId()` plus all `FlowItemQueuedSnapshot` methods |
 | `DispatchDecisionResponse` | `of(selected_flow_item_id)`, `getSelectedFlowItemId()` |

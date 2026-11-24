@@ -8,6 +8,7 @@ import de.terministic.fabsim.metamodel.AbstractFlowItem;
 import de.terministic.fabsim.metamodel.components.Batch;
 import de.terministic.fabsim.metamodel.components.Lot;
 import de.terministic.fabsim.metamodel.components.ProcessStep;
+import de.terministic.fabsim.metamodel.components.Recipe;
 import de.terministic.fabsim.metamodel.components.equipment.AbstractTool;
 import de.terministic.fabsim.metamodel.components.equipment.SetupState;
 import de.terministic.fabsim.metamodel.components.equipment.ToolGroup;
@@ -26,6 +27,28 @@ final class SnapshotCalculations {
 			return 0L;
 		}
 		return Math.max(0L, item.getRecipe().get(currentStepNumber).getAvgDuration());
+	}
+
+	static long calculateRemainingProcessingTime(final AbstractFlowItem item) {
+		if (item == null) {
+			return 0L;
+		}
+		if (item instanceof Batch) {
+			final Batch batch = (Batch) item;
+			return Math.round(batch.getItems().stream()
+					.mapToDouble(SnapshotCalculations::calculateRemainingProcessingTime)
+					.average().orElse(0.0d));
+		}
+		final Recipe recipe = item.getRecipe();
+		final int currentStepNumber = item.getCurrentStepNumber();
+		if (recipe == null || currentStepNumber < 0) {
+			return 0L;
+		}
+		long remainingProcessingTime = 0L;
+		for (int i = currentStepNumber; i < recipe.size(); i++) {
+			remainingProcessingTime += Math.max(0L, recipe.get(i).getAvgDuration());
+		}
+		return remainingProcessingTime;
 	}
 
 	static long calculateRemainingCycleTime(final AbstractFlowItem item) {

@@ -40,18 +40,37 @@ public class ExternalDispatchRuleTest {
 		Assertions.assertEquals(fixture.secondItem.getId(), provider.request.getCandidates().get(1).getId());
 		Assertions.assertEquals("Recipe", provider.request.getCandidates().get(0).getRecipe());
 		Assertions.assertEquals(10L, provider.request.getCandidates().get(0).getExpectedProcessingTime());
+		Assertions.assertEquals(10L, provider.request.getCandidates().get(0).getRemainingProcessingTime());
 		Assertions.assertEquals(20L, provider.request.getCandidates().get(0).getRemainingCycleTime());
 		Assertions.assertEquals(7L, provider.request.getCandidates().get(0).getExpectedSetupTime());
 		Assertions.assertEquals(1, provider.request.getFabState().getToolGroups().size());
 		Assertions.assertTrue(provider.request.getFabState().getToolGroups().get(0).getWaitingForDispatch());
+		Assertions.assertEquals(10L, provider.request.getFabState().getToolGroups().get(0)
+				.getQueuedItems().get(0).getRemainingProcessingTime());
 	}
 
 	@Test
 	public void selectsBatchChosenByExternalProvider() {
 		TestFixture fixture = createFixture();
-		Batch batch = new Batch(fixture.model, fixture.firstItem.getRecipe());
+		Recipe firstRecipe = fixture.firstItem.getRecipe();
+		fixture.model.getSimComponentFactory().createProcessStepAndAddToRecipe("FirstFutureStep",
+				fixture.toolGroup, 20L, ProcessType.LOT, firstRecipe);
+
+		Recipe secondRecipe = fixture.model.getSimComponentFactory().createRecipe("SecondRecipe");
+		fixture.model.getSimComponentFactory().createProcessStepAndAddToRecipe("CompletedStep",
+				fixture.toolGroup, 100L, ProcessType.LOT, secondRecipe);
+		secondRecipe.add(fixture.firstItem.getCurrentStep());
+		fixture.model.getSimComponentFactory().createProcessStepAndAddToRecipe("SecondFutureStep",
+				fixture.toolGroup, 23L, ProcessType.LOT, secondRecipe);
+		Product secondProduct = fixture.model.getSimComponentFactory().createProduct("SecondProduct", secondRecipe);
+		Lot secondLot = new Lot(fixture.model, secondProduct, 2, 2, 20L);
+		secondLot.setCurrentStepNumber(1);
+
+		Recipe batchRecipe = new Recipe("BatchRecipe");
+		batchRecipe.add(fixture.firstItem.getCurrentStep());
+		Batch batch = new Batch(fixture.model, batchRecipe);
 		batch.addItem(fixture.firstItem);
-		batch.addItem(fixture.secondItem);
+		batch.addItem(secondLot);
 
 		ArrayList<AbstractFlowItem> items = new ArrayList<AbstractFlowItem>();
 		items.add(batch);
@@ -62,6 +81,7 @@ public class ExternalDispatchRuleTest {
 
 		Assertions.assertEquals(batch, selected);
 		Assertions.assertEquals(batch.getId(), provider.request.getCandidates().get(0).getId());
+		Assertions.assertEquals(32L, provider.request.getCandidates().get(0).getRemainingProcessingTime());
 	}
 
 	@Test
@@ -102,8 +122,8 @@ public class ExternalDispatchRuleTest {
 		toolGroup.setInitialSetup(currentSetup);
 
 		Recipe recipe = model.getSimComponentFactory().createRecipe("Recipe");
-		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step", toolGroup, 10L, recipeSetup,
-				ProcessType.LOT, recipe);
+		model.getSimComponentFactory().createProcessStepAndAddToRecipe("Step", toolGroup, null, 2L, 10L, 3L,
+				null, recipeSetup, ProcessType.LOT, recipe);
 		Product product = model.getSimComponentFactory().createProduct("Product", recipe);
 
 		Lot firstItem = new Lot(model, product, 1, 1, 20L);
